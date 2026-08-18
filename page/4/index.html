@@ -1,0 +1,214 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta property="og:type" content="website">
+<meta property="og:title" content="Twistzz">
+<meta property="og:url" content="https://twistzz-ctf.github.io/page/4/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:author" content="Twistzz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/page/4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Twistzz',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="site-info"><h1 id="site-title">Twistzz</h1><div id="site_social_icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/16/Unquoted-Service-Path/" title="Unquoted Service Path">Unquoted Service Path</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-16T18:24:15.000Z" title="Created 2026-06-16 19:24:15">2026-06-16</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Services/">Services</a></span></div><div class="content"> ➜ Unquoted Service Path occurs when a service binary path contains spaces and is not enclosed in quotes, causing Windows to search and execute executables in unintended locations. If an attacker can place a malicious executable in one of these searched paths, they can hijack the service and execute code with the service’s privileges, such as SYSTEM. ➜ Example : ➜ If the service binary path is :  1C:\Program Files (x86)\System Explorer\service\SystemExplorerService64.exe   ➜ Windows will atte...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/12/NTLM-relay-SMB-To-SMB/" title="NTLM relay SMB To SMB">NTLM relay SMB To SMB</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-12T20:37:29.000Z" title="Created 2026-06-12 21:37:29">2026-06-12</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Exploitation/">Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Exploitation/NTLM-Relay/">NTLM Relay</a></span></div><div class="content">Requirements  The machine we relay from should be vulnerable to one of these coercion methods  SMB signing on the machine we relay to should be disabled or enabled.      ➜ Self-relay (relaying back to the same host that authenticated) has been patched since MS08-068, the machine we relay to must therefore be a different machine from the machine we relay from.   ➜ We can bypass this restriction by adding a crafted DNS record on the DC, formatted as &lt;hostname&gt;1UWhRCAAAAAAAAAAAAAAAAAAAAAAA...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/09/Protections-Enumeration/" title="Protections Enumeration">Protections Enumeration</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-09T20:54:38.000Z" title="Created 2026-06-09 21:54:38">2026-06-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Windows-Enumeration/">Windows Enumeration</a></span></div><div class="content">Checking Windows Defender status1234567PS&gt; Get-MpComputerStatusAMServiceEnabled        : TrueAntivirusEnabled        : TrueRealTimeProtectionEnabled : False   &lt;-- Disabled! Safe to use standard toolsBehaviorMonitorEnabled  : FalseIoavProtectionEnabled   : False    RealTimeProtectionEnabled: False → Defender scanning is off, use tools normally RealTimeProtectionEnabled: True → need obfuscated or in-memory techniques BehaviorMonitorEnabled → catches Potato-style attacks even when signatur...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/09/Windows-Enumeration/" title="Windows Enumeration">Windows Enumeration</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-09T19:23:00.000Z" title="Created 2026-06-09 20:23:00">2026-06-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Windows-Enumeration/">Windows Enumeration</a></span></div><div class="content">System Information Operating system version and build  1C:\&gt; systeminfo | findstr /B /C:&quot;OS Name&quot; /C:&quot;OS Version&quot;   Patch level  1C:\&gt; wmic qfe list brief  1PS&gt; Get-HotFix | ft -AutoSize   Environment variables   If a writable directory appears early in PATH ( Example home directory ) we can plant a malicious binary or DLL that gets loaded by a privileged process like DLL hijacking or binary planting.  1C:\&gt; set  12345PS&gt; Get-ChildItem Env:➜ Check just the P...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/04/ADCS-ESC10/" title="ADCS : ESC10">ADCS : ESC10</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-04T10:59:19.000Z" title="Created 2026-06-04 11:59:19">2026-06-04</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Exploitation/">Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Exploitation/ADCS/">ADCS</a></span></div><div class="content">Certificate authentication mappingWhen we authenticate using the Certificate Authentication method the Domain Controller (KDC) must answer a critical question :  ➜ Which Active Directory account owns this certificate?  The process of associating a certificate with an Active Directory account is called Certificate Mapping. Certificate mapping can occur in two different places:  1- The KDC if we use kerberos PKINIT authentication  2- Schannel if we use TLS client certificate authentication Case...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/06/SeTakeOwnershipPrivilege/" title="SeTakeOwnershipPrivilege">SeTakeOwnershipPrivilege</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-03-06T10:50:42.000Z" title="Created 2026-03-06 11:50:42">2026-03-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/User/">User</a></span></div><div class="content"> ➜ SeTakeOwnershipPrivilege lets a user become the owner of any protected Windows object (files, registry keys, services, or AD objects), which enables full access through the sequence :   Take Ownership → Modify The DACL (ACL) → Gain Full Access   ➜ This can lead us to :   Read protected files  Take ownership → change ACL → read sensitive files (creds, keys, flags).  Privilege escalation &#x2F; RCE  Take ownership of a config&#x2F;script used by a privileged service → modify it → code runs a...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/06/SeImpersonate-and-SeAssignPrimaryToken/" title="SeImpersonate and SeAssignPrimaryToken">SeImpersonate and SeAssignPrimaryToken</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-03-06T10:48:44.000Z" title="Created 2026-03-06 11:48:44">2026-03-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/User/">User</a></span></div><div class="content"> Sometimes services need to impersonate users to perform actions on their behalf, such as writing files to the system or accessing network shares. For this reason, administrators often grant service accounts the SeImpersonatePrivilege. As a result, whenever we gain a shell as a service account, it is always worth checking whether this privilege is present.   Abusing SeImpersonate and SeAssignPrimaryToken consists of tricking a high-privileged process (usually running as SYSTEM) into authentic...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/06/SeDebugPrivilege/" title="SeDebugPrivilege">SeDebugPrivilege</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-03-06T10:46:49.000Z" title="Created 2026-03-06 11:46:49">2026-03-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/User/">User</a></span></div><div class="content"> To run a particular application or service or assist with troubleshooting, a user might be assigned the SeDebugPrivilege instead of adding the account into the administrators group.   Attackers can abuse SeDebugPrivilege by:  Dumping LSASS memory ( With procdump Or Task Manager ) Achieving RCE as SYSTEM by interacting with privileged processes.   Dumping LsassDump LSASS with procdump.exe1C:\Tools\Mimikatz\x64&gt;C:\Tools\Procdump\procdump.exe -accepteula -ma lsass.exe lsass.dmp  Dump Hashes1...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/06/Server-Operators/" title="Server Operators">Server Operators</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-03-06T10:43:03.000Z" title="Created 2026-03-06 11:43:03">2026-03-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Groups/">Groups</a></span></div><div class="content"> ➜ Members of the Server Operators group may have SERVICE_ALL_ACCESS or SERVICE_CHANGE_CONFIG permissions on certain services. These permissions allow modification of the service configuration, including the binPath. ➜ If the targeted service runs as LocalSystem, modifying its binPath allows execution of arbitrary commands with NT AUTHORITY\SYSTEM privileges, resulting in full local privilege escalation.  Enumerating Services Running as LocalSystem and Controllable by Server Operators To iden...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/06/Hyper-V-Administrators/" title="Hyper-V Administrators">Hyper-V Administrators</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-03-06T10:32:17.000Z" title="Created 2026-03-06 11:32:17">2026-03-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Groups/">Groups</a></span></div><div class="content"> ➜ The Hyper-V Administrators group has full access to all Hyper-V features. If Domain Controllers have been virtualized, then the virtualization admins should be considered Domain Admins. They could easily create a clone of the live Domain Controller and mount the virtual disk offline to obtain the NTDS.dit file and extract NTLM password hashes for all users in the domain.   ➜ The Hyper-V Administrators group can manage virtual machines and their disk files (.vhdx). The Hyper-V service (vmms...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/3/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/#content-inner">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#content-inner">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/#content-inner">8</a><a class="extend next" rel="next" href="/page/5/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>Categories</span>
+            <a class="card-more-btn" href="/categories/" title="View More">
+      <i class="fas fa-angle-right"></i></a>
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/"><span class="card-category-list-name">Active Directory</span><span class="card-category-list-count">70</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/"><span class="card-category-list-name">Enumeration</span><span class="card-category-list-count">5</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/"><span class="card-category-list-name">Service-Enumeration</span><span class="card-category-list-count">2</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/MSSQL/"><span class="card-category-list-name">MSSQL</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/MySQL/"><span class="card-category-list-name">MySQL</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/"><span class="card-category-list-name">Users & Passwords Enumeration</span><span class="card-category-list-count">3</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/Enumerating-Retrieving-Password-Policies/"><span class="card-category-list-name">Enumerating & Retrieving Password Policies</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/Making-a-Target-User-List/"><span class="card-category-list-name">Making a Target User List</span><span class="card-category-list-count">1</span></a></li></ul></li></ul></li></ul></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/PKINITtools/" style="font-size: 1.1em; color: #999">PKINITtools</a> <a href="/tags/secretsdump/" style="font-size: 1.3em; color: #99a1ac">secretsdump</a> <a href="/tags/pyGPOAbuse/" style="font-size: 1.1em; color: #999">pyGPOAbuse</a> <a href="/tags/SMB/" style="font-size: 1.2em; color: #999da3">SMB</a> <a href="/tags/WinPEAS/" style="font-size: 1.1em; color: #999">WinPEAS</a> <a href="/tags/GPO/" style="font-size: 1.1em; color: #999">GPO</a> <a href="/tags/Windows-Installer/" style="font-size: 1.1em; color: #999">Windows-Installer</a> <a href="/tags/Environment-Variables/" style="font-size: 1.1em; color: #999">Environment-Variables</a> <a href="/tags/Administrator/" style="font-size: 1.1em; color: #999">Administrator</a> <a href="/tags/Netexec/" style="font-size: 1.1em; color: #999">Netexec</a> <a href="/tags/OSINT/" style="font-size: 1.1em; color: #999">OSINT</a> <a href="/tags/Domain-Controllers/" style="font-size: 1.3em; color: #99a1ac">Domain-Controllers</a> <a href="/tags/Service-Hijacking/" style="font-size: 1.1em; color: #999">Service-Hijacking</a> <a href="/tags/MX/" style="font-size: 1.1em; color: #999">MX</a> <a href="/tags/kinit/" style="font-size: 1.1em; color: #999">kinit</a> <a href="/tags/fping/" style="font-size: 1.1em; color: #999">fping</a> <a href="/tags/net-view/" style="font-size: 1.1em; color: #999">net-view</a> <a href="/tags/Privileged-Users/" style="font-size: 1.1em; color: #999">Privileged-Users</a> <a href="/tags/Privilege-Escalation/" style="font-size: 1.5em; color: #99a9bf">Privilege-Escalation</a> <a href="/tags/NTLM-Relay/" style="font-size: 1.1em; color: #999">NTLM-Relay</a> <a href="/tags/Password-Policy/" style="font-size: 1.3em; color: #99a1ac">Password-Policy</a> <a href="/tags/net-accounts/" style="font-size: 1.1em; color: #999">net-accounts</a> <a href="/tags/Legacy-Systems/" style="font-size: 1.1em; color: #999">Legacy-Systems</a> <a href="/tags/Delegation/" style="font-size: 1.1em; color: #999">Delegation</a> <a href="/tags/Living-Off-the-Land/" style="font-size: 1.1em; color: #999">Living-Off-the-Land</a> <a href="/tags/Impacket/" style="font-size: 1.1em; color: #999">Impacket</a> <a href="/tags/Unquoted-Service-Path/" style="font-size: 1.1em; color: #999">Unquoted-Service-Path</a> <a href="/tags/Get-MpComputerStatus/" style="font-size: 1.1em; color: #999">Get-MpComputerStatus</a> <a href="/tags/Logon-Autorun/" style="font-size: 1.1em; color: #999">Logon-Autorun</a> <a href="/tags/Exploitation/" style="font-size: 1.1em; color: #999">Exploitation</a> <a href="/tags/Print-Spooler/" style="font-size: 1.2em; color: #999da3">Print-Spooler</a> <a href="/tags/Modifiable-Service-Binary/" style="font-size: 1.1em; color: #999">Modifiable-Service-Binary</a> <a href="/tags/netexec/" style="font-size: 1.4em; color: #99a5b6">netexec</a> <a href="/tags/schtasks/" style="font-size: 1.1em; color: #999">schtasks</a> <a href="/tags/SERVICE-ALL-ACCESS/" style="font-size: 1.1em; color: #999">SERVICE_ALL_ACCESS</a> <a href="/tags/UAC-Bypass/" style="font-size: 1.2em; color: #999da3">UAC-Bypass</a> <a href="/tags/Registry-Hives/" style="font-size: 1.1em; color: #999">Registry-Hives</a> <a href="/tags/Get-NetShare/" style="font-size: 1.1em; color: #999">Get-NetShare</a> <a href="/tags/Windows-Misconfiguration/" style="font-size: 1.1em; color: #999">Windows-Misconfiguration</a> <a href="/tags/dnsrecon/" style="font-size: 1.1em; color: #999">dnsrecon</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>Archives</span>
+      
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/07/">
+            <span class="card-archive-list-date">
+              July 2026
+            </span>
+            <span class="card-archive-list-count">11</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/06/">
+            <span class="card-archive-list-date">
+              June 2026
+            </span>
+            <span class="card-archive-list-count">24</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/03/">
+            <span class="card-archive-list-date">
+              March 2026
+            </span>
+            <span class="card-archive-list-count">8</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/01/">
+            <span class="card-archive-list-date">
+              January 2026
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/12/">
+            <span class="card-archive-list-date">
+              December 2025
+            </span>
+            <span class="card-archive-list-count">8</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/11/">
+            <span class="card-archive-list-date">
+              November 2025
+            </span>
+            <span class="card-archive-list-count">19</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">71</div></div><div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-18T23:25:29.902Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

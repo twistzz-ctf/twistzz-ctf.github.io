@@ -1,0 +1,372 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Living Off the Land | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="➜ In environments where offensive tooling cannot be executed due to AppLocker, Constrained Language Mode, or EDR, Windows built-in utilities can still be used to enumerate the Active Directory enviro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Living Off the Land">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2026/06/29/Living-Off-the-Land/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="➜ In environments where offensive tooling cannot be executed due to AppLocker, Constrained Language Mode, or EDR, Windows built-in utilities can still be used to enumerate the Active Directory enviro">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2026-06-29T22:56:56.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:51.221Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="Active-Directory">
+<meta property="article:tag" content="Active-Sessions">
+<meta property="article:tag" content="AppLocker">
+<meta property="article:tag" content="Constrained-Language-Mode">
+<meta property="article:tag" content="Domain-Controllers">
+<meta property="article:tag" content="Domain-Enumeration">
+<meta property="article:tag" content="Enumeration">
+<meta property="article:tag" content="Environment-Variables">
+<meta property="article:tag" content="Execution-Policy">
+<meta property="article:tag" content="Firewall">
+<meta property="article:tag" content="Group-Enumeration">
+<meta property="article:tag" content="Host-Enumeration">
+<meta property="article:tag" content="LOLBAS">
+<meta property="article:tag" content="Living-Off-the-Land">
+<meta property="article:tag" content="Microsoft-Defender">
+<meta property="article:tag" content="Native-Commands">
+<meta property="article:tag" content="Password-Policy">
+<meta property="article:tag" content="PowerShell">
+<meta property="article:tag" content="Share-Enumeration">
+<meta property="article:tag" content="User-Enumeration">
+<meta property="article:tag" content="WMIC">
+<meta property="article:tag" content="Windows">
+<meta property="article:tag" content="dsquery">
+<meta property="article:tag" content="net">
+<meta property="article:tag" content="net1">
+<meta property="article:tag" content="whoami">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Living Off the Land",
+  "url": "https://twistzz-ctf.github.io/2026/06/29/Living-Off-the-Land/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2026-06-29T22:56:56.000Z",
+  "dateModified": "2026-08-18T23:24:51.221Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2026/06/29/Living-Off-the-Land/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Living Off the Land',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">Living Off the Land</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">Living Off the Land</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-29T22:56:56.000Z" title="Created 2026-06-29 23:56:56">2026-06-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:51.221Z" title="Updated 2026-08-19 00:24:51">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/">Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/Living-Off-the-Land/">Living Off the Land</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>➜ In environments where offensive tooling cannot be executed due to AppLocker, Constrained Language Mode, or EDR, Windows built-in utilities can still be used to enumerate the Active Directory environment.</p>
+</blockquote>
+<h2 id="Host-and-Session-Information"><a href="#Host-and-Session-Information" class="headerlink" title="Host and Session Information"></a>Host and Session Information</h2><h4 id="Current-User-Information"><a href="#Current-User-Information" class="headerlink" title="Current User Information"></a>Current User Information</h4><blockquote>
+<p>➜ Display the current user along with its privileges and group memberships.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">whoami /all</span><br></pre></td></tr></table></figure>
+
+<h4 id="Environment-Variables"><a href="#Environment-Variables" class="headerlink" title="Environment Variables"></a>Environment Variables</h4><blockquote>
+<p>➜ List environment variables to reveal paths, the logon server, and the user’s domain.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-ChildItem</span> Env: | <span class="built_in">ft</span> Key,Value</span><br></pre></td></tr></table></figure>
+
+<h4 id="System-Information"><a href="#System-Information" class="headerlink" title="System Information"></a>System Information</h4><blockquote>
+<p>➜ Print a full summary of the host: OS version, installed patches, and domain membership.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systeminfo</span><br></pre></td></tr></table></figure>
+
+<h4 id="Installed-Patches-Hotfixes"><a href="#Installed-Patches-Hotfixes" class="headerlink" title="Installed Patches (Hotfixes)"></a>Installed Patches (Hotfixes)</h4><blockquote>
+<p>➜ List installed hotfixes to spot missing patches that may allow privilege escalation.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic qfe get Caption,Description,HotFixID,InstalledOn</span><br></pre></td></tr></table></figure>
+
+<h4 id="Loaded-PowerShell-Modules"><a href="#Loaded-PowerShell-Modules" class="headerlink" title="Loaded PowerShell Modules"></a>Loaded PowerShell Modules</h4><blockquote>
+<p>➜ Show the modules currently loaded in the PowerShell session.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Module</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Execution-Policy"><a href="#Execution-Policy" class="headerlink" title="Execution Policy"></a>Execution Policy</h4><blockquote>
+<p>➜ Check the PowerShell execution policy across all scopes.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-ExecutionPolicy</span> <span class="literal">-List</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Antivirus-Defender-Status"><a href="#Antivirus-Defender-Status" class="headerlink" title="Antivirus &#x2F; Defender Status"></a>Antivirus &#x2F; Defender Status</h4><blockquote>
+<p>➜ Check whether Microsoft Defender and its real-time protection are enabled.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-MpComputerStatus</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Active-Sessions"><a href="#Active-Sessions" class="headerlink" title="Active Sessions"></a>Active Sessions</h4><blockquote>
+<p>➜ List the active sessions on the host to see who else is logged on.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qwinsta</span><br></pre></td></tr></table></figure>
+
+<h4 id="ARP-Cache"><a href="#ARP-Cache" class="headerlink" title="ARP Cache"></a>ARP Cache</h4><blockquote>
+<p>➜ List the hosts this machine has recently communicated with — potential pivots for lateral movement.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp <span class="literal">-a</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Routing-Table"><a href="#Routing-Table" class="headerlink" title="Routing Table"></a>Routing Table</h4><blockquote>
+<p>➜ Display the routing table to reveal which networks the host can reach.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route print</span><br></pre></td></tr></table></figure>
+
+<h4 id="IP-Configuration"><a href="#IP-Configuration" class="headerlink" title="IP Configuration"></a>IP Configuration</h4><blockquote>
+<p>➜ Show the full network configuration, including IP address, DNS servers, and domain.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig /all</span><br></pre></td></tr></table></figure>
+
+<h4 id="Windows-Firewall-Profiles"><a href="#Windows-Firewall-Profiles" class="headerlink" title="Windows Firewall Profiles"></a>Windows Firewall Profiles</h4><blockquote>
+<p>➜ Display the configuration of all Windows Firewall profiles.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netsh advfirewall show allprofiles</span><br></pre></td></tr></table></figure>
+
+<h4 id="Downgrade-to-PowerShell-v2"><a href="#Downgrade-to-PowerShell-v2" class="headerlink" title="Downgrade to PowerShell v2"></a>Downgrade to PowerShell v2</h4><blockquote>
+<p>➜ Older environments may still support PowerShell v2, which does not include AMSI.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powershell.exe <span class="literal">-version</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Confirm the current PowerShell version after the downgrade.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Host</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Enumerating-Domain-Users"><a href="#Enumerating-Domain-Users" class="headerlink" title="Enumerating Domain Users"></a>Enumerating Domain Users</h2><h4 id="List-All-Domain-Users"><a href="#List-All-Domain-Users" class="headerlink" title="List All Domain Users"></a>List All Domain Users</h4><blockquote>
+<p>➜ List every user account in the domain.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> user /domain</span><br></pre></td></tr></table></figure>
+
+<h4 id="Information-About-a-Specific-User"><a href="#Information-About-a-Specific-User" class="headerlink" title="Information About a Specific User"></a>Information About a Specific User</h4><blockquote>
+<p>➜ Display the group memberships and details of a single domain user.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> user &lt;ACCOUNT&gt; /domain</span><br></pre></td></tr></table></figure>
+
+<h4 id="Built-in-LDAP-User-Enumeration"><a href="#Built-in-LDAP-User-Enumeration" class="headerlink" title="Built-in LDAP User Enumeration"></a>Built-in LDAP User Enumeration</h4><blockquote>
+<p>➜ Enumerate domain users through the built-in dsquery LDAP utility.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dsquery user</span><br></pre></td></tr></table></figure>
+
+<h2 id="Enumerating-Domain-Groups"><a href="#Enumerating-Domain-Groups" class="headerlink" title="Enumerating Domain Groups"></a>Enumerating Domain Groups</h2><h4 id="Members-of-a-Group"><a href="#Members-of-a-Group" class="headerlink" title="Members of a Group"></a>Members of a Group</h4><blockquote>
+<p>➜ List the members of a specific privileged group such as Domain Admins.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> group &quot;Domain Admins&quot; /domain</span><br></pre></td></tr></table></figure>
+
+<h4 id="Domain-Controllers-Group"><a href="#Domain-Controllers-Group" class="headerlink" title="Domain Controllers Group"></a>Domain Controllers Group</h4><blockquote>
+<p>➜ List the members of the Domain Controllers group.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> group &quot;Domain Controllers&quot; /domain</span><br></pre></td></tr></table></figure>
+
+<h4 id="Domain-Computers-Group"><a href="#Domain-Computers-Group" class="headerlink" title="Domain Computers Group"></a>Domain Computers Group</h4><blockquote>
+<p>➜ List the computer accounts that belong to the domain.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> group &quot;Domain Computers&quot; /domain</span><br></pre></td></tr></table></figure>
+
+<h4 id="Local-Administrators"><a href="#Local-Administrators" class="headerlink" title="Local Administrators"></a>Local Administrators</h4><blockquote>
+<p>➜ List the users in the local Administrators group on this host.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> localgroup administrators</span><br></pre></td></tr></table></figure>
+
+<h4 id="Nested-Group-Membership"><a href="#Nested-Group-Membership" class="headerlink" title="Nested Group Membership"></a>Nested Group Membership</h4><blockquote>
+<p>➜ Recursively resolve nested membership of a group using the LDAP matching-rule-in-chain OID.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dsquery * -filter &quot;(member:<span class="number">1</span>.<span class="number">2</span>.<span class="number">840</span>.<span class="number">113556</span>.<span class="number">1</span>.<span class="number">4</span>.<span class="number">1941</span>:=&lt;GROUP_DN&gt;)&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Host-and-Share-Discovery"><a href="#Host-and-Share-Discovery" class="headerlink" title="Host and Share Discovery"></a>Host and Share Discovery</h2><h4 id="List-Domain-Computers"><a href="#List-Domain-Computers" class="headerlink" title="List Domain Computers"></a>List Domain Computers</h4><blockquote>
+<p>➜ Discover the computers visible in the domain.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> view /domain</span><br></pre></td></tr></table></figure>
+
+<h4 id="List-Shares-on-a-Host"><a href="#List-Shares-on-a-Host" class="headerlink" title="List Shares on a Host"></a>List Shares on a Host</h4><blockquote>
+<p>➜ List the shared folders exposed by a specific computer.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> view \\&lt;COMPUTER&gt; /ALL</span><br></pre></td></tr></table></figure>
+
+<h4 id="Current-Shares-on-This-Host"><a href="#Current-Shares-on-This-Host" class="headerlink" title="Current Shares on This Host"></a>Current Shares on This Host</h4><blockquote>
+<p>➜ Show the shares currently published by the local host.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> share</span><br></pre></td></tr></table></figure>
+
+<h2 id="Enumerating-Password-Policy"><a href="#Enumerating-Password-Policy" class="headerlink" title="Enumerating Password Policy"></a>Enumerating Password Policy</h2><h4 id="Domain-Password-Policy"><a href="#Domain-Password-Policy" class="headerlink" title="Domain Password Policy"></a>Domain Password Policy</h4><blockquote>
+<p>➜ Display the domain password and account lockout policy.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> accounts /domain</span><br></pre></td></tr></table></figure>
+
+<h2 id="Enumerating-Domain-Controllers"><a href="#Enumerating-Domain-Controllers" class="headerlink" title="Enumerating Domain Controllers"></a>Enumerating Domain Controllers</h2><blockquote>
+<p>➜ The OID <code>1.2.840.113556.1.4.803</code> is a bitwise-AND match on <code>userAccountControl</code>, where <code>8192</code> flags a Domain Controller.</p>
+</blockquote>
+<h4 id="Identify-Domain-Controllers"><a href="#Identify-Domain-Controllers" class="headerlink" title="Identify Domain Controllers"></a>Identify Domain Controllers</h4><blockquote>
+<p>➜ Query for accounts whose userAccountControl carries the Domain Controller flag.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dsquery * -filter &quot;(userAccountControl:<span class="number">1</span>.<span class="number">2</span>.<span class="number">840</span>.<span class="number">113556</span>.<span class="number">1</span>.<span class="number">4</span>.<span class="number">803</span>:=<span class="number">8192</span>)&quot; -attr sAMAccountName</span><br></pre></td></tr></table></figure>
+
+<h2 id="Enumerating-Accounts-Without-Password-Requirements"><a href="#Enumerating-Accounts-Without-Password-Requirements" class="headerlink" title="Enumerating Accounts Without Password Requirements"></a>Enumerating Accounts Without Password Requirements</h2><blockquote>
+<p>➜ Query for user accounts carrying the PASSWD_NOTREQD flag (value 32), which may have no password set.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dsquery * -filter &quot;(&amp;(objectCategory=person)(objectClass=user)(userAccountControl:<span class="number">1</span>.<span class="number">2</span>.<span class="number">840</span>.<span class="number">113556</span>.<span class="number">1</span>.<span class="number">4</span>.<span class="number">803</span>:=<span class="number">32</span>))&quot; -attr distinguishedName</span><br></pre></td></tr></table></figure>
+
+<h2 id="Enumerating-Domain-Information"><a href="#Enumerating-Domain-Information" class="headerlink" title="Enumerating Domain Information"></a>Enumerating Domain Information</h2><h4 id="Display-Domain-Information"><a href="#Display-Domain-Information" class="headerlink" title="Display Domain Information"></a>Display Domain Information</h4><blockquote>
+<p>➜ Display information about the domain the host is joined to.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic ntdomain get</span><br></pre></td></tr></table></figure>
+
+<h4 id="Current-Computer’s-Domain"><a href="#Current-Computer’s-Domain" class="headerlink" title="Current Computer’s Domain"></a>Current Computer’s Domain</h4><blockquote>
+<p>➜ Show the domain name of the current computer.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic computersystem get domain</span><br></pre></td></tr></table></figure>
+
+<h4 id="Enumerate-User-Accounts"><a href="#Enumerate-User-Accounts" class="headerlink" title="Enumerate User Accounts"></a>Enumerate User Accounts</h4><blockquote>
+<p>➜ List the local and domain user accounts known to the host.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic useraccount list /<span class="built_in">format</span>:list</span><br></pre></td></tr></table></figure>
+
+<h4 id="Enumerate-Groups"><a href="#Enumerate-Groups" class="headerlink" title="Enumerate Groups"></a>Enumerate Groups</h4><blockquote>
+<p>➜ List the groups known to the host.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic group list /<span class="built_in">format</span>:list</span><br></pre></td></tr></table></figure>
+
+<h4 id="Enumerate-Service-Accounts"><a href="#Enumerate-Service-Accounts" class="headerlink" title="Enumerate Service Accounts"></a>Enumerate Service Accounts</h4><blockquote>
+<p>➜ List the accounts used to run services on the host.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic sysaccount list /<span class="built_in">format</span>:list</span><br></pre></td></tr></table></figure>
+
+<h4 id="List-Running-Processes"><a href="#List-Running-Processes" class="headerlink" title="List Running Processes"></a>List Running Processes</h4><blockquote>
+<p>➜ List all running processes, which can reveal installed software and security agents.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic process list /<span class="built_in">format</span>:list</span><br></pre></td></tr></table></figure>
+
+<h2 id="Enumerating-Local-Groups"><a href="#Enumerating-Local-Groups" class="headerlink" title="Enumerating Local Groups"></a>Enumerating Local Groups</h2><h4 id="Enumerate-Local-Groups-Using-WMI"><a href="#Enumerate-Local-Groups-Using-WMI" class="headerlink" title="Enumerate Local Groups Using WMI"></a>Enumerate Local Groups Using WMI</h4><blockquote>
+<p>➜ Enumerate the local groups for the specified domain using WMI.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-WmiObject</span> <span class="literal">-Class</span> Win32_Group <span class="literal">-Filter</span> <span class="string">&quot;Domain=&#x27;&lt;DOMAIN&gt;&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="net1"><a href="#net1" class="headerlink" title="net1"></a>net1</h3><h4 id="Bypass-net-Binary-Restrictions"><a href="#Bypass-net-Binary-Restrictions" class="headerlink" title="Bypass net Binary Restrictions"></a>Bypass net Binary Restrictions</h4><blockquote>
+<p>➜ <code>net1.exe</code> provides the same functionality as <code>net.exe</code> and can sometimes bypass simple application-control rules that block the <code>net</code> binary.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net1 user /domain</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2026/06/29/Living-Off-the-Land/">https://twistzz-ctf.github.io/2026/06/29/Living-Off-the-Land/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/net/">net</a><a class="post-meta__tags" href="/tags/Windows/">Windows</a><a class="post-meta__tags" href="/tags/Active-Directory/">Active-Directory</a><a class="post-meta__tags" href="/tags/Enumeration/">Enumeration</a><a class="post-meta__tags" href="/tags/Microsoft-Defender/">Microsoft-Defender</a><a class="post-meta__tags" href="/tags/AppLocker/">AppLocker</a><a class="post-meta__tags" href="/tags/PowerShell/">PowerShell</a><a class="post-meta__tags" href="/tags/Domain-Enumeration/">Domain-Enumeration</a><a class="post-meta__tags" href="/tags/User-Enumeration/">User-Enumeration</a><a class="post-meta__tags" href="/tags/Group-Enumeration/">Group-Enumeration</a><a class="post-meta__tags" href="/tags/Share-Enumeration/">Share-Enumeration</a><a class="post-meta__tags" href="/tags/Domain-Controllers/">Domain-Controllers</a><a class="post-meta__tags" href="/tags/dsquery/">dsquery</a><a class="post-meta__tags" href="/tags/Password-Policy/">Password-Policy</a><a class="post-meta__tags" href="/tags/Living-Off-the-Land/">Living-Off-the-Land</a><a class="post-meta__tags" href="/tags/LOLBAS/">LOLBAS</a><a class="post-meta__tags" href="/tags/Native-Commands/">Native-Commands</a><a class="post-meta__tags" href="/tags/whoami/">whoami</a><a class="post-meta__tags" href="/tags/net1/">net1</a><a class="post-meta__tags" href="/tags/WMIC/">WMIC</a><a class="post-meta__tags" href="/tags/Constrained-Language-Mode/">Constrained-Language-Mode</a><a class="post-meta__tags" href="/tags/Host-Enumeration/">Host-Enumeration</a><a class="post-meta__tags" href="/tags/Execution-Policy/">Execution-Policy</a><a class="post-meta__tags" href="/tags/Environment-Variables/">Environment-Variables</a><a class="post-meta__tags" href="/tags/Firewall/">Firewall</a><a class="post-meta__tags" href="/tags/Active-Sessions/">Active-Sessions</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/30/Credential-Pillaging/" title="Credential Pillaging"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Credential Pillaging</div></div><div class="info-2"><div class="info-item-1"> ➜ With valid domain credentials in hand, the next goal is to harvest more credentials : Group Policy Preferences, SYSVOL logon scripts, and Active Directory attributes are the classic places administrators leave passwords behind.  Group Policy Preferences (GPP) ➜ Older versions of Group Policy Preferences stored passwords in the cPassword attribute. Although encrypted, Microsoft publicly released the AES key, so any discovered cPassword value can be decrypted.  LinuxSearch for GPP Passwords ...</div></div></div></a><a class="pagination-related" href="/2026/06/29/Credentialed-Enumeration/" title="Credentialed Enumeration"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Credentialed Enumeration</div></div><div class="info-2"><div class="info-item-1"> ➜ Once valid domain credentials have been obtained, the next step is to enumerate the Active Directory environment, the objective is to identify users, groups, trusts, shares, security controls, and privilege escalation paths that can be leveraged during the engagement.  Enumerating Security Controls ➜ Before executing offensive tooling, identify the security controls deployed in the environment, this helps determine which techniques are likely to be detected or blocked.   Microsoft Defender...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/29/Credentialed-Enumeration/" title="Credentialed Enumeration"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-29</div><div class="info-item-2">Credentialed Enumeration</div></div><div class="info-2"><div class="info-item-1"> ➜ Once valid domain credentials have been obtained, the next step is to enumerate the Active Directory environment, the objective is to identify users, groups, trusts, shares, security controls, and privilege escalation paths that can be leveraged during the engagement.  Enumerating Security Controls ➜ Before executing offensive tooling, identify the security controls deployed in the environment, this helps determine which techniques are likely to be detected or blocked.   Microsoft Defender...</div></div></div></a><a class="pagination-related" href="/2026/07/04/Security-Controls/" title="Security Controls"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-04</div><div class="info-item-2">Security Controls</div></div><div class="info-2"><div class="info-item-1">Windows Defender Status ➜ Check whether Defender and real-time protection are enabled.  1Get-MpComputerStatus  AppLocker Policy ➜ Review the effective AppLocker rules to see what binaries are blocked.  1Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections  PowerShell Language Mode ➜ Check the language mode : ConstrainedLanguage restricts most offensive tools  1$ExecutionContext.SessionState.LanguageMode  LAPS - Delegated Groups ➜ Find groups delegated rights to read LAPS pa...</div></div></div></a><a class="pagination-related" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-06</div><div class="info-item-2">Users &amp; Groups</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate domain users and groups from the DC directly (null&#x2F;anonymous) or credentialed  UsersUsername Wordlist ➜ Turn real names into username  1./username-anarchy -i &lt;names-file&gt;  Kerbrute ➜ Validate usernames using Kerberos pre-auth (low-noise, no credential needed).  1kerbrute userenum -d &lt;DOMAIN&gt; --dc &lt;DC_IP&gt; &lt;wordlist&gt;  RID Brute ➜ Enumerate users via RID cycling.  1nxc smb &lt;DC_IP&gt; -u guest -p &#x27;&#x27; --rid-brute  List Domain Users ➜ List all d...</div></div></div></a><a class="pagination-related" href="/2026/07/04/Domain-Controllers-And-Servers/" title="Domain Controllers And Servers"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-04</div><div class="info-item-2">Domain Controllers And Servers</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate computer objects : Domain Controllers, servers, delegation, sessions, and where we hold local admin.  PowerView1Import-Module .\PowerView.ps1   ➜ Return all computers with their DNS name and account flags  1Get-DomainComputer | select dnshostname,useraccountcontrol   ➜ Return the DCs with OS, IP, and Global Catalog status  1Get-DomainController   ➜ Test whether the current user is local admin on a target host  1Test-AdminAccess -ComputerName &lt;host&gt;   ➜ Show who is connected...</div></div></div></a><a class="pagination-related" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-06</div><div class="info-item-2">Domain and ACLs</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate the domain itself (info + password policy) and the Access Control Lists that reveal who can act on whom.  Domain InformationAD Module1Import-Module ActiveDirectory   ➜ Pull domain details  1Get-ADDomain  PowerView ➜ Pull the domain objects  1Get-Domain  LOTL ➜ Read the domain the host is joined to.  1wmic ntdomain get  Password PolicyNetExec ➜ Pull the password policy with a credential.  1nxc smb &lt;DC_IP&gt; -u &lt;user&gt; -p &lt;pass&gt; --pass-pol  rpcclient ➜ Read the polic...</div></div></div></a><a class="pagination-related" href="/2026/06/29/Password-Attacks/" title="Password Attacks"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-29</div><div class="info-item-2">Password Attacks</div></div><div class="info-2"><div class="info-item-1"> ➜ Password attacks are one of the most common ways to obtain an initial domain credential. Before attempting any password spray, we should enumerate the domain password policy to avoid locking user accounts. Once the policy is known, we can build a list of valid usernames and perform a controlled password spray against the domain.  Enumerating the Password Policy ➜ Before spraying passwords, identify the domain’s password and account lockout policy, the most important values are the lockout ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Host-and-Session-Information"><span class="toc-number">1.</span> <span class="toc-text">Host and Session Information</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Current-User-Information"><span class="toc-number">1.1.</span> <span class="toc-text">Current User Information</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Environment-Variables"><span class="toc-number">1.2.</span> <span class="toc-text">Environment Variables</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#System-Information"><span class="toc-number">1.3.</span> <span class="toc-text">System Information</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Installed-Patches-Hotfixes"><span class="toc-number">1.4.</span> <span class="toc-text">Installed Patches (Hotfixes)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Loaded-PowerShell-Modules"><span class="toc-number">1.5.</span> <span class="toc-text">Loaded PowerShell Modules</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Execution-Policy"><span class="toc-number">1.6.</span> <span class="toc-text">Execution Policy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Antivirus-Defender-Status"><span class="toc-number">1.7.</span> <span class="toc-text">Antivirus &#x2F; Defender Status</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Active-Sessions"><span class="toc-number">1.8.</span> <span class="toc-text">Active Sessions</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ARP-Cache"><span class="toc-number">1.9.</span> <span class="toc-text">ARP Cache</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Routing-Table"><span class="toc-number">1.10.</span> <span class="toc-text">Routing Table</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IP-Configuration"><span class="toc-number">1.11.</span> <span class="toc-text">IP Configuration</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows-Firewall-Profiles"><span class="toc-number">1.12.</span> <span class="toc-text">Windows Firewall Profiles</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Downgrade-to-PowerShell-v2"><span class="toc-number">1.13.</span> <span class="toc-text">Downgrade to PowerShell v2</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerating-Domain-Users"><span class="toc-number">2.</span> <span class="toc-text">Enumerating Domain Users</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#List-All-Domain-Users"><span class="toc-number">2.1.</span> <span class="toc-text">List All Domain Users</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Information-About-a-Specific-User"><span class="toc-number">2.2.</span> <span class="toc-text">Information About a Specific User</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Built-in-LDAP-User-Enumeration"><span class="toc-number">2.3.</span> <span class="toc-text">Built-in LDAP User Enumeration</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerating-Domain-Groups"><span class="toc-number">3.</span> <span class="toc-text">Enumerating Domain Groups</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Members-of-a-Group"><span class="toc-number">3.1.</span> <span class="toc-text">Members of a Group</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Domain-Controllers-Group"><span class="toc-number">3.2.</span> <span class="toc-text">Domain Controllers Group</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Domain-Computers-Group"><span class="toc-number">3.3.</span> <span class="toc-text">Domain Computers Group</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Local-Administrators"><span class="toc-number">3.4.</span> <span class="toc-text">Local Administrators</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Nested-Group-Membership"><span class="toc-number">3.5.</span> <span class="toc-text">Nested Group Membership</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Host-and-Share-Discovery"><span class="toc-number">4.</span> <span class="toc-text">Host and Share Discovery</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#List-Domain-Computers"><span class="toc-number">4.1.</span> <span class="toc-text">List Domain Computers</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#List-Shares-on-a-Host"><span class="toc-number">4.2.</span> <span class="toc-text">List Shares on a Host</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Current-Shares-on-This-Host"><span class="toc-number">4.3.</span> <span class="toc-text">Current Shares on This Host</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerating-Password-Policy"><span class="toc-number">5.</span> <span class="toc-text">Enumerating Password Policy</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Domain-Password-Policy"><span class="toc-number">5.1.</span> <span class="toc-text">Domain Password Policy</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerating-Domain-Controllers"><span class="toc-number">6.</span> <span class="toc-text">Enumerating Domain Controllers</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Identify-Domain-Controllers"><span class="toc-number">6.1.</span> <span class="toc-text">Identify Domain Controllers</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerating-Accounts-Without-Password-Requirements"><span class="toc-number">7.</span> <span class="toc-text">Enumerating Accounts Without Password Requirements</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerating-Domain-Information"><span class="toc-number">8.</span> <span class="toc-text">Enumerating Domain Information</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Display-Domain-Information"><span class="toc-number">8.1.</span> <span class="toc-text">Display Domain Information</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Current-Computer%E2%80%99s-Domain"><span class="toc-number">8.2.</span> <span class="toc-text">Current Computer’s Domain</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Enumerate-User-Accounts"><span class="toc-number">8.3.</span> <span class="toc-text">Enumerate User Accounts</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Enumerate-Groups"><span class="toc-number">8.4.</span> <span class="toc-text">Enumerate Groups</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Enumerate-Service-Accounts"><span class="toc-number">8.5.</span> <span class="toc-text">Enumerate Service Accounts</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#List-Running-Processes"><span class="toc-number">8.6.</span> <span class="toc-text">List Running Processes</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enumerating-Local-Groups"><span class="toc-number">9.</span> <span class="toc-text">Enumerating Local Groups</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Enumerate-Local-Groups-Using-WMI"><span class="toc-number">9.1.</span> <span class="toc-text">Enumerate Local Groups Using WMI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#net1"><span class="toc-number">9.2.</span> <span class="toc-text">net1</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Bypass-net-Binary-Restrictions"><span class="toc-number">9.2.1.</span> <span class="toc-text">Bypass net Binary Restrictions</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

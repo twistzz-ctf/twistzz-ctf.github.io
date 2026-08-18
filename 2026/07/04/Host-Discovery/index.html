@@ -1,0 +1,232 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Host Discovery | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="PassiveLinux ➜ Sniff ARP and MDNS to reveal live hosts and hostnames without sending anything.   Wireshark  1sudo -E wireshark   tcpdump  1sudo tcpdump -i &lt;iface&gt;   Responder (Analyze)   Analyze">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Host Discovery">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2026/07/04/Host-Discovery/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="PassiveLinux ➜ Sniff ARP and MDNS to reveal live hosts and hostnames without sending anything.   Wireshark  1sudo -E wireshark   tcpdump  1sudo tcpdump -i &lt;iface&gt;   Responder (Analyze)   Analyze">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2026-07-04T17:16:52.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:51.010Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="ARP">
+<meta property="article:tag" content="Active-Directory">
+<meta property="article:tag" content="Active-Reconnaissance">
+<meta property="article:tag" content="Host-Discovery">
+<meta property="article:tag" content="ICMP">
+<meta property="article:tag" content="Network-Discovery">
+<meta property="article:tag" content="Nmap">
+<meta property="article:tag" content="Passive-Reconnaissance">
+<meta property="article:tag" content="Ping-Sweep">
+<meta property="article:tag" content="Responder">
+<meta property="article:tag" content="Wireshark">
+<meta property="article:tag" content="fping">
+<meta property="article:tag" content="mDNS">
+<meta property="article:tag" content="pktmon">
+<meta property="article:tag" content="tcpdump">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Host Discovery",
+  "url": "https://twistzz-ctf.github.io/2026/07/04/Host-Discovery/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2026-07-04T17:16:52.000Z",
+  "dateModified": "2026-08-18T23:24:51.010Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2026/07/04/Host-Discovery/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Host Discovery',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">Host Discovery</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">Host Discovery</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-07-04T17:16:52.000Z" title="Created 2026-07-04 18:16:52">2026-07-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:51.010Z" title="Updated 2026-08-19 00:24:51">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/">Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/Enumeration/">Enumeration</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/Enumeration/Host-Discovery/">Host Discovery</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="Passive"><a href="#Passive" class="headerlink" title="Passive"></a>Passive</h2><h4 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h4><blockquote>
+<p>➜ Sniff ARP and MDNS to reveal live hosts and hostnames without sending anything.</p>
+</blockquote>
+<blockquote>
+<p>Wireshark</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> -E wireshark</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>tcpdump</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tcpdump -i &lt;iface&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Responder (Analyze)</p>
+</blockquote>
+<blockquote>
+<p>Analyze mode logs hosts requesting name resolution without poisoning.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> responder -I &lt;iface&gt; -A</span><br></pre></td></tr></table></figure>
+
+<h4 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h4><blockquote>
+<p>pktmon</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pktmon <span class="built_in">start</span> --capture</span><br></pre></td></tr></table></figure>
+
+<h2 id="Active"><a href="#Active" class="headerlink" title="Active"></a>Active</h2><blockquote>
+<p>FPing Sweep</p>
+</blockquote>
+<blockquote>
+<p>Sweep the subnet and write alive hosts to a list.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fping -asgq 172.16.5.0/23</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Nmap</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sn -iL hosts.txt -oG -</span><br></pre></td></tr></table></figure>
+
+<h2 id="Living-Off-the-Land-Local-Host-Network-Awareness"><a href="#Living-Off-the-Land-Local-Host-Network-Awareness" class="headerlink" title="Living Off the Land - Local Host &amp; Network Awareness"></a>Living Off the Land - Local Host &amp; Network Awareness</h2><blockquote>
+<p>➜ Once on a foothold, these built-ins map the local host and the networks it can reach, revealing pivot points without any tooling.</p>
+</blockquote>
+<h4 id="ARP-Cache"><a href="#ARP-Cache" class="headerlink" title="ARP Cache"></a>ARP Cache</h4><blockquote>
+<p>➜ List hosts this machine has recently communicated with</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp <span class="literal">-a</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Routing-Table"><a href="#Routing-Table" class="headerlink" title="Routing Table"></a>Routing Table</h4><blockquote>
+<p>➜ Display the routing table to reveal reachable networks.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route print</span><br></pre></td></tr></table></figure>
+
+<h4 id="IP-Configuration"><a href="#IP-Configuration" class="headerlink" title="IP Configuration"></a>IP Configuration</h4><blockquote>
+<p>➜ Built-in. Show the full network configuration, including DNS servers and domain.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig /all</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2026/07/04/Host-Discovery/">https://twistzz-ctf.github.io/2026/07/04/Host-Discovery/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Active-Directory/">Active-Directory</a><a class="post-meta__tags" href="/tags/Passive-Reconnaissance/">Passive-Reconnaissance</a><a class="post-meta__tags" href="/tags/Host-Discovery/">Host-Discovery</a><a class="post-meta__tags" href="/tags/Network-Discovery/">Network-Discovery</a><a class="post-meta__tags" href="/tags/Active-Reconnaissance/">Active-Reconnaissance</a><a class="post-meta__tags" href="/tags/ARP/">ARP</a><a class="post-meta__tags" href="/tags/mDNS/">mDNS</a><a class="post-meta__tags" href="/tags/Responder/">Responder</a><a class="post-meta__tags" href="/tags/Wireshark/">Wireshark</a><a class="post-meta__tags" href="/tags/tcpdump/">tcpdump</a><a class="post-meta__tags" href="/tags/pktmon/">pktmon</a><a class="post-meta__tags" href="/tags/fping/">fping</a><a class="post-meta__tags" href="/tags/Nmap/">Nmap</a><a class="post-meta__tags" href="/tags/ICMP/">ICMP</a><a class="post-meta__tags" href="/tags/Ping-Sweep/">Ping-Sweep</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/07/04/Security-Controls/" title="Security Controls"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Security Controls</div></div><div class="info-2"><div class="info-item-1">Windows Defender Status ➜ Check whether Defender and real-time protection are enabled.  1Get-MpComputerStatus  AppLocker Policy ➜ Review the effective AppLocker rules to see what binaries are blocked.  1Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections  PowerShell Language Mode ➜ Check the language mode : ConstrainedLanguage restricts most offensive tools  1$ExecutionContext.SessionState.LanguageMode  LAPS - Delegated Groups ➜ Find groups delegated rights to read LAPS pa...</div></div></div></a><a class="pagination-related" href="/2026/07/04/Internal-DNS-Enumeration/" title="Internal DNS Enumeration"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Internal DNS Enumeration</div></div><div class="info-2"><div class="info-item-1"> ➜ From inside the network, DNS gives up the domain’s structure for free, the DC publishes its own roles as SRV records, and AD-integrated zones can often be dumped.  Locate AD Roles via SRV Records ➜ Find the Domain Controllers.  1nslookup -type=SRV _ldap._tcp.dc._msdcs.&lt;DOMAIN&gt;   ➜ Find the KDC (Kerberos).  1nslookup -type=SRV _kerberos._tcp.&lt;DOMAIN&gt;  Zone Transfer ➜ Attempt a full zone transfer  1dig axfr &lt;DOMAIN&gt; @&lt;DC_IP&gt;   Or  1dnsrecon -d &lt;DOMAIN&gt; -t axfr  ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/29/Network-Poisoning/" title="Network Poisoning"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-29</div><div class="info-item-2">Network Poisoning</div></div><div class="info-2"><div class="info-item-1">SMB (LLMNR &#x2F; NBT-NS Poisoning) ➜ LLMNR (UDP 5355) and NBT-NS (UDP 137) are name resolution protocols used when DNS cannot resolve a hostname. An attacker can spoof these requests, causing the victim to connect to the attacker’s machine instead of the intended host.   ➜ If a victim attempts to access a non-existent SMB share (e.g., \\printer01\share) and DNS cannot resolve the hostname, Windows broadcasts an LLMNR&#x2F;NBT-NS query. The attacker replies first, impersonating the requested ...</div></div></div></a><a class="pagination-related" href="/2026/06/30/Bleeding-Edge-Coercion/" title="Bleeding-Edge &amp; Coercion"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-30</div><div class="info-item-2">Bleeding-Edge &amp; Coercion</div></div><div class="info-2"><div class="info-item-1"> ➜ Everything here needs only a valid domain account yet can jump straight to Domain Admin.  NoPac (CVE-2021-42278 &#x2F; 42287) ➜ NoPac chains two bugs: we rename a machine account we create to match the DC’s name (42278), then request a service ticket after the DC object is restored, so the KDC issues us a ticket as the DC (42287). The result is a SYSTEM shell or a DCSync.  SetupClone NoPac ➜ Clone the exploit repo :  1git clone https://github.com/Ridter/noPac.git  ExploitationScan Whether ...</div></div></div></a><a class="pagination-related no-desc" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-06</div><div class="info-item-2">Child-Parent Trust Enumeration</div></div></div></a><a class="pagination-related" href="/2026/06/30/Credential-Pillaging/" title="Credential Pillaging"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-30</div><div class="info-item-2">Credential Pillaging</div></div><div class="info-2"><div class="info-item-1"> ➜ With valid domain credentials in hand, the next goal is to harvest more credentials : Group Policy Preferences, SYSVOL logon scripts, and Active Directory attributes are the classic places administrators leave passwords behind.  Group Policy Preferences (GPP) ➜ Older versions of Group Policy Preferences stored passwords in the cPassword attribute. Although encrypted, Microsoft publicly released the AES key, so any discovered cPassword value can be decrypted.  LinuxSearch for GPP Passwords ...</div></div></div></a><a class="pagination-related" href="/2026/06/29/Credentialed-Enumeration/" title="Credentialed Enumeration"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-29</div><div class="info-item-2">Credentialed Enumeration</div></div><div class="info-2"><div class="info-item-1"> ➜ Once valid domain credentials have been obtained, the next step is to enumerate the Active Directory environment, the objective is to identify users, groups, trusts, shares, security controls, and privilege escalation paths that can be leveraged during the engagement.  Enumerating Security Controls ➜ Before executing offensive tooling, identify the security controls deployed in the environment, this helps determine which techniques are likely to be detected or blocked.   Microsoft Defender...</div></div></div></a><a class="pagination-related" href="/2026/07/04/Domain-Controllers-And-Servers/" title="Domain Controllers And Servers"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-04</div><div class="info-item-2">Domain Controllers And Servers</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate computer objects : Domain Controllers, servers, delegation, sessions, and where we hold local admin.  PowerView1Import-Module .\PowerView.ps1   ➜ Return all computers with their DNS name and account flags  1Get-DomainComputer | select dnshostname,useraccountcontrol   ➜ Return the DCs with OS, IP, and Global Catalog status  1Get-DomainController   ➜ Test whether the current user is local admin on a target host  1Test-AdminAccess -ComputerName &lt;host&gt;   ➜ Show who is connected...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Passive"><span class="toc-number">1.</span> <span class="toc-text">Passive</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux"><span class="toc-number">1.1.</span> <span class="toc-text">Linux</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows"><span class="toc-number">1.2.</span> <span class="toc-text">Windows</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Active"><span class="toc-number">2.</span> <span class="toc-text">Active</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Living-Off-the-Land-Local-Host-Network-Awareness"><span class="toc-number">3.</span> <span class="toc-text">Living Off the Land - Local Host &amp; Network Awareness</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ARP-Cache"><span class="toc-number">3.1.</span> <span class="toc-text">ARP Cache</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Routing-Table"><span class="toc-number">3.2.</span> <span class="toc-text">Routing Table</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IP-Configuration"><span class="toc-number">3.3.</span> <span class="toc-text">IP Configuration</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

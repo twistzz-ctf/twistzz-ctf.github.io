@@ -1,0 +1,244 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Domain and ACLs | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="➜ Enumerate the domain itself (info + password policy) and the Access Control Lists that reveal who can act on whom.  Domain InformationAD Module1Import-Module ActiveDirectory   ➜ Pull domain details">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Domain and ACLs">
+<meta property="og:url" content="https://twistzz-ctf.github.io/2026/07/06/Domain-and-ACLs/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:description" content="➜ Enumerate the domain itself (info + password policy) and the Access Control Lists that reveal who can act on whom.  Domain InformationAD Module1Import-Module ActiveDirectory   ➜ Pull domain details">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/images/avatar.png">
+<meta property="article:published_time" content="2026-07-06T12:24:06.000Z">
+<meta property="article:modified_time" content="2026-08-18T23:24:50.844Z">
+<meta property="article:author" content="Twistzz">
+<meta property="article:tag" content="ACL">
+<meta property="article:tag" content="Access-Control-Lists">
+<meta property="article:tag" content="Active-Directory">
+<meta property="article:tag" content="Active-Directory-ACL">
+<meta property="article:tag" content="ActiveDirectory-Module">
+<meta property="article:tag" content="Convert-NameToSid">
+<meta property="article:tag" content="Domain-Enumeration">
+<meta property="article:tag" content="Domain-Information">
+<meta property="article:tag" content="Find-InterestingDomainAcl">
+<meta property="article:tag" content="Get-ADDomain">
+<meta property="article:tag" content="Get-ADObject">
+<meta property="article:tag" content="Get-Domain">
+<meta property="article:tag" content="Get-DomainObjectACL">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Living-Off-The-Land">
+<meta property="article:tag" content="NetExec">
+<meta property="article:tag" content="Password-Policy">
+<meta property="article:tag" content="PowerView">
+<meta property="article:tag" content="Security-Descriptors">
+<meta property="article:tag" content="Windows">
+<meta property="article:tag" content="net-accounts">
+<meta property="article:tag" content="rpcclient">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Domain and ACLs",
+  "url": "https://twistzz-ctf.github.io/2026/07/06/Domain-and-ACLs/",
+  "image": "https://twistzz-ctf.github.io/images/avatar.png",
+  "datePublished": "2026-07-06T12:24:06.000Z",
+  "dateModified": "2026-08-18T23:24:50.844Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Twistzz",
+      "url": "https://twistzz-ctf.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.ico"><link rel="canonical" href="https://twistzz-ctf.github.io/2026/07/06/Domain-and-ACLs/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Domain and ACLs',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a><a class="nav-page-title" href="/"><span class="site-name">Domain and ACLs</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div></div></nav><div id="post-info"><h1 class="post-title">Domain and ACLs</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-08-18T23:24:50.844Z" title="Updated 2026-08-19 00:24:50">2026-08-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/">Active Directory</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/">Exploitation</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/Enumeration/">Enumeration</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Active-Directory/Exploitation/Enumeration/Domain-and-ACLs/">Domain and ACLs</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>➜ Enumerate the domain itself (info + password policy) and the Access Control Lists that reveal who can act on whom.</p>
+</blockquote>
+<h2 id="Domain-Information"><a href="#Domain-Information" class="headerlink" title="Domain Information"></a>Domain Information</h2><h4 id="AD-Module"><a href="#AD-Module" class="headerlink" title="AD Module"></a>AD Module</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Import-Module</span> ActiveDirectory</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Pull domain details</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-ADDomain</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="PowerView"><a href="#PowerView" class="headerlink" title="PowerView"></a>PowerView</h3><blockquote>
+<p>➜ Pull the domain objects</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Domain</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="LOTL"><a href="#LOTL" class="headerlink" title="LOTL"></a>LOTL</h3><blockquote>
+<p>➜ Read the domain the host is joined to.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic ntdomain get</span><br></pre></td></tr></table></figure>
+
+<h2 id="Password-Policy"><a href="#Password-Policy" class="headerlink" title="Password Policy"></a>Password Policy</h2><h4 id="NetExec"><a href="#NetExec" class="headerlink" title="NetExec"></a>NetExec</h4><blockquote>
+<p>➜ Pull the password policy with a credential.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nxc smb &lt;DC_IP&gt; -u &lt;user&gt; -p &lt;pass&gt; --pass-pol</span><br></pre></td></tr></table></figure>
+
+<h4 id="rpcclient"><a href="#rpcclient" class="headerlink" title="rpcclient"></a>rpcclient</h4><blockquote>
+<p>➜ Read the policy over a null session.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpcclient -U <span class="string">&quot;&quot;</span> -N &lt;DC_IP&gt; -c <span class="string">&quot;getdompwinfo&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="net-accounts"><a href="#net-accounts" class="headerlink" title="net accounts"></a>net accounts</h3><blockquote>
+<p>➜ Read the policy from a domain host.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> accounts /domain</span><br></pre></td></tr></table></figure>
+
+<h2 id="ACL-Enumeration"><a href="#ACL-Enumeration" class="headerlink" title="ACL Enumeration"></a>ACL Enumeration</h2><h4 id="PowerView-1"><a href="#PowerView-1" class="headerlink" title="PowerView"></a>PowerView</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Import-Module</span> .\PowerView.ps1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Find Interesting ACLs</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Find-InterestingDomainAcl</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Convert an account name to its SID to match against object ACLs.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sid</span> = <span class="built_in">Convert-NameToSid</span> &lt;tar<span class="built_in">get-user</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Return every object the target has rights over, with GUIDs resolved to names.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-DomainObjectACL</span> <span class="literal">-ResolveGUIDs</span> <span class="literal">-Identity</span> * | ? &#123;<span class="variable">$_</span>.SecurityIdentifier <span class="operator">-eq</span> <span class="variable">$sid</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Look up an ExtendedRight GUID (e.g. User-Force-Change-Password) in the schema.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-ADObject</span> <span class="literal">-SearchBase</span> <span class="string">&quot;CN=Extended-Rights,<span class="variable">$</span>((Get-ADRootDSE).ConfigurationNamingContext)&quot;</span> <span class="literal">-Filter</span> &#123;ObjectClass <span class="operator">-like</span> <span class="string">&#x27;ControlAccessRight&#x27;</span>&#125; <span class="literal">-Properties</span> * | <span class="built_in">Select</span> Name,DisplayName,rightsGuid | ?&#123;<span class="variable">$_</span>.rightsGuid <span class="operator">-eq</span> <span class="string">&quot;00299570-246d-11d0-a768-00aa006e0529&quot;</span>&#125; | <span class="built_in">fl</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Built-In-Alternative-Check-ACLs"><a href="#Built-In-Alternative-Check-ACLs" class="headerlink" title="Built-In Alternative : Check ACLs"></a>Built-In Alternative : Check ACLs</h4><blockquote>
+<p>➜ Loop each user’s ACL, keeping only entries where our controlled account has rights.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span>(<span class="variable">$line</span> <span class="keyword">in</span> [<span class="type">System.IO.File</span>]::ReadLines(<span class="string">&quot;.\ad_users.txt&quot;</span>)) &#123;<span class="built_in">get-acl</span> <span class="string">&quot;AD:\<span class="variable">$</span>(Get-ADUser <span class="variable">$line</span>)&quot;</span> | <span class="built_in">Select-Object</span> Path <span class="literal">-ExpandProperty</span> Access | <span class="built_in">Where-Object</span> &#123;<span class="variable">$_</span>.IdentityReference <span class="operator">-match</span> <span class="string">&#x27;&lt;DOMAIN&gt;\&lt;target-user&gt;&#x27;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io">Twistzz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://twistzz-ctf.github.io/2026/07/06/Domain-and-ACLs/">https://twistzz-ctf.github.io/2026/07/06/Domain-and-ACLs/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/PowerView/">PowerView</a><a class="post-meta__tags" href="/tags/Windows/">Windows</a><a class="post-meta__tags" href="/tags/Active-Directory/">Active-Directory</a><a class="post-meta__tags" href="/tags/NetExec/">NetExec</a><a class="post-meta__tags" href="/tags/ActiveDirectory-Module/">ActiveDirectory-Module</a><a class="post-meta__tags" href="/tags/Living-Off-The-Land/">Living-Off-The-Land</a><a class="post-meta__tags" href="/tags/Domain-Enumeration/">Domain-Enumeration</a><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/Domain-Information/">Domain-Information</a><a class="post-meta__tags" href="/tags/Password-Policy/">Password-Policy</a><a class="post-meta__tags" href="/tags/ACL/">ACL</a><a class="post-meta__tags" href="/tags/Active-Directory-ACL/">Active-Directory-ACL</a><a class="post-meta__tags" href="/tags/Access-Control-Lists/">Access-Control-Lists</a><a class="post-meta__tags" href="/tags/Security-Descriptors/">Security-Descriptors</a><a class="post-meta__tags" href="/tags/rpcclient/">rpcclient</a><a class="post-meta__tags" href="/tags/net-accounts/">net-accounts</a><a class="post-meta__tags" href="/tags/Get-ADDomain/">Get-ADDomain</a><a class="post-meta__tags" href="/tags/Get-Domain/">Get-Domain</a><a class="post-meta__tags" href="/tags/Find-InterestingDomainAcl/">Find-InterestingDomainAcl</a><a class="post-meta__tags" href="/tags/Get-DomainObjectACL/">Get-DomainObjectACL</a><a class="post-meta__tags" href="/tags/Convert-NameToSid/">Convert-NameToSid</a><a class="post-meta__tags" href="/tags/Get-ADObject/">Get-ADObject</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Users & Groups</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate domain users and groups from the DC directly (null&#x2F;anonymous) or credentialed  UsersUsername Wordlist ➜ Turn real names into username  1./username-anarchy -i &lt;names-file&gt;  Kerbrute ➜ Validate usernames using Kerberos pre-auth (low-noise, no credential needed).  1kerbrute userenum -d &lt;DOMAIN&gt; --dc &lt;DC_IP&gt; &lt;wordlist&gt;  RID Brute ➜ Enumerate users via RID cycling.  1nxc smb &lt;DC_IP&gt; -u guest -p &#x27;&#x27; --rid-brute  List Domain Users ➜ List all d...</div></div></div></a><a class="pagination-related" href="/2026/07/04/Domain-Controllers-And-Servers/" title="Domain Controllers And Servers"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Domain Controllers And Servers</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate computer objects : Domain Controllers, servers, delegation, sessions, and where we hold local admin.  PowerView1Import-Module .\PowerView.ps1   ➜ Return all computers with their DNS name and account flags  1Get-DomainComputer | select dnshostname,useraccountcontrol   ➜ Return the DCs with OS, IP, and Global Catalog status  1Get-DomainController   ➜ Test whether the current user is local admin on a target host  1Test-AdminAccess -ComputerName &lt;host&gt;   ➜ Show who is connected...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-06</div><div class="info-item-2">Users &amp; Groups</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate domain users and groups from the DC directly (null&#x2F;anonymous) or credentialed  UsersUsername Wordlist ➜ Turn real names into username  1./username-anarchy -i &lt;names-file&gt;  Kerbrute ➜ Validate usernames using Kerberos pre-auth (low-noise, no credential needed).  1kerbrute userenum -d &lt;DOMAIN&gt; --dc &lt;DC_IP&gt; &lt;wordlist&gt;  RID Brute ➜ Enumerate users via RID cycling.  1nxc smb &lt;DC_IP&gt; -u guest -p &#x27;&#x27; --rid-brute  List Domain Users ➜ List all d...</div></div></div></a><a class="pagination-related" href="/2026/06/29/Credentialed-Enumeration/" title="Credentialed Enumeration"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-29</div><div class="info-item-2">Credentialed Enumeration</div></div><div class="info-2"><div class="info-item-1"> ➜ Once valid domain credentials have been obtained, the next step is to enumerate the Active Directory environment, the objective is to identify users, groups, trusts, shares, security controls, and privilege escalation paths that can be leveraged during the engagement.  Enumerating Security Controls ➜ Before executing offensive tooling, identify the security controls deployed in the environment, this helps determine which techniques are likely to be detected or blocked.   Microsoft Defender...</div></div></div></a><a class="pagination-related" href="/2026/06/29/Password-Attacks/" title="Password Attacks"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-29</div><div class="info-item-2">Password Attacks</div></div><div class="info-2"><div class="info-item-1"> ➜ Password attacks are one of the most common ways to obtain an initial domain credential. Before attempting any password spray, we should enumerate the domain password policy to avoid locking user accounts. Once the policy is known, we can build a list of valid usernames and perform a controlled password spray against the domain.  Enumerating the Password Policy ➜ Before spraying passwords, identify the domain’s password and account lockout policy, the most important values are the lockout ...</div></div></div></a><a class="pagination-related no-desc" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-06</div><div class="info-item-2">Child-Parent Trust Enumeration</div></div></div></a><a class="pagination-related" href="/2026/07/04/Domain-Controllers-And-Servers/" title="Domain Controllers And Servers"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-04</div><div class="info-item-2">Domain Controllers And Servers</div></div><div class="info-2"><div class="info-item-1"> ➜ Enumerate computer objects : Domain Controllers, servers, delegation, sessions, and where we hold local admin.  PowerView1Import-Module .\PowerView.ps1   ➜ Return all computers with their DNS name and account flags  1Get-DomainComputer | select dnshostname,useraccountcontrol   ➜ Return the DCs with OS, IP, and Global Catalog status  1Get-DomainController   ➜ Test whether the current user is local admin on a target host  1Test-AdminAccess -ComputerName &lt;host&gt;   ➜ Show who is connected...</div></div></div></a><a class="pagination-related" href="/2026/06/30/Credential-Pillaging/" title="Credential Pillaging"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-30</div><div class="info-item-2">Credential Pillaging</div></div><div class="info-2"><div class="info-item-1"> ➜ With valid domain credentials in hand, the next goal is to harvest more credentials : Group Policy Preferences, SYSVOL logon scripts, and Active Directory attributes are the classic places administrators leave passwords behind.  Group Policy Preferences (GPP) ➜ Older versions of Group Policy Preferences stored passwords in the cPassword attribute. Although encrypted, Microsoft publicly released the AES key, so any discovered cPassword value can be decrypted.  LinuxSearch for GPP Passwords ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Twistzz-cb" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Domain-Information"><span class="toc-number">1.</span> <span class="toc-text">Domain Information</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AD-Module"><span class="toc-number">1.1.</span> <span class="toc-text">AD Module</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PowerView"><span class="toc-number">1.2.</span> <span class="toc-text">PowerView</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LOTL"><span class="toc-number">1.3.</span> <span class="toc-text">LOTL</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Password-Policy"><span class="toc-number">2.</span> <span class="toc-text">Password Policy</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NetExec"><span class="toc-number">2.1.</span> <span class="toc-text">NetExec</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#rpcclient"><span class="toc-number">2.2.</span> <span class="toc-text">rpcclient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#net-accounts"><span class="toc-number">2.3.</span> <span class="toc-text">net accounts</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ACL-Enumeration"><span class="toc-number">3.</span> <span class="toc-text">ACL Enumeration</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PowerView-1"><span class="toc-number">3.1.</span> <span class="toc-text">PowerView</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Built-In-Alternative-Check-ACLs"><span class="toc-number">3.2.</span> <span class="toc-text">Built-In Alternative : Check ACLs</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>
