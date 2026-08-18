@@ -1,0 +1,105 @@
+
+/* ===== Navbar avatar (top-left) ===== */
+
+
+#nav .site-logo,
+#nav .site-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+
+#footer {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+
+#rightside {
+  background: transparent !important;
+}
+
+/* Slightly bold + slightly bigger footer text */
+.footer-copyright .copyright {
+    font-weight: 700 !important;   /* bold but not huge */
+    font-size: 1.05rem !important; /* just a little bigger than normal */
+}
+
+/* Make the entire article page share ONE background image */
+.layout-post {
+  background: url("/images/ad.png") center top / cover no-repeat fixed !important;
+}
+
+/* Remove the white/blue background of the content wrapper */
+.layout-post #post {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Remove footer background so it blends with the global bg */
+#footer-wrap {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Remove the gray background behind the header image */
+#page-header {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Prevent content card from overriding background */
+#content-inner {
+  background: transparent !important;
+}
+
+
+/* Center post title + metadata */
+#post-info,
+#post-info h1,
+#post-meta {
+    text-align: center !important;
+}
+
+/* Force metadata icons + text to center */
+#post-meta .post-meta {
+    justify-content: center !important;
+    text-align: center !important;
+    display: flex !important;
+}
+
+
+/* Make tags look like simple text (no boxes, no colors, no radius) */
+.tag-cloud-list a,
+.tag-cloud a,
+.page-tags .tag-cloud-tags a {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 10px !important;
+  border-radius: 0 !important;
+  color: #b86aa3 !important; /* pink/purple like your example */
+  font-size: 1.2rem !important;
+  font-weight: 400 !important;
+}
+
+/* Make the second tag (cheatsheet) look like normal blue link */
+.tag-cloud a:nth-child(2),
+.page-tags .tag-cloud-tags a:nth-child(2) {
+  color: #1a4d9c !important; /* soft blue link */
+}
+
+/* Remove weird spacing & align center like screenshot */
+.page-tags .tag-cloud-tags {
+  text-align: center !important;
+}
+
+/* Remove tag count bubble (if any) */
+.tag-cloud-number {
+  display: none !important;
+}
+
