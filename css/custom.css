@@ -30,7 +30,7 @@
 
 /* Make the entire article page share ONE background image */
 .layout-post {
-  background: url("/images/ad.png") center top / cover no-repeat fixed !important;
+  background: url("/img/ad.png") center top / cover no-repeat fixed !important;
 }
 
 /* Remove the white/blue background of the content wrapper */
