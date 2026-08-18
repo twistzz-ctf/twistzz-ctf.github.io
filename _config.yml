@@ -13,8 +13,8 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://twistzz-cb.github.io/twistzz-ctf.github.io
-root: /twistzz-ctf.github.io/
+url: https://twistzz-ctf.github.io
+root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -91,6 +91,7 @@ pagination_dir: page
 # Include / Exclude file(s)
 ## include:/exclude: options only apply to the 'source/' folder
 include:
+  - .nojekyll
 exclude:
 ignore:
 
@@ -110,5 +111,5 @@ search:
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: https://github.com/twistzz-cb/twistzz-ctf.github.io.git
+  repo: https://github.com/twistzz-ctf/twistzz-ctf.github.io.git
   branch: web-site-pages
