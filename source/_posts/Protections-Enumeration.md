@@ -1,6 +1,7 @@
 ---
 title: Protections Enumeration
 date: 2026-06-09 21:54:38
+
 categories:
   - Active Directory
   - Windows
@@ -8,11 +9,8 @@ categories:
   - Windows Privesc
   - Windows Enumeration
 tags:
-  - AppLocker
-  - wmic
-  - LOLBAS
-  - whoami
   - systeminfo
+  - whoami
   - tasklist
   - netstat
   - ipconfig
@@ -20,11 +18,20 @@ tags:
   - Get-Process
   - Get-MpComputerStatus
   - Get-AppLockerPolicy
+  - wmic
   - Windows-Defender
   - EDR
+  - AppLocker
   - CrowdStrike
   - SentinelOne
+  - LOLBAS
+cover: /img/defender.png
+top_img: /img/bg-img.jpg
+description: Enumerate a Windows system for privilege escalation vectors including Defender status, EDR detection, AppLocker rules, and bypass paths.
 ---
+
+
+
 
 ### Checking Windows Defender status
 
@@ -38,22 +45,21 @@ BehaviorMonitorEnabled  : False
 IoavProtectionEnabled   : False
 ```
 
->   * `RealTimeProtectionEnabled: False` → Defender scanning is off, use tools normally
->   * `RealTimeProtectionEnabled: True` → need obfuscated or in-memory techniques
->   * `BehaviorMonitorEnabled` → catches Potato-style attacks even when signature scanning is bypassed
->
+>- `RealTimeProtectionEnabled: False` → Defender scanning is off, use tools normally
+>- `RealTimeProtectionEnabled: True` → need obfuscated or in-memory techniques
+>- `BehaviorMonitorEnabled` → catches Potato-style attacks even when signature scanning is bypassed
 
 ### Identifying third-party EDR products
 
 > Enterprise environments almost always have an EDR beyond basic Defender :
 
-EDR Product | Process to look for
----|---
-CrowdStrike Falcon | CSFalconService.exe
-Carbon Black | cb.exe, CarbonBlack.exe
-Cylance | CylanceSvc.exe
-SentinelOne | SentinelAgent.exe
-Windows Defender ATP | MsSense.exe
+| EDR Product          | Process to look for     |
+| -------------------- | ----------------------- |
+| CrowdStrike Falcon   | CSFalconService.exe     |
+| Carbon Black         | cb.exe, CarbonBlack.exe |
+| Cylance              | CylanceSvc.exe          |
+| SentinelOne          | SentinelAgent.exe       |
+| Windows Defender ATP | MsSense.exe             |
 
 ```cmd
 C:\> tasklist | findstr /i "carbon\|cylance\|sentinel\|crowdstrike\|MsSense\|csfalcon"
@@ -63,7 +69,7 @@ C:\> tasklist | findstr /i "carbon\|cylance\|sentinel\|crowdstrike\|MsSense\|csf
 
 ### Understanding AppLocker rules
 
-> AppLocker is Microsoft’s application whitelisting solution, It can block execution of specific files, entire file types, or anything not from a trusted publisher.
+> AppLocker is Microsoft's application whitelisting solution, It can block execution of specific files, entire file types, or anything not from a trusted publisher.
 
 ```powershell
 PS> Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections
@@ -83,7 +89,7 @@ C:\Windows\System32\cmd.exe       Denied          c:\windows\system32\cmd.exe
 
 > Even when AppLocker is enabled, several paths are almost always allowed, we can place our tools in these locations:
 
-```plaintext
+```
 C:\Windows\Temp\         <-- BUILTIN\Users always has write access here
 C:\Windows\System32\     <-- Default allowed (can't write, but LOLBAS binaries here work)
 C:\Program Files\        <-- Usually allowed for execution

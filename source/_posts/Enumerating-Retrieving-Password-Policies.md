@@ -1,27 +1,38 @@
 ---
-title: "Enumerating & Retrieving Password Policies"
+title: Enumerating & Retrieving Password Policies
 date: 2025-12-03 03:33:31
+
 categories:
   - Active Directory
   - Enumeration
-  - "Users & Passwords Enumeration"
-  - "Enumerating & Retrieving Password Policies"
+  - Users & Passwords Enumeration
+  - Enumerating & Retrieving Password Policies
+
 tags:
   - netexec
   - rpcclient
   - ldapsearch
   - enum4linux-ng
+
+cover: /img/enum-retrieving-password-policies.png
+top_img: /img/bg-img.jpg
+description: Enumerating & Retrieving Password Policies
 ---
+
+
 
 # Linux
 
 ### Using Valid Domain Credential
 
+
 ```bash
 nxc smb dc-ip -u username -p password --pass-pol
 ```
 
+
 ### Using SMB NULL Sessions
+
 
 ```bash
 nxc smb dc-ip -u guest -p '' --pass-pol
@@ -45,19 +56,23 @@ ldapsearch -x -H ldap://<DC_IP> -s base namingcontexts
 ldapsearch -x -H ldap://<DC_IP> -b "<BASE_DN>" -s sub "*" | grep -m 1 -B 10 pwdHistoryLength
 ```
 
+
 # Windows
 
-### Using SMB NULL Sessions
+### Using SMB NULL Sessions 
+
 
 #### net.exe : Built-in Tool
 
-```plaintext
+```
 C:\htb> net accounts
 ```
 
 #### PowerView
 
+
 ```powershell
 PS C:\htb> import-module .\PowerView.ps1
 PS C:\htb> Get-DomainPolicy
 ```
+

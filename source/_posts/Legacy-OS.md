@@ -1,17 +1,19 @@
 ---
 title: Legacy OS
 date: 2026-06-26 17:10:35
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Old Systems
+
 tags:
-  - Privilege-Escalation
   - Windows
-  - CVE
+  - Privilege-Escalation
   - Legacy-Systems
+  - CVE
   - Watson
   - Sherlock
   - Windows-Exploit-Suggester
@@ -20,7 +22,13 @@ tags:
   - Local-Exploit-Suggester
   - Windows-Updates
   - HotFix
+
+cover: /img/legacy-os.png
+top_img: /img/bg-img.jpg
+description: Enumerate Windows updates, identify missing security patches, and discover privilege escalation vulnerabilities using Watson, Sherlock, Windows Exploit Suggester, and Metasploit.
 ---
+
+
 
 ### Enumeration
 
@@ -34,7 +42,9 @@ or
 Get-HotFix
 ```
 
+
 ### Windows Exploit Suggester
+
 
 > Save the system information for offline analysis.
 
@@ -49,6 +59,7 @@ python windows-exploit-suggester.py --update
 
 python windows-exploit-suggester.py --database <database>.xlsx --systeminfo sysinfo.txt
 ```
+
 
 ### Watson
 
@@ -67,6 +78,7 @@ Import-Module .\Sherlock.ps1
 
 Find-AllVulns
 ```
+
 
 ### Metasploit Local Exploit Suggester
 

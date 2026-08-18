@@ -1,17 +1,25 @@
 ---
 title: Linux Credential Hunting
 date: 2025-11-27 09:55:02
+
 categories:
   - Active Directory
   - Linux
   - Post Exploitation
   - Credential Hunting
+
 tags:
   - config-files
   - history-file
   - db-files
   - cronjobs-enumeration
+
+cover: /img/zoom.png
+top_img: /img/bg-img.jpg
+description: Hunt for credentials on Linux System 
 ---
+
+
 
 # Linux Credential Hunting
 
@@ -23,15 +31,18 @@ tail -n10 /home/*/.bash*
 
 ### Searching for configuration files
 
+
 ```bash
 for l in $(echo ".conf .config .cnf");do echo -e "\nFile extension: " $l; find / -name *$l 2>/dev/null | grep -v "lib\|fonts\|share\|core" ;done
 ```
 
 ### Searching for Passwords in Configuration Files
 
+
 ```bash
 for i in $(find / -type f \( -iname "*.txt" -o -iname "*.ini" -o -iname "*.cfg" -o -iname "*.config" -o -iname "*.xml" -o -iname "*.yml" -o -iname "*.yaml" -o -iname "*.cnf" -o -iname "*.conf" -o -iname "*.sh" -o -iname "*.py" -o -iname "*.php" -o -iname "*.git" -o -iname "*.json" \) 2>/dev/null | grep -v "doc\|lib"); do echo -e "\nFile: $i"; grep -Ei "password|passphrase|key|username|user account|creds|users|passkeys|configuration|dbcredential|dbpassword|pwd|login|credentials" "$i" 2>/dev/null | grep -Ev "^\s*#"; done
 ```
+
 
 ### Searching for databases
 
@@ -39,17 +50,21 @@ for i in $(find / -type f \( -iname "*.txt" -o -iname "*.ini" -o -iname "*.cfg" 
 for l in $(echo ".sql .db .*db .db*");do echo -e "\nDB File extension: " $l; find / -name *$l 2>/dev/null | grep -v "doc\|lib\|headers\|share\|man";done
 ```
 
+
 ### Searching for scripts
 
 ```bash
 for l in $(echo ".py .pyc .pl .go .jar .c .sh");do echo -e "\nFile extension: " $l; find / -name *$l 2>/dev/null | grep -v "doc\|lib\|headers\|share";done
 ```
 
+
 ### Searching for notes
+
 
 ```bash
 find /home/* -type f -name "*.txt" -o ! -name "*.*"
 ```
+
 
 ### Enumerating log files
 
@@ -59,8 +74,9 @@ for i in $(ls /var/log/* 2>/dev/null);do GREP=$(grep "accepted\|session opened\|
 
 ### Enumerating cronjobs
 
+
 ```bash
-cat /etc/crontab
+cat /etc/crontab 
 
 # /etc/crontab: system-wide crontab
 # Unlike any other crontab you don't have to run the `crontab'
@@ -80,6 +96,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # |  |  |  |  |
 # *  *  *  *  * user-name command to be executed
 ```
+
 
 ```bash
 ls -la /etc/cron.*/

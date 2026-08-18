@@ -1,16 +1,18 @@
 ---
 title: Host Discovery
 date: 2026-07-04 18:16:52
+
 categories:
   - Active Directory
   - Exploitation
-  - Enumeration
+  - Enumeration 
   - Host Discovery
+
 tags:
   - Active-Directory
-  - Passive-Reconnaissance
   - Host-Discovery
   - Network-Discovery
+  - Passive-Reconnaissance
   - Active-Reconnaissance
   - ARP
   - mDNS
@@ -22,13 +24,19 @@ tags:
   - Nmap
   - ICMP
   - Ping-Sweep
+
+cover: /img/host-discovery.png
+top_img: /img/bg-img.jpg
+description: Learn how to discover live hosts on an internal network using passive traffic analysis and active host discovery techniques with Linux and Windows tools.
 ---
+
 
 ## Passive
 
 #### Linux
 
 > ➜ Sniff ARP and MDNS to reveal live hosts and hostnames without sending anything.
+
 
 > Wireshark
 
@@ -50,15 +58,16 @@ sudo tcpdump -i <iface>
 sudo responder -I <iface> -A
 ```
 
+
 #### Windows
 
-> pktmon
+> pktmon 
 
 ```cmd
 pktmon start --capture
 ```
 
-## Active
+## Active 
 
 > FPing Sweep
 
@@ -73,6 +82,9 @@ fping -asgq 172.16.5.0/23
 ```bash
 nmap -sn -iL hosts.txt -oG -
 ```
+
+
+
 
 ## Living Off the Land - Local Host & Network Awareness
 

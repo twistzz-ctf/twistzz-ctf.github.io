@@ -1,39 +1,46 @@
 ---
 title: Password Attacks
 date: 2026-06-29 21:11:44
+
 categories:
   - Active Directory
   - Exploitation
   - Password Attacks
+
 tags:
-  - PowerView
   - Windows
   - Active-Directory
-  - NetExec
-  - windapsearch
-  - LDAP
-  - User-Enumeration
-  - Password-Policy
-  - rpcclient
-  - ldapsearch
   - Password-Attacks
   - Password-Spraying
   - Password-Reuse
   - Credential-Reuse
+  - NetExec
   - Kerbrute
+  - rpcclient
+  - LDAP
+  - ldapsearch
   - enum4linux
+  - windapsearch
+  - PowerView
   - DomainPasswordSpray
+  - Password-Policy
   - Lockout-Policy
+  - User-Enumeration
   - Domain-Users
+
+cover: /img/password-attacks.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate domain password policies, discover valid users, perform password spraying, and identify credential reuse in Active Directory environments using Linux and Windows tools.
 ---
+
 
 > ➜ Password attacks are one of the most common ways to obtain an initial domain credential. Before attempting any password spray, we should enumerate the domain password policy to avoid locking user accounts. Once the policy is known, we can build a list of valid usernames and perform a controlled password spray against the domain.
 
 ## Enumerating the Password Policy
 
-> ➜ Before spraying passwords, identify the domain’s password and account lockout policy, the most important values are the lockout threshold and lockout observation window, allowing us to stay below the lockout limit during the engagement.
+> ➜ Before spraying passwords, identify the domain's password and account lockout policy, the most important values are the lockout threshold and lockout observation window, allowing us to stay below the lockout limit during the engagement.
 
-### Linux
+### Linux 
 
 > NetExec
 
@@ -41,7 +48,7 @@ tags:
 nxc smb <DC_IP> -u <user> -p <pass> --pass-pol
 ```
 
-> rpcclient
+> rpcclient 
 
 ```bash
 rpcclient -U "" -N <DC_IP>
@@ -117,6 +124,7 @@ rpcclient $> enumdomusers
 enum4linux -U <DC_IP> | grep "user:"
 ```
 
+
 ## Password Spraying
 
 ### Linux
@@ -132,6 +140,7 @@ nxc smb <DC_IP> -u valid_users.txt -p ""
 ##### Password Spraying with Username as the Password
 
 > NetExec
+
 
 ```bash
 nxc smb <DC_IP> -u valid_users.txt -p valid_users.txt --continue-on-success --no-bruteforce
@@ -179,7 +188,7 @@ Invoke-DomainPasswordSpray -Password Welcome1 -OutFile spray_success
 nxc smb --local-auth IP-range -u administrator -H <NTLM_HASH>
 ```
 
-> ➜ The `--local-auth` option authenticates using the target’s local account database instead of the domain, making it useful for identifying reused local administrator passwords or NTLM hashes.
+> ➜ The `--local-auth` option authenticates using the target's local account database instead of the domain, making it useful for identifying reused local administrator passwords or NTLM hashes.
 
 ### Domain Account Reuse
 

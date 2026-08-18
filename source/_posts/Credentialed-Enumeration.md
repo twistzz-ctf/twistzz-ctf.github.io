@@ -1,18 +1,19 @@
 ---
 title: Credentialed Enumeration
 date: 2026-06-29 21:37:57
+
 categories:
   - Active Directory
   - Exploitation
   - Credentialed Enumeration
+
 tags:
-  - PowerView
   - Windows
   - Active-Directory
-  - NetExec
-  - Trust-Enumeration
-  - ActiveDirectory-Module
   - Credentialed-Enumeration
+  - PowerView
+  - ActiveDirectory-Module
+  - NetExec
   - SMBMap
   - Snaffler
   - SharpHound
@@ -28,14 +29,22 @@ tags:
   - User-Enumeration
   - Group-Enumeration
   - Share-Enumeration
+  - Trust-Enumeration
   - Kerberoasting
+
+cover: /img/credentialed-enumeration.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Active Directory after obtaining valid credentials, including security controls, users, groups, trusts, SMB shares, LAPS, and BloodHound attack paths using both Linux and Windows tools.
 ---
+
+
 
 > ➜ Once valid domain credentials have been obtained, the next step is to enumerate the Active Directory environment, the objective is to identify users, groups, trusts, shares, security controls, and privilege escalation paths that can be leveraged during the engagement.
 
 ## Enumerating Security Controls
 
 > ➜ Before executing offensive tooling, identify the security controls deployed in the environment, this helps determine which techniques are likely to be detected or blocked.
+
 
 > Microsoft Defender
 
@@ -73,7 +82,7 @@ Find-AdmPwdExtendedRights
 Get-LAPSComputers
 ```
 
-## Enumerating Users - Groups And Domain Admins
+## Enumerating Users - Groups And Domain Admins 
 
 > ➜ After identifying the security controls, enumerate users, groups, trusts, sessions and file shares to understand the domain structure and identify potential attack paths.
 
@@ -110,6 +119,7 @@ python3 windapsearch.py --dc-ip <DC_IP> -u <DOMAIN>\<user> -p <pass> -PU
 python3 windapsearch.py --dc-ip <DC_IP> -u <DOMAIN>\<user> -p <pass> --da
 python3 windapsearch.py --dc-ip <DC_IP> -u <DOMAIN>\<user> -p <pass> -PU
 ```
+
 
 ### Windows
 
@@ -179,6 +189,7 @@ Get-DomainUser -SPN
 Test-AdminAccess -ComputerName <HOST>
 ```
 
+
 ## Enumerating SMB Shares
 
 > ➜ Shared folders often contain credentials, scripts, configuration files, backups, and other sensitive information.
@@ -213,6 +224,7 @@ smbmap -u <user> -p <pass> -d <DOMAIN> -H <DC_IP> -R
 .\Snaffler.exe -d <DOMAIN> -s -v data
 ```
 
+
 ## BloodHound Collection
 
 > ➜ BloodHound maps relationships between users, groups, computers and ACLs to identify privilege escalation and attack paths that are difficult to discover manually.
@@ -230,7 +242,6 @@ bloodhound-python -u <user> -p <pass> -d <DOMAIN> -ns <DC_IP> -c All
 ```bash
 nxc ldap FQDN -u user -p password --bloodhound -c all --dns-tcp --dns-server IP
 ```
-
 ### Windows
 
 ```powershell
@@ -238,14 +249,14 @@ nxc ldap FQDN -u user -p password --bloodhound -c all --dns-tcp --dns-server IP
 ```
 
 > After importing the collected data, useful starting queries include:
->
->   * Shortest Paths to Domain Admins
->   * Kerberoastable Accounts
->   * AS-REP Roastable Accounts
->   * Unconstrained Delegation
->   * Outbound Object Control
->   * Computers where Domain Users are Local Administrators
->
+> 
+> - Shortest Paths to Domain Admins
+> - Kerberoastable Accounts
+> - AS-REP Roastable Accounts
+> - Unconstrained Delegation
+> - Outbound Object Control
+> - Computers where Domain Users are Local Administrators
+
 
 ## Active Directory DNS Enumeration
 

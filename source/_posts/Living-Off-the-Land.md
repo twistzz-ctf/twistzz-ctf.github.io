@@ -1,42 +1,50 @@
 ---
 title: Living Off the Land
 date: 2026-06-29 23:56:56
+
+
 categories:
   - Active Directory
   - Exploitation
   - Living Off the Land
+
 tags:
-  - net
   - Windows
   - Active-Directory
+  - Living-Off-the-Land
+  - LOLBAS
   - Enumeration
-  - Microsoft-Defender
-  - AppLocker
+  - Native-Commands
+  - whoami
+  - net
+  - net1
+  - dsquery
+  - WMIC
   - PowerShell
-  - Domain-Enumeration
+  - AppLocker
+  - Constrained-Language-Mode
+  - Microsoft-Defender
+  - Host-Enumeration
   - User-Enumeration
   - Group-Enumeration
   - Share-Enumeration
-  - Domain-Controllers
-  - dsquery
+  - Domain-Enumeration
   - Password-Policy
-  - Living-Off-the-Land
-  - LOLBAS
-  - Native-Commands
-  - whoami
-  - net1
-  - WMIC
-  - Constrained-Language-Mode
-  - Host-Enumeration
   - Execution-Policy
   - Environment-Variables
   - Firewall
   - Active-Sessions
+  - Domain-Controllers
+
+cover: /img/living-off-the-land.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Windows and Active Directory environments using only built-in Windows utilities when offensive tooling is restricted by AppLocker, Constrained Language Mode, or endpoint security solutions.
 ---
 
 > ➜ In environments where offensive tooling cannot be executed due to AppLocker, Constrained Language Mode, or EDR, Windows built-in utilities can still be used to enumerate the Active Directory environment.
 
 ## Host and Session Information
+
 
 #### Current User Information
 
@@ -48,7 +56,7 @@ whoami /all
 
 #### Environment Variables
 
-> ➜ List environment variables to reveal paths, the logon server, and the user’s domain.
+> ➜ List environment variables to reveal paths, the logon server, and the user's domain.
 
 ```powershell
 Get-ChildItem Env: | ft Key,Value
@@ -266,6 +274,7 @@ dsquery * -filter "(userAccountControl:1.2.840.113556.1.4.803:=8192)" -attr sAMA
 
 ## Enumerating Accounts Without Password Requirements
 
+
 > ➜ Query for user accounts carrying the PASSWD_NOTREQD flag (value 32), which may have no password set.
 
 ```cmd
@@ -282,7 +291,7 @@ dsquery * -filter "(&(objectCategory=person)(objectClass=user)(userAccountContro
 wmic ntdomain get
 ```
 
-#### Current Computer’s Domain
+#### Current Computer's Domain
 
 > ➜ Show the domain name of the current computer.
 

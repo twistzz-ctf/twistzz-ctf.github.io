@@ -11,13 +11,19 @@
 
 nav:
   # Navigation bar logo image
-  logo: /images/avatar.png
+  logo: /img/avatar.png
+  title: Twistzz
   display_title: true
   display_post_title: true
   # Whether to fix navigation bar
   fixed: false
 
 menu:
+  Home: / || fas fa-home
+  Categories: /categories/ || fas fa-folder-open
+  Tags: /tags/ || fas fa-tags
+  WhoAmI: / || fas fa-user-secret
+
   # Home: / || fas fa-home
   # List||fas fa-list:
   #   Music: /music/ || fas fa-music
@@ -46,16 +52,17 @@ code_blocks:
 # Formal:
 #   icon: link || the description || color
 social:
-  fab fa-github: https://github.com/Twistzz-cb || Github || '#24292e'
+  # fab fa-github: https://github.com/xxxxx || Github || '#24292e'
+  # fas fa-envelope: mailto:xxxxxx@gmail.com || Email || '#4a7dbe'
 
 # --------------------------------------
 # Image Settings
 # --------------------------------------
 
-favicon: /images/favicon.ico
+favicon: /img/icon.png
 
 avatar:
-  img: /images/avatar.png
+  img: /img/avatar.png
   effect: false
 
 # Disable all banner images
@@ -65,7 +72,7 @@ disable_top_img: false
 default_top_img:
 
 # The banner image of index page
-index_img:
+index_img: /img/bg-img.jpg
 
 # The banner image of archive page
 archive_img:
@@ -91,7 +98,7 @@ footer_img: false
 
 # Website Background
 # Can set it to color or image url
-background:
+background: /img/bg-img.jpg
 
 cover:
   # Disable the cover or not
@@ -105,13 +112,15 @@ cover:
 # Replace Broken Images
 error_img:
   flink: /img/friend_404.gif
-  post_page: /img/404.jpg
+  post_page: /img/404.png
 
 # A simple 404 page
 error_404:
-  enable: false
+  enable: true
   subtitle: 'Page Not Found'
-  background: /img/error-page.png
+  background: /img/404.png
+  background_purecolor: false
+  background_opacity: 1
 
 post_meta:
   # Home Page
@@ -127,12 +136,14 @@ post_meta:
     # Choose: left / center
     position: left
     # Choose: created / updated / both
-    date_type: both
+    date_type: created
     # Choose: date / relative
     date_format: date
     categories: true
     tags: true
     label: true
+    
+    
 
 # --------------------------------------
 # Index page settings
@@ -143,7 +154,7 @@ post_meta:
 # The position of site info, eg: 300px/300em/300rem/10%
 index_site_info_top:
 # The height of top_img, eg: 300px/300em/300rem
-index_top_img_height:
+index_top_img_height: 650px
 
 # The subtitle on homepage
 subtitle:
@@ -172,7 +183,7 @@ subtitle:
 # 5: Info displayed on the cover
 # 6: Masonry layout - Cover on top, info on the bottom
 # 7: Masonry layout - Info displayed on the cover
-index_layout: 3
+index_layout: 1
 
 # Display the article introduction on homepage
 # 1: description
@@ -180,7 +191,7 @@ index_layout: 3
 # 3: auto_excerpt (default)
 # false: do not show the article introduction
 index_post_content:
-  method: 3
+  method: 1
   # If you set method to 2 or 3, the length need to config
   length: 500
 
@@ -198,7 +209,7 @@ toc:
   scroll_percent: true
 
 post_copyright:
-  enable: true
+  enable: false
   decode: false
   author_href:
   license: CC BY-NC-SA 4.0
@@ -257,7 +268,7 @@ footer:
   nav:
   owner:
     enable: true
-    since: 2026
+    since: 2025
   # Copyright of theme and framework
   copyright:
     enable: true
@@ -287,9 +298,9 @@ aside:
       enable: true
       icon: fab fa-github
       text: Follow Me
-      link: https://github.com/xxxxxx
+      link: https://github.com/Twistzz-cb
   card_announcement:
-    enable: true
+    enable: false
     content: This is my Blog
   card_recent_post:
     enable: true
@@ -342,7 +353,7 @@ aside:
     # Sort of order. 1, asc for ascending; -1, desc for descending
     order: -1
   card_webinfo:
-    enable: true
+    enable: false
     post_count: true
     last_push_date: true
     sort_order:
@@ -436,9 +447,9 @@ wordcount:
 
 # Busuanzi count for PV / UV in site
 busuanzi:
-  site_uv: true
-  site_pv: true
-  page_pv: true
+  site_uv: false
+  site_pv: false
+  page_pv: false
 
 # --------------------------------------
 # Math
@@ -472,7 +483,7 @@ search:
   # Choose: algolia_search / local_search / docsearch
   # leave it empty if you don't need search
   use: local_search
-  placeholder:
+  placeholder: Search…
 
   # Algolia Search
   algolia_search:
@@ -486,7 +497,7 @@ search:
     # Show top n results per article, show all results by setting to -1
     top_n_per_article: 1
     # Unescape html strings to the readable one.
-    unescape: false
+    unescape: true
     # Enable pagination for search results
     pagination:
       enable: false
@@ -509,12 +520,11 @@ search:
 share:
   # Choose: sharejs / addtoany
   # Leave it empty if you don't need share
-  use: sharejs
+  use:
 
   # Share.js
   # https://github.com/overtrue/share.js
-  sharejs:
-    sites: facebook,x,wechat,weibo,qq
+ 
 
   # AddToAny
   # https://www.addtoany.com/

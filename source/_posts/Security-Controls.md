@@ -1,28 +1,35 @@
 ---
 title: Security Controls
 date: 2026-07-04 23:42:03
+
 categories:
   - Active Directory
   - Exploitation
-  - Enumeration
+  - Enumeration 
   - Security Controls
+
 tags:
-  - PowerView
   - Windows
   - Active-Directory
-  - Living-Off-The-Land
-  - LAPS
+  - Security-Controls
   - Microsoft-Defender
   - AppLocker
-  - Security-Controls
-  - LOLBAS
   - Constrained-Language-Mode
   - Execution-Policy
   - Windows-Firewall
+  - LAPS
+  - PowerView
+  - Living-Off-The-Land
+  - LOLBAS
   - Defensive-Enumeration
   - Environment-Enumeration
   - Post-Exploitation
+
+cover: /img/security-controls-enumeration.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Windows security controls, including Microsoft Defender, AppLocker, PowerShell restrictions, LAPS, Windows Firewall, and execution policies to assess which offensive techniques are likely to succeed.
 ---
+
 
 ### Windows Defender Status
 

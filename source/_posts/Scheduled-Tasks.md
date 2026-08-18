@@ -1,27 +1,36 @@
 ---
 title: Scheduled Tasks
 date: 2026-06-26 17:45:23
+
 categories:
   - Active Directory
   - Windows
   - Post-Exploitation
   - Windows Privesc
   - Misconfigurations
+
 tags:
-  - Privilege-Escalation
   - Windows
-  - SYSTEM
-  - PowerShell
-  - AccessChk
+  - Privilege-Escalation
   - Scheduled-Tasks
   - Task-Scheduler
   - schtasks
   - Get-ScheduledTask
+  - AccessChk
+  - SYSTEM
   - Task-Hijacking
   - Writable-Scripts
   - Writable-Binaries
+  - PowerShell
   - Persistence
+
+cover: /img/scheduled-tasks.png
+top_img: /img/bg-img.jpg
+description: Enumerate Windows Scheduled Tasks, identify tasks running with elevated privileges, abuse writable scripts or binaries executed by scheduled tasks, and obtain SYSTEM privileges.
 ---
+
+
+
 
 > Scheduled Tasks automate actions such as backups, maintenance, and system updates, if a task runs with elevated privileges ( SYSTEM ) and executes a script or binary that we can modify, we can inject our own code, wait for the task to execute, and obtain code execution as SYSTEM.
 
@@ -53,15 +62,15 @@ schtasks /query /tn "<task_path>\<task_name>" /fo LIST /v
 
 > Review the following fields:
 
->   * Task To Run / Action : executable or script executed by the task.
->
->   * Run As User : account used to execute the task.
->
->   * Next Run Time : indicates when the payload will execute.
->
->
+> - Task To Run / Action :  executable or script executed by the task.
+>    
+>- Run As User : account used to execute the task.
+>    
+>- Next Run Time : indicates when the payload will execute.
+
 
 > We are interested in tasks that run as `SYSTEM` (or another privileged account) and execute a file we can modify.
+
 
 ### Exploitation
 
@@ -102,3 +111,4 @@ whoami
 
 nt authority\system
 ```
+

@@ -1,23 +1,30 @@
 ---
 title: Writing Custom Wordlists and Rules
 date: 2025-12-04 01:55:58
+
 categories:
   - Active Directory
   - Enumeration
-  - "Users & Passwords Enumeration"
+  - Users & Passwords Enumeration
   - Writing Custom Wordlists and Rules
+
 tags:
   - Creds
   - CeWL
   - Cupp
   - Hashcat Rules
+
+cover: /img/wordlist.png
+top_img: /img/bg-img.jpg
+description: Writing Custom Wordlists and Rules
 ---
 
-# Default Credential
+
+# Default Credential 
 
 ### Creds
 
-Installation
+Installation 
 
 ```bash
 pip3 install defaultcreds-cheat-sheet
@@ -33,17 +40,18 @@ creds search tomcat
 creds search mysql
 ```
 
+
 # CeWL
 
->   * Depth to spider (`-d`)
->   * The minimum length of the word (`-m`)
->   * The storage of the found words in lowercase (`--lowercase`)
->   * The file where we want to store the results (`-w`)
->
+>- Depth to spider (`-d`)
+>- The minimum length of the word (`-m`)
+>- The storage of the found words in lowercase (`--lowercase`)
+>- The file where we want to store the results (`-w`)
 
 ```bash
 cewl https://website -d 4 -m 6 --lowercase -w wordlist.txt
 ```
+
 
 # Cupp
 
@@ -52,6 +60,8 @@ cewl https://website -d 4 -m 6 --lowercase -w wordlist.txt
 ```bash
 cupp -i
 ```
+
+
 
 # Hashcat Rules
 
@@ -69,12 +79,13 @@ hob0rules
 
 ### Writing Custom Rules
 
-> `:` Do nothing
-> `l` Lowercase all letters
-> `u` Uppercase all letters
-> `c` Capitalize the first letter and lowercase others
-> `sXY` Replace all instances of X with Y
-> `$!` Add the exclamation character at the end
+>`:`      Do nothing
+>`l`      Lowercase all letters
+>`u`      Uppercase all letters                        
+>`c`      Capitalize the first letter and lowercase others
+>`sXY`   Replace all instances of X with Y                
+>`$!`     Add the exclamation character at the end
+
 
 ```bash
 cat custom.rule
