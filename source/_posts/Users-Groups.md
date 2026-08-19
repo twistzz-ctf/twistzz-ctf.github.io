@@ -37,6 +37,10 @@ tags:
   - net-user
   - Username-Anarchy
   - Find-DomainUserLocation
+
+cover: /img/user-group-enumeration.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Active Directory users, groups, privileged accounts, logged-on users, service accounts, and Kerberoastable accounts using Linux, PowerView, the Active Directory module, and…
 ---
 
 > ➜ Enumerate domain users and groups from the DC directly (null/anonymous) or credentialed

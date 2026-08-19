@@ -24,6 +24,10 @@ tags:
   - netdom
   - nltest
   - Living-Off-The-Land
+
+cover: /img/domain-trust-enumeration.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Active Directory domain, forest, parent-child, and external trusts using PowerView, the Active Directory module, and built-in Windows tools to identify potential cross-domain…
 ---
 
 

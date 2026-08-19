@@ -21,6 +21,10 @@ tags:
   - Foreign-Group-Members
   - Get-ForestTrust
   - Get-DomainForeignUser
+
+cover: /img/cross-domain-enumeration.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Active Directory forest trusts, foreign users, and foreign group members using PowerView to identify cross-domain and cross-forest access relationships.
 ---
 
 ### PowerView

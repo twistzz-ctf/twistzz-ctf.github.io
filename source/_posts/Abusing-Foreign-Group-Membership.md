@@ -17,6 +17,10 @@ tags:
   - Enter-PSSession
   - Lateral-Movement
   - Privilege-Escalation
+
+cover: /img/foreign-group-membership-abuse.png
+top_img: /img/bg-img.jpg
+description: Learn how to identify and abuse foreign group memberships across Active Directory forest trusts to gain administrative access in a trusted forest.
 ---
 
 > ➜ Groups normally only accept members from their own forest. `Domain Local Groups` are the exception, they can include members from a trusted forest. So we may find a privileged account from Forest A inside a Domain Local group (often the built-in `Administrators`) of Forest B.

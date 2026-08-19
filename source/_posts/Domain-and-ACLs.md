@@ -29,6 +29,10 @@ tags:
   - Get-DomainObjectACL
   - Convert-NameToSid
   - Get-ADObject
+
+cover: /img/domain-acl-enumeration.png
+top_img: /img/bg-img.jpg
+description: Learn how to enumerate Active Directory domain information, password policies, and access control lists (ACLs) to identify privilege escalation opportunities using Linux, PowerView, the Active…
 ---
 
 > ➜ Enumerate the domain itself (info + password policy) and the Access Control Lists that reveal who can act on whom.
