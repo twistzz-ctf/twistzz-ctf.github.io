@@ -112,7 +112,7 @@ qwinsta
 
 #### ARP Cache
 
-> ➜ List the hosts this machine has recently communicated with — potential pivots for lateral movement.
+> ➜ List the hosts this machine has recently communicated with, which are potential pivots for lateral movement.
 
 ```powershell
 arp -a

@@ -67,7 +67,7 @@ TrustAttributes         : 8
 TrustType               : Uplevel
 ```
 
-> ➜ If `SIDFilteringForestAware`/`SIDFilteringQuarantined` are both `False`, SID filtering isn't enforced — the trust may be vulnerable to an ExtraSids attack (SID History abuse).
+> ➜ If `SIDFilteringForestAware`/`SIDFilteringQuarantined` are both `False`, SID filtering isn't enforced, so the trust may be vulnerable to an ExtraSids attack (SID History abuse).
 
 #### PowerView
 
@@ -137,7 +137,7 @@ nltest /domain_trusts /all_trusts
 
 #### wmic
 
-> ➜ Show the current domain, its forest, and any trusted domain in one line each — no credentials required beyond a domain session.
+> ➜ Show the current domain, its forest, and any trusted domain in one line each, with no credentials required beyond a domain session.
 
 ```cmd
 wmic ntdomain get Caption,Description,DnsForestName,DomainName,DomainControllerAddress

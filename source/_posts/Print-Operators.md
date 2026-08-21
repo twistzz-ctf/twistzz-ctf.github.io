@@ -178,7 +178,7 @@ nc -lvnp <port>
 
 ### EoPLoadDriver
 
-> We can use [EoPLoadDriver](https://github.com/TarlogicSecurity/EoPLoadDriver/) to automate the process of enabling the privilege, creating the registry key, and calling `NTLoadDriver` to load the driver — replacing the manual steps above.
+> We can use [EoPLoadDriver](https://github.com/TarlogicSecurity/EoPLoadDriver/) to automate the process of enabling the privilege, creating the registry key, and calling `NTLoadDriver` to load the driver, replacing the manual steps above.
 
 ```cmd
 C:\> EoPLoadDriver.exe System\CurrentControlSet\Capcom C:\Tools\Capcom.sys

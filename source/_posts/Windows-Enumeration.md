@@ -145,7 +145,7 @@ SeBackupPrivilege             Back up files         Disabled  <-- Can be enabled
 |Backup Operators|Can read any file, log into DCs locally|Extract NTDS.dit → Domain Admin|
 |Server Operators|Full control over all services on servers/DCs|Modify service binpath → SYSTEM|
 |DnsAdmins|Can load DLL into DNS service (runs as SYSTEM on DC)|Malicious DLL → SYSTEM on DC|
-|Print Operators|SeLoadDriverPrivilege — load kernel drivers|Capcom.sys → SYSTEM|
+|Print Operators|SeLoadDriverPrivilege (load kernel drivers)|Capcom.sys → SYSTEM|
 |Hyper-V Administrators|Full Hyper-V access, can clone virtual DCs|Clone DC VHDX → extract NTDS.dit|
 |Event Log Readers|Read security event logs including 4688 process creation|Find credentials in process command lines|
 
