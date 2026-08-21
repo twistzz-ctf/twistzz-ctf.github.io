@@ -7,7 +7,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://twistzz-ctf.github.io/img/domain-trust-enumeration.png">
 <meta property="article:published_time" content="2026-07-06T13:42:32.000Z">
-<meta property="article:modified_time" content="2026-08-21T17:31:09.548Z">
+<meta property="article:modified_time" content="2026-08-21T17:39:02.228Z">
 <meta property="article:author" content="Twistzz">
 <meta property="article:tag" content="Active-Directory">
 <meta property="article:tag" content="ActiveDirectory-Module">
@@ -34,7 +34,7 @@
   "url": "https://twistzz-ctf.github.io/2026/07/06/Child-Parent-Trust-Enumeration/",
   "image": "https://twistzz-ctf.github.io/img/domain-trust-enumeration.png",
   "datePublished": "2026-07-06T13:42:32.000Z",
-  "dateModified": "2026-08-21T17:31:09.548Z",
+  "dateModified": "2026-08-21T17:39:02.228Z",
   "author": [
     {
       "@type": "Person",
@@ -183,7 +183,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Direction               : BiDirectional</span><br><span class="line">DistinguishedName       : CN=LOGISTICS.INLANEFREIGHT.LOCAL,CN=System,DC=INLANEFREIGHT,DC=LOCAL</span><br><span class="line">ForestTransitive        : False</span><br><span class="line">IntraForest             : True</span><br><span class="line">Name                    : LOGISTICS.INLANEFREIGHT.LOCAL</span><br><span class="line">SIDFilteringForestAware : False</span><br><span class="line">SIDFilteringQuarantined : False</span><br><span class="line">Source                  : DC=INLANEFREIGHT,DC=LOCAL</span><br><span class="line">Target                  : LOGISTICS.INLANEFREIGHT.LOCAL</span><br><span class="line">TrustAttributes         : 32</span><br><span class="line">TrustType               : Uplevel</span><br><span class="line"></span><br><span class="line">Direction               : BiDirectional</span><br><span class="line">DistinguishedName       : CN=FREIGHTLOGISTICS.LOCAL,CN=System,DC=INLANEFREIGHT,DC=LOCAL</span><br><span class="line">ForestTransitive        : True</span><br><span class="line">IntraForest             : False</span><br><span class="line">Name                    : FREIGHTLOGISTICS.LOCAL</span><br><span class="line">SIDFilteringForestAware : False</span><br><span class="line">SIDFilteringQuarantined : False</span><br><span class="line">Source                  : DC=INLANEFREIGHT,DC=LOCAL</span><br><span class="line">Target                  : FREIGHTLOGISTICS.LOCAL</span><br><span class="line">TrustAttributes         : 8</span><br><span class="line">TrustType               : Uplevel</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>➜ If <code>SIDFilteringForestAware</code>&#x2F;<code>SIDFilteringQuarantined</code> are both <code>False</code>, SID filtering isn’t enforced — the trust may be vulnerable to an ExtraSids attack (SID History abuse).</p>
+<p>➜ If <code>SIDFilteringForestAware</code>&#x2F;<code>SIDFilteringQuarantined</code> are both <code>False</code>, SID filtering isn’t enforced, so the trust may be vulnerable to an ExtraSids attack (SID History abuse).</p>
 </blockquote>
 <h4 id="PowerView"><a href="#PowerView" class="headerlink" title="PowerView"></a>PowerView</h4><blockquote>
 <p>➜ Same information, PowerView’s own format.</p>
@@ -220,7 +220,7 @@
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nltest /domain_trusts /all_trusts</span><br></pre></td></tr></table></figure>
 
 <h4 id="wmic"><a href="#wmic" class="headerlink" title="wmic"></a>wmic</h4><blockquote>
-<p>➜ Show the current domain, its forest, and any trusted domain in one line each — no credentials required beyond a domain session.</p>
+<p>➜ Show the current domain, its forest, and any trusted domain in one line each, with no credentials required beyond a domain session.</p>
 </blockquote>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic ntdomain get Caption,Description,DnsForestName,DomainName,DomainControllerAddress</span><br></pre></td></tr></table></figure>
 

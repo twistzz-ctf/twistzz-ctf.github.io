@@ -7,7 +7,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://twistzz-ctf.github.io/img/Windows-Credential-Hunting.png">
 <meta property="article:published_time" content="2026-06-26T12:01:53.000Z">
-<meta property="article:modified_time" content="2026-08-18T23:39:49.076Z">
+<meta property="article:modified_time" content="2026-08-21T17:39:21.360Z">
 <meta property="article:author" content="Twistzz">
 <meta property="article:tag" content="Browser-Credentials">
 <meta property="article:tag" content="Credential-Hunting">
@@ -27,7 +27,7 @@
   "url": "https://twistzz-ctf.github.io/2026/06/26/Pillaging-Windows-Credential-Hunting-Extraction/",
   "image": "https://twistzz-ctf.github.io/img/Windows-Credential-Hunting.png",
   "datePublished": "2026-06-26T12:01:53.000Z",
-  "dateModified": "2026-08-18T23:39:49.076Z",
+  "dateModified": "2026-08-21T17:39:21.360Z",
   "author": [
     {
       "@type": "Person",
@@ -529,7 +529,7 @@
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">type</span> C:\Scripts\backup.ps1</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>Example output — the password is assigned to <code>$env:RESTIC_PASSWORD</code>:</p>
+<p>Example output where the password is assigned to <code>$env:RESTIC_PASSWORD</code>:</p>
 </blockquote>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$env:RESTIC_PASSWORD=&quot;PASSWORD&quot;</span><br><span class="line">restic.exe -r &lt;repository&gt; backup &lt;folder&gt;</span><br></pre></td></tr></table></figure>
 
