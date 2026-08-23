@@ -1,0 +1,216 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>categories | Twistzz</title><meta name="author" content="Twistzz"><meta name="copyright" content="Twistzz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta property="og:type" content="website">
+<meta property="og:title" content="categories">
+<meta property="og:url" content="https://twistzz-ctf.github.io/categories/index.html">
+<meta property="og:site_name" content="Twistzz">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://twistzz-ctf.github.io/img/avatar.png">
+<meta property="article:published_time" content="2026-08-23T11:29:27.000Z">
+<meta property="article:modified_time" content="2026-08-23T11:29:33.108Z">
+<meta property="article:author" content="Twistzz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://twistzz-ctf.github.io/img/avatar.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/icon.png"><link rel="canonical" href="https://twistzz-ctf.github.io/categories/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'categories',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'page'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="web_bg" style="background-image: url(/img/bg-img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-user-secret"></i><span> WhoAmI</span></a></div></div></div></div><div class="page type-categories" id="body-wrap"><header class="not-home-page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/avatar.png" alt="Logo"><span class="site-name">Twistzz</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-user-secret"></i><span> WhoAmI</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="page-site-info"><h1 id="site-title">categories</h1></div></header><main class="layout" id="content-inner"><div id="page"><div class="category-lists"><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/">Active Directory</a><span class="category-list-count">70</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Enumeration/">Enumeration</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/">Service-Enumeration</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/MSSQL/">MSSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/MySQL/">MySQL</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/">Users & Passwords Enumeration</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/Enumerating-Retrieving-Password-Policies/">Enumerating & Retrieving Password Policies</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/Making-a-Target-User-List/">Making a Target User List</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/Writing-Custom-Wordlists-and-Rules/">Writing Custom Wordlists and Rules</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/">Exploitation</a><span class="category-list-count">23</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/ACLs/">ACLs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Bleeding-Edge-Coercion/">Bleeding-Edge & Coercion</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Credential-Pillaging/">Credential Pillaging</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Credentialed-Enumeration/">Credentialed Enumeration</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Cross-Forest/">Cross Forest</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Cross-Forest/Abusing-Foreign-Group-Membership/">Abusing Foreign Group Membership</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Cross-Forest/Kerberoasting/">Kerberoasting</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Domain-Trusts/">Domain Trusts</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Domain-Trusts/Abuse-Child-Parent-Trust-From-Linux/">Abuse Child-Parent Trust From Linux</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Domain-Trusts/Abuse-Child-Parent-Trust-From-Windows/">Abuse Child-Parent Trust From Windows</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/">Enumeration</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Child-Parent-Trust-Enumeration/">Child-Parent Trust Enumeration</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Domain-Controllers-And-Servers/">Domain Controllers And Servers</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Domain-and-ACLs/">Domain and ACLs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/External-Enumeration/">External Enumeration</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Forest-Trust-Enumeration/">Forest Trust Enumeration</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Host-Discovery/">Host Discovery</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Internal-DNS-Enumeration/">Internal DNS Enumeration</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Security-Controls/">Security Controls</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Shares/">Shares</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Enumeration/Users-Groups/">Users & Groups</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Kerberoasting-ASREPRoasting/">Kerberoasting & ASREPRoasting</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Living-Off-the-Land/">Living Off the Land</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/NTLM-Relay/">NTLM Relay</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Network-Poisonin/">Network Poisonin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Exploitation/Password-Attacks/">Password Attacks</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Linux/">Linux</a><span class="category-list-count">6</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Linux/Pivoting-And-Port-Forwarding/">Pivoting And Port Forwarding</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Linux/Post-Exploitation/">Post Exploitation</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Linux/Post-Exploitation/Credential-Hunting/">Credential Hunting</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Linux/Post-Exploitation/Pass-the-Hash-PtH/">Pass the Hash (PtH)</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Linux/Post-Exploitation/Pass-the-Ticket-Ptt/">Pass the Ticket (Ptt)</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Linux/Post-Exploitation/Pass-the-Ticket-Ptt/KeyTab-Ccache-Abuse/">KeyTab Ccache Abuse</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Linux/Post-Exploitation/Pass-the-Ticket-Ptt/KeyTab-File-Abuse/">KeyTab File Abuse</a><span class="category-list-count">1</span></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Service-Enumeration/">Service-Enumeration</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Service-Enumeration/SMB/">SMB</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Service-Exploitation/">Service-Exploitation</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Service-Exploitation/MSSQL/">MSSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Service-Exploitation/MySQL/">MySQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Service-Exploitation/RDP/">RDP</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/">Windows</a><span class="category-list-count">32</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Exploitation/">Exploitation</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Exploitation/ADCS/">ADCS</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/">Post-Exploitation</a><span class="category-list-count">30</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Credential-Hunting/">Credential Hunting</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Dump-Passwords/">Dump-Passwords</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Pass-the-Hash-PtH/">Pass the Hash (PtH)</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/">Windows Privesc</a><span class="category-list-count">23</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Credential-Hunting/">Credential Hunting</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Groups/">Groups</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Misconfigurations/">Misconfigurations</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Old-Systems/">Old Systems</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Services/">Services</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/UAC-Bypass/">UAC Bypass</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/User/">User</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Active-Directory/Windows/Post-Exploitation/Windows-Privesc/Windows-Enumeration/">Windows Enumeration</a><span class="category-list-count">2</span></li></ul></li></ul></li></ul></li></ul></li></ul></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Twistzz</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">71</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">417</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">66</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Twistzz-cb"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership"><img src="/img/foreign-group-membership-abuse.png" onerror="this.onerror=null;this.src='/img/404.png'" alt="Abusing Foreign Group Membership"/></a><div class="content"><a class="title" href="/2026/07/07/Abusing-Foreign-Group-Membership/" title="Abusing Foreign Group Membership">Abusing Foreign Group Membership</a><time datetime="2026-07-07T07:29:09.000Z" title="Created 2026-07-07 08:29:09">2026-07-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration"><img src="/img/cross-domain-enumeration.png" onerror="this.onerror=null;this.src='/img/404.png'" alt="Forest Trust Enumeration"/></a><div class="content"><a class="title" href="/2026/07/06/Forest-Trust-Enumeration/" title="Forest Trust Enumeration">Forest Trust Enumeration</a><time datetime="2026-07-06T14:00:25.000Z" title="Created 2026-07-06 15:00:25">2026-07-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration"><img src="/img/domain-trust-enumeration.png" onerror="this.onerror=null;this.src='/img/404.png'" alt="Child-Parent Trust Enumeration"/></a><div class="content"><a class="title" href="/2026/07/06/Child-Parent-Trust-Enumeration/" title="Child-Parent Trust Enumeration">Child-Parent Trust Enumeration</a><time datetime="2026-07-06T13:42:32.000Z" title="Created 2026-07-06 14:42:32">2026-07-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups"><img src="/img/user-group-enumeration.png" onerror="this.onerror=null;this.src='/img/404.png'" alt="Users &amp; Groups"/></a><div class="content"><a class="title" href="/2026/07/06/Users-Groups/" title="Users &amp; Groups">Users &amp; Groups</a><time datetime="2026-07-06T13:13:08.000Z" title="Created 2026-07-06 14:13:08">2026-07-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs"><img src="/img/domain-acl-enumeration.png" onerror="this.onerror=null;this.src='/img/404.png'" alt="Domain and ACLs"/></a><div class="content"><a class="title" href="/2026/07/06/Domain-and-ACLs/" title="Domain and ACLs">Domain and ACLs</a><time datetime="2026-07-06T12:24:06.000Z" title="Created 2026-07-06 13:24:06">2026-07-06</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>Categories</span>
+            <a class="card-more-btn" href="/categories/" title="View More">
+      <i class="fas fa-angle-right"></i></a>
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/"><span class="card-category-list-name">Active Directory</span><span class="card-category-list-count">70</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/"><span class="card-category-list-name">Enumeration</span><span class="card-category-list-count">5</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/"><span class="card-category-list-name">Service-Enumeration</span><span class="card-category-list-count">2</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/MSSQL/"><span class="card-category-list-name">MSSQL</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Service-Enumeration/MySQL/"><span class="card-category-list-name">MySQL</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/"><span class="card-category-list-name">Users & Passwords Enumeration</span><span class="card-category-list-count">3</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/Enumerating-Retrieving-Password-Policies/"><span class="card-category-list-name">Enumerating & Retrieving Password Policies</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Active-Directory/Enumeration/Users-Passwords-Enumeration/Making-a-Target-User-List/"><span class="card-category-list-name">Making a Target User List</span><span class="card-category-list-count">1</span></a></li></ul></li></ul></li></ul></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/Trust-Enumeration/" style="font-size: 1.5em; color: #99a9bf">Trust-Enumeration</a> <a href="/tags/Group-Enumeration/" style="font-size: 1.5em; color: #99a9bf">Group-Enumeration</a> <a href="/tags/SharpHound/" style="font-size: 1.1em; color: #999">SharpHound</a> <a href="/tags/Proxy/" style="font-size: 1.1em; color: #999">Proxy</a> <a href="/tags/EDR/" style="font-size: 1.1em; color: #999">EDR</a> <a href="/tags/TXT/" style="font-size: 1.1em; color: #999">TXT</a> <a href="/tags/Logon-Scripts/" style="font-size: 1.1em; color: #999">Logon-Scripts</a> <a href="/tags/MySQL-Read-Files/" style="font-size: 1.1em; color: #999">MySQL-Read-Files</a> <a href="/tags/active-directory/" style="font-size: 1.1em; color: #999">active-directory</a> <a href="/tags/Forest-Trusts/" style="font-size: 1.5em; color: #99a9bf">Forest-Trusts</a> <a href="/tags/adidnsdump/" style="font-size: 1.1em; color: #999">adidnsdump</a> <a href="/tags/Credential-Reuse/" style="font-size: 1.1em; color: #999">Credential-Reuse</a> <a href="/tags/Win32-StartupCommand/" style="font-size: 1.1em; color: #999">Win32_StartupCommand</a> <a href="/tags/Responder/" style="font-size: 1.5em; color: #99a9bf">Responder</a> <a href="/tags/nslookup/" style="font-size: 1.1em; color: #999">nslookup</a> <a href="/tags/Domain-Controllers/" style="font-size: 1.5em; color: #99a9bf">Domain-Controllers</a> <a href="/tags/net-user/" style="font-size: 1.1em; color: #999">net-user</a> <a href="/tags/Set-ItemProperty/" style="font-size: 1.1em; color: #999">Set-ItemProperty</a> <a href="/tags/DeHashed/" style="font-size: 1.1em; color: #999">DeHashed</a> <a href="/tags/Permissive-File-System-ACLs/" style="font-size: 1.1em; color: #999">Permissive-File-System-ACLs</a> <a href="/tags/Search-for-File-Content/" style="font-size: 1.1em; color: #999">Search-for-File-Content</a> <a href="/tags/owneredit/" style="font-size: 1.1em; color: #999">owneredit</a> <a href="/tags/Meterpreter/" style="font-size: 1.1em; color: #999">Meterpreter</a> <a href="/tags/Domain-Computers/" style="font-size: 1.1em; color: #999">Domain-Computers</a> <a href="/tags/Get-HotFix/" style="font-size: 1.3em; color: #99a1ac">Get-HotFix</a> <a href="/tags/Get-DomainObjectACL/" style="font-size: 1.1em; color: #999">Get-DomainObjectACL</a> <a href="/tags/MySQL/" style="font-size: 1.3em; color: #99a1ac">MySQL</a> <a href="/tags/impacket-ntlmrelayx/" style="font-size: 1.3em; color: #99a1ac">impacket-ntlmrelayx</a> <a href="/tags/systeminfo/" style="font-size: 1.3em; color: #99a1ac">systeminfo</a> <a href="/tags/Foreign-Group-Membership/" style="font-size: 1.1em; color: #999">Foreign-Group-Membership</a> <a href="/tags/DriverView/" style="font-size: 1.1em; color: #999">DriverView</a> <a href="/tags/MX/" style="font-size: 1.1em; color: #999">MX</a> <a href="/tags/Weak-Service-Permissions/" style="font-size: 1.1em; color: #999">Weak-Service-Permissions</a> <a href="/tags/Scheduled-Tasks/" style="font-size: 1.1em; color: #999">Scheduled-Tasks</a> <a href="/tags/Hash-Capture/" style="font-size: 1.1em; color: #999">Hash-Capture</a> <a href="/tags/DFS/" style="font-size: 1.1em; color: #999">DFS</a> <a href="/tags/PKINITtools/" style="font-size: 1.1em; color: #999">PKINITtools</a> <a href="/tags/Get-MpComputerStatus/" style="font-size: 1.1em; color: #999">Get-MpComputerStatus</a> <a href="/tags/Get-ADDomain/" style="font-size: 1.1em; color: #999">Get-ADDomain</a> <a href="/tags/User-Sessions/" style="font-size: 1.1em; color: #999">User-Sessions</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>Archives</span>
+      
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/07/">
+            <span class="card-archive-list-date">
+              July 2026
+            </span>
+            <span class="card-archive-list-count">11</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/06/">
+            <span class="card-archive-list-date">
+              June 2026
+            </span>
+            <span class="card-archive-list-count">24</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/03/">
+            <span class="card-archive-list-date">
+              March 2026
+            </span>
+            <span class="card-archive-list-count">8</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/01/">
+            <span class="card-archive-list-date">
+              January 2026
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/12/">
+            <span class="card-archive-list-date">
+              December 2025
+            </span>
+            <span class="card-archive-list-count">8</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/11/">
+            <span class="card-archive-list-date">
+              November 2025
+            </span>
+            <span class="card-archive-list-count">19</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Twistzz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search…" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.2"></script></div></div></body></html>
